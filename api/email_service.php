@@ -86,7 +86,13 @@ function get_brevo_service() {
     $sender_name = get_system_setting('brevo_sender_name', 'AquaSphere');
     $enable_notifications = get_system_setting('enable_email_notifications', '0') === '1';
     
+    // Debug logging (remove in production)
+    error_log("Brevo service check - API key: " . (!empty($api_key) ? "SET (" . strlen($api_key) . " chars)" : "NOT SET"));
+    error_log("Brevo service check - Sender email: " . ($sender_email ?: "NOT SET"));
+    error_log("Brevo service check - Enable notifications: " . ($enable_notifications ? "YES" : "NO"));
+    
     if (!$enable_notifications || !$api_key || !$sender_email) {
+        error_log("Brevo service not available - enable: " . ($enable_notifications ? "yes" : "no") . ", api_key: " . (!empty($api_key) ? "yes" : "no") . ", sender_email: " . (!empty($sender_email) ? "yes" : "no"));
         return null;
     }
     

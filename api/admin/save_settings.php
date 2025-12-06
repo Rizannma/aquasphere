@@ -58,15 +58,21 @@ init_db();
 
 foreach ($settings_to_save as $key) {
     if (isset($data[$key])) {
-        $result = update_system_setting($key, $data[$key], $user_id);
+        $value = $data[$key];
+        error_log("Saving setting: $key = " . (in_array($key, ['brevo_api_key']) ? '***HIDDEN***' : $value));
+        $result = update_system_setting($key, $value, $user_id);
         if ($result) {
             $saved_settings[] = $key;
             // Verify it was saved
             $verify = get_system_setting($key);
-            if ($verify !== $data[$key]) {
-                $errors[] = "Setting $key was not saved correctly";
+            if ($verify !== $value) {
+                error_log("Setting $key verification failed - expected: " . (in_array($key, ['brevo_api_key']) ? '***HIDDEN***' : $value) . ", got: " . (in_array($key, ['brevo_api_key']) ? '***HIDDEN***' : $verify));
+                $errors[] = "Setting $key was not saved correctly (expected: " . strlen($value) . " chars, got: " . strlen($verify) . " chars)";
+            } else {
+                error_log("Setting $key saved and verified successfully");
             }
         } else {
+            error_log("Failed to save setting: $key");
             $errors[] = "Failed to save setting: $key";
         }
     }
@@ -74,16 +80,23 @@ foreach ($settings_to_save as $key) {
 
 // Handle API key separately (only save if provided)
 if (isset($data['brevo_api_key']) && !empty($data['brevo_api_key']) && $data['brevo_api_key'] !== '***SAVED***') {
-    $result = update_system_setting('brevo_api_key', $data['brevo_api_key'], $user_id);
+    $api_key_value = trim($data['brevo_api_key']);
+    error_log("Saving API key (length: " . strlen($api_key_value) . ")");
+    $result = update_system_setting('brevo_api_key', $api_key_value, $user_id);
     if ($result) {
         $api_key_saved = true;
         $saved_settings[] = 'brevo_api_key';
         // Verify API key was saved (check length, not value for security)
         $saved_key = get_system_setting('brevo_api_key');
-        if (empty($saved_key) || strlen($saved_key) !== strlen($data['brevo_api_key'])) {
-            $errors[] = "API key was not saved correctly";
+        error_log("API key verification - saved length: " . strlen($saved_key) . ", expected length: " . strlen($api_key_value));
+        if (empty($saved_key) || strlen($saved_key) !== strlen($api_key_value)) {
+            error_log("API key verification FAILED");
+            $errors[] = "API key was not saved correctly (expected length: " . strlen($api_key_value) . ", got: " . strlen($saved_key) . ")";
+        } else {
+            error_log("API key saved and verified successfully");
         }
     } else {
+        error_log("Failed to save API key");
         $errors[] = "Failed to save API key";
     }
 }

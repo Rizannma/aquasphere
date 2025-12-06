@@ -3,7 +3,17 @@
  * OTP Verification Handler
  */
 
+// Start output buffering to catch any unexpected output
+ob_start();
+
+// Set headers first
 header('Content-Type: application/json');
+
+// Suppress any warnings/notices that might break JSON
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
 require_once 'database.php';
 
 // Only allow POST requests
@@ -31,8 +41,14 @@ if (empty($otp_code)) {
     exit;
 }
 
+// Initialize database first
+init_db();
+
 // Verify OTP
 $user_data = verify_otp_code($email, $otp_code);
+
+// Clear any output buffer before sending JSON
+ob_clean();
 
 if ($user_data) {
     // Create the user account (password is already hashed)
@@ -52,12 +68,13 @@ if ($user_data) {
         $user_data['date_of_birth']
     ]);
     
-    if ($result) {
+    if ($result !== false) {
         close_connection($conn);
         // Clean up session
         session_start();
         unset($_SESSION['pending_email']);
         unset($_SESSION['pending_username']);
+        unset($_SESSION['dev_otp']);
         
         // Clean up expired OTP records
         cleanup_expired_otp();
@@ -81,5 +98,9 @@ if ($user_data) {
         'message' => 'Invalid or expired verification code. Please try again.'
     ]);
 }
+
+// End output buffering
+ob_end_flush();
+exit;
 ?>
 

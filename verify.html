@@ -438,7 +438,6 @@
                 </div>
                 
                 <button type="submit" class="verify-btn" id="verifyBtn" disabled>
-                    <i class="fas fa-check-circle me-2"></i>
                     <span id="verifyBtnText">Verify Code</span>
                 </button>
             </form>
@@ -641,7 +640,24 @@
                     otp_code: code
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is ok
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                    });
+                }
+                // Try to parse as JSON
+                return response.text().then(text => {
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        console.error('Response text:', text);
+                        throw new Error('Invalid JSON response from server: ' + text.substring(0, 100));
+                    }
+                });
+            })
             .then(data => {
                 if (data.success) {
                     showSuccess('Registration successful! Redirecting to login...');
@@ -657,7 +673,7 @@
                     });
                     otpCodeInput.value = '';
                     verifyBtn.disabled = true;
-                    verifyBtnText.innerHTML = '<i class="fas fa-check-circle me-2"></i>Verify Code';
+                    verifyBtnText.innerHTML = 'Verify Code';
                     otpInputs[0].focus();
                 }
             })
@@ -698,7 +714,24 @@
                     body: JSON.stringify({
                         email: userEmail
                     })
-                }).then(response => response.json()),
+                }).then(response => {
+                    // Check if response is ok
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                        });
+                    }
+                    // Try to parse as JSON
+                    return response.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            console.error('JSON parse error:', e);
+                            console.error('Response text:', text);
+                            throw new Error('Invalid JSON response from server: ' + text.substring(0, 100));
+                        }
+                    });
+                }),
                 // Minimum loading time (1500ms like AnemoCheck)
                 new Promise(resolve => setTimeout(resolve, 1500))
             ])

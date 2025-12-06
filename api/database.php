@@ -577,6 +577,9 @@ function store_otp_verification($email, $otp_code, $username, $password_hash, $f
  * Verify OTP code and get user data
  */
 function verify_otp_code($email, $otp_code) {
+    // Initialize database first to ensure tables exist
+    init_db();
+    
     $conn = get_db_connection();
     
     $query = "
@@ -588,6 +591,12 @@ function verify_otp_code($email, $otp_code) {
     
     $result = execute_sql($conn, $query, [$email, $otp_code]);
     
+    if ($result === false) {
+        error_log("Failed to execute query in verify_otp_code: " . ($GLOBALS['use_postgres'] ? pg_last_error($conn) : "SQLite error"));
+        close_connection($conn);
+        return null;
+    }
+    
     if ($GLOBALS['use_postgres']) {
         $otp_data = pg_fetch_assoc($result);
     } else {
@@ -597,7 +606,11 @@ function verify_otp_code($email, $otp_code) {
     if ($otp_data) {
         // Mark as verified
         $updateQuery = "UPDATE otp_verification SET is_verified = 1 WHERE id = ?";
-        execute_sql($conn, $updateQuery, [$otp_data['id']]);
+        $updateResult = execute_sql($conn, $updateQuery, [$otp_data['id']]);
+        
+        if ($updateResult === false) {
+            error_log("Failed to mark OTP as verified");
+        }
         
         // Return user data
         $user_data = [
@@ -611,6 +624,24 @@ function verify_otp_code($email, $otp_code) {
         
         close_connection($conn);
         return $user_data;
+    } else {
+        // Log for debugging
+        error_log("OTP verification failed for email: $email, code: $otp_code");
+        // Check if OTP exists but is expired or already verified
+        $check_query = "SELECT * FROM otp_verification WHERE email = ? AND otp_code = ? ORDER BY created_at DESC LIMIT 1";
+        $check_result = execute_sql($conn, $check_query, [$email, $otp_code]);
+        if ($check_result !== false) {
+            if ($GLOBALS['use_postgres']) {
+                $check_data = pg_fetch_assoc($check_result);
+            } else {
+                $check_data = $check_result->fetchArray(SQLITE3_ASSOC);
+            }
+            if ($check_data) {
+                error_log("OTP found but: is_verified=" . ($check_data['is_verified'] ?? 'N/A') . ", expires_at=" . ($check_data['expires_at'] ?? 'N/A'));
+            } else {
+                error_log("No OTP record found for email: $email, code: $otp_code");
+            }
+        }
     }
     
     close_connection($conn);
@@ -621,6 +652,9 @@ function verify_otp_code($email, $otp_code) {
  * Get pending OTP data by email
  */
 function get_pending_otp($email) {
+    // Initialize database first to ensure tables exist
+    init_db();
+    
     $conn = get_db_connection();
     
     $query = "
@@ -631,6 +665,12 @@ function get_pending_otp($email) {
     ";
     
     $result = execute_sql($conn, $query, [$email]);
+    
+    if ($result === false) {
+        error_log("Failed to execute query in get_pending_otp: " . ($GLOBALS['use_postgres'] ? pg_last_error($conn) : "SQLite error"));
+        close_connection($conn);
+        return null;
+    }
     
     if ($GLOBALS['use_postgres']) {
         $otp_data = pg_fetch_assoc($result);
@@ -646,6 +686,9 @@ function get_pending_otp($email) {
  * Update OTP code (for resend)
  */
 function update_otp_code($email, $otp_code, $expires_at) {
+    // Initialize database first to ensure tables exist
+    init_db();
+    
     $conn = get_db_connection();
     
     $query = "
@@ -655,6 +698,12 @@ function update_otp_code($email, $otp_code, $expires_at) {
     ";
     
     $result = execute_sql($conn, $query, [$otp_code, $expires_at, $email]);
+    
+    if ($result === false) {
+        error_log("Failed to execute query in update_otp_code: " . ($GLOBALS['use_postgres'] ? pg_last_error($conn) : "SQLite error"));
+        close_connection($conn);
+        return false;
+    }
     
     if ($GLOBALS['use_postgres']) {
         $affected = pg_affected_rows($result);

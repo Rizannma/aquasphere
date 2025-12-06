@@ -3,7 +3,17 @@
  * Resend OTP Handler
  */
 
+// Start output buffering to catch any unexpected output
+ob_start();
+
+// Set headers first
 header('Content-Type: application/json');
+
+// Suppress any warnings/notices that might break JSON
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
 require_once 'database.php';
 
 // Only allow POST requests
@@ -34,12 +44,17 @@ if (empty($pending_email) || $pending_email !== $email) {
     exit;
 }
 
+// Initialize database first
+init_db();
+
 // Check if pending OTP exists
 $pending_otp = get_pending_otp($email);
 
 if (!$pending_otp) {
+    ob_clean();
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'No pending registration found. Please register again.']);
+    ob_end_flush();
     exit;
 }
 
@@ -51,8 +66,10 @@ $expires_at = date('Y-m-d H:i:s', time() + (10 * 60));
 $updated = update_otp_code($email, $otp_code, $expires_at);
 
 if (!$updated) {
+    ob_clean();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Failed to update verification code. Please try again.']);
+    ob_end_flush();
     exit;
 }
 
@@ -63,6 +80,9 @@ $email_sent = send_otp_email_brevo($email, $otp_code, $username);
 
 // Check if in development mode
 $is_development = empty(get_system_setting('brevo_api_key'));
+
+// Clear any output buffer before sending JSON
+ob_clean();
 
 if ($email_sent) {
     echo json_encode([
@@ -87,5 +107,9 @@ if ($email_sent) {
         ]);
     }
 }
+
+// End output buffering
+ob_end_flush();
+exit;
 ?>
 

@@ -3,11 +3,15 @@
  * Login Handler for AquaSphere
  */
 
+// Start output buffering to catch any unexpected output
+ob_start();
+
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
+// Set headers first
 header('Content-Type: application/json');
 
 // Only allow POST requests
@@ -25,7 +29,9 @@ $remember_me = isset($_POST['remember_me']) ? 1 : 0;
 // Special admin login check (BEFORE requiring database)
 if ($username === 'admin' && $password === 'admin123') {
     // Start session for admin
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
     $_SESSION['user_id'] = 0; // Special admin ID
     $_SESSION['username'] = 'admin';
     $_SESSION['is_admin'] = 1;
@@ -36,11 +42,14 @@ if ($username === 'admin' && $password === 'admin123') {
         setcookie('aquasphere_remember', $cookie_value, time() + (86400 * 30), '/'); // 30 days
     }
     
+    // Clear any output buffer before sending JSON
+    ob_clean();
     echo json_encode([
         'success' => true, 
         'message' => 'Admin login successful!',
         'redirect' => 'admin/dashboard.html'
     ]);
+    ob_end_flush();
     exit;
 }
 
@@ -67,8 +76,10 @@ try {
     
     // If there are errors, return them
     if (!empty($errors)) {
+        ob_clean();
         http_response_code(400);
         echo json_encode(['success' => false, 'errors' => $errors]);
+        ob_end_flush();
         exit;
     }
     
@@ -89,7 +100,9 @@ try {
         execute_sql($conn, $updateQuery, [$user['id']]);
         
         // Start session
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['is_admin'] = $user['is_admin'] ?? 0;

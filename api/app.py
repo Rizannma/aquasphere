@@ -206,6 +206,8 @@ def update_order_status():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    # Use a different port for Python API (5000) or get from env
+    # PHP will use the main PORT env var, Python uses PYTHON_PORT or defaults to 5000
+    port = int(os.environ.get('PYTHON_PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
 

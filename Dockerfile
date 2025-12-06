@@ -12,15 +12,21 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
+    python3-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy Python requirements and install
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Copy requirements file
+COPY requirements.txt /app/requirements.txt
+
+# Create virtual environment and install packages
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r /app/requirements.txt
 
 # Copy all files
 COPY . .
@@ -29,6 +35,7 @@ COPY . .
 EXPOSE 8080
 
 # Start PHP built-in server (Railway sets PORT env var)
-# Note: For production, you might want to run both PHP and Python services
-CMD sh -c "php -S 0.0.0.0:\${PORT:-8080} -t . & python3 api/app.py & wait"
+# Python API is available but optional - can be enabled if needed
+# For now, we'll focus on PHP as the main backend
+CMD php -S 0.0.0.0:\${PORT:-8080} -t .
 

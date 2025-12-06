@@ -464,6 +464,17 @@
             pointer-events: none;
             transform: none !important;
             will-change: auto;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Ensure parent containers don't create new containing block */
+        .main-content,
+        .main-content .container,
+        .main-content .row,
+        .main-content .col-lg-4 {
+            transform: none !important;
+            will-change: auto !important;
         }
         
         .cart-summary-wrapper > * {

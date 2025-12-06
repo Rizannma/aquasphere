@@ -438,10 +438,11 @@
             background: white;
             border: 2px solid #e2e8f0;
             border-radius: 10px;
-            overflow: hidden;
+            overflow: visible;
             width: 120px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            flex-wrap: nowrap;
         }
         
         .quantity-controls:hover {
@@ -469,9 +470,11 @@
             font-size: 1.2rem;
             position: relative;
             border-right: 1px solid #e2e8f0;
+            flex-shrink: 0;
+            min-width: 40px;
         }
         
-        .quantity-btn:last-of-type {
+        .quantity-btn.increase {
             border-right: none;
             border-left: 1px solid #e2e8f0;
         }
@@ -505,18 +508,26 @@
             font-size: 1rem;
             color: #0369a1;
             background: white;
-            padding: 0;
+            padding: 0 5px;
+            min-width: 40px;
+            display: block;
+            -moz-appearance: textfield;
         }
         
         .quantity-input:focus {
             outline: none;
             background: #f0f9ff;
+            border-bottom: 2px solid #0ea5e9;
         }
         
         .quantity-input::-webkit-inner-spin-button,
         .quantity-input::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
+        }
+        
+        .quantity-input[type="number"] {
+            -moz-appearance: textfield;
         }
         
         /* Quick Stats */
@@ -780,9 +791,9 @@
                                     ₱25<span>/refill</span>
                                 </div>
                                 <div class="quantity-controls">
-                                    <button class="quantity-btn decrease" onclick="decreaseQuantity(1)">−</button>
+                                    <button type="button" class="quantity-btn decrease" onclick="decreaseQuantity(1)">−</button>
                                     <input type="number" class="quantity-input" id="qty-1" value="1" min="1" onchange="validateQuantity(1)">
-                                    <button class="quantity-btn increase" onclick="increaseQuantity(1)">+</button>
+                                    <button type="button" class="quantity-btn increase" onclick="increaseQuantity(1)">+</button>
                                 </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(1, '5-Gallon Refill', 25)">
@@ -807,9 +818,9 @@
                                     ₱150<span>/unit</span>
                                 </div>
                                 <div class="quantity-controls">
-                                    <button class="quantity-btn decrease" onclick="decreaseQuantity(2)">−</button>
+                                    <button type="button" class="quantity-btn decrease" onclick="decreaseQuantity(2)">−</button>
                                     <input type="number" class="quantity-input" id="qty-2" value="1" min="1" onchange="validateQuantity(2)">
-                                    <button class="quantity-btn increase" onclick="increaseQuantity(2)">+</button>
+                                    <button type="button" class="quantity-btn increase" onclick="increaseQuantity(2)">+</button>
                                 </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(2, 'New 5-Gallon + Container', 150)">
@@ -834,9 +845,9 @@
                                     ₱120<span>/pack</span>
                                 </div>
                                 <div class="quantity-controls">
-                                    <button class="quantity-btn decrease" onclick="decreaseQuantity(3)">−</button>
+                                    <button type="button" class="quantity-btn decrease" onclick="decreaseQuantity(3)">−</button>
                                     <input type="number" class="quantity-input" id="qty-3" value="1" min="1" onchange="validateQuantity(3)">
-                                    <button class="quantity-btn increase" onclick="increaseQuantity(3)">+</button>
+                                    <button type="button" class="quantity-btn increase" onclick="increaseQuantity(3)">+</button>
                                 </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(3, '1-Liter Bottle (12-pack)', 120)">
@@ -861,9 +872,9 @@
                                     ₱100<span>/pack</span>
                                 </div>
                                 <div class="quantity-controls">
-                                    <button class="quantity-btn decrease" onclick="decreaseQuantity(4)">−</button>
+                                    <button type="button" class="quantity-btn decrease" onclick="decreaseQuantity(4)">−</button>
                                     <input type="number" class="quantity-input" id="qty-4" value="1" min="1" onchange="validateQuantity(4)">
-                                    <button class="quantity-btn increase" onclick="increaseQuantity(4)">+</button>
+                                    <button type="button" class="quantity-btn increase" onclick="increaseQuantity(4)">+</button>
                                 </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(4, '500ml Bottle (24-pack)', 100)">
@@ -888,9 +899,9 @@
                                     ₱20<span>/refill</span>
                                 </div>
                                 <div class="quantity-controls">
-                                    <button class="quantity-btn decrease" onclick="decreaseQuantity(5)">−</button>
+                                    <button type="button" class="quantity-btn decrease" onclick="decreaseQuantity(5)">−</button>
                                     <input type="number" class="quantity-input" id="qty-5" value="1" min="1" onchange="validateQuantity(5)">
-                                    <button class="quantity-btn increase" onclick="increaseQuantity(5)">+</button>
+                                    <button type="button" class="quantity-btn increase" onclick="increaseQuantity(5)">+</button>
                                 </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(5, 'Bring Your Jug (Refill)', 20)">

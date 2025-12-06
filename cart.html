@@ -114,7 +114,6 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             padding: 2rem;
             margin-bottom: 2rem;
-            margin-right: 420px; /* Space for fixed order summary and delivery address */
         }
         
         .cart-header {
@@ -444,33 +443,19 @@
         }
         
         .cart-summary-wrapper {
-            position: fixed !important;
-            top: 100px !important;
-            left: calc((100vw - 1200px) / 2 + 800px + 2rem) !important; /* Position beside shopping cart: container left margin + 66.666% width + spacing */
-            width: 380px !important;
-            max-width: 380px !important;
-            z-index: 1000 !important;
+            position: fixed;
+            top: 100px;
+            width: 100%;
+            z-index: 100;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            pointer-events: none;
-            transform: translateZ(0) !important; /* Force hardware acceleration */
-            will-change: auto;
-            margin: 0 !important;
-            padding: 0 !important;
         }
         
-        .cart-summary-wrapper > * {
-            pointer-events: auto;
-        }
-        
-        @media (max-width: 1400px) {
+        @media (max-width: 991px) {
             .cart-summary-wrapper {
-                left: calc(66.666% + 1rem) !important;
-                width: 360px !important;
-            }
-            .cart-container {
-                margin-right: 380px;
+                position: relative;
+                top: 0;
             }
         }
         
@@ -1252,73 +1237,77 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Fixed Order Summary and Delivery Address - Outside Bootstrap grid -->
-        <div class="cart-summary-wrapper">
-            <div class="cart-summary">
-                <h3 class="summary-title">Order Summary</h3>
-                
-                <div class="summary-row">
-                    <span class="summary-label">Subtotal</span>
-                    <span class="summary-value" id="subtotal">₱0.00</span>
-                </div>
-                
-                <div class="summary-row">
-                    <span class="summary-label">Delivery Fee</span>
-                    <span class="summary-value" id="deliveryFee">₱50.00</span>
-                </div>
-                
-                <div class="summary-row total">
-                    <span class="summary-label">Total</span>
-                    <span class="summary-value" id="total">₱0.00</span>
-                </div>
-                
-                <button class="btn-checkout" id="checkoutBtn" onclick="proceedToCheckout()" disabled>
-                    <i class="fas fa-credit-card me-2"></i>
-                    Proceed to Checkout
-                </button>
-                
-                <a href="dashboard.html" class="btn btn-continue-shopping w-100 mt-2" style="justify-content: center;">
-                    <i class="fas fa-arrow-left"></i>
-                    Continue Shopping
-                </a>
-            </div>
-            
-            <!-- Delivery Address Section -->
-            <div class="cart-summary">
-                <div class="delivery-address-section" id="deliveryAddressSection">
-                <div class="address-header">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Delivery Address</span>
-                </div>
-                <div id="addressContent" class="address-content">
-                    <div class="empty-address" id="emptyAddress">
-                        <p>No delivery address set</p>
-                        <button class="btn-add-address" onclick="openAddressModal()">
-                            <i class="fas fa-plus me-2"></i>
-                            Add Delivery Address
-                        </button>
                     </div>
-                    <div class="address-display" id="addressDisplay" style="display: none;">
-                        <div class="address-header-row">
-                            <div class="address-info">
-                                <div class="address-name-phone">
-                                    <strong id="addressName"></strong>
-                                    <span id="addressPhone"></span>
+                </div>
+                
+                <!-- Cart Summary -->
+                <div class="col-lg-4">
+                    <div class="cart-summary-wrapper">
+                        <div class="cart-summary">
+                            <h3 class="summary-title">Order Summary</h3>
+                            
+                            <div class="summary-row">
+                                <span class="summary-label">Subtotal</span>
+                                <span class="summary-value" id="subtotal">₱0.00</span>
+                            </div>
+                            
+                            <div class="summary-row">
+                                <span class="summary-label">Delivery Fee</span>
+                                <span class="summary-value" id="deliveryFee">₱50.00</span>
+                            </div>
+                            
+                            <div class="summary-row total">
+                                <span class="summary-label">Total</span>
+                                <span class="summary-value" id="total">₱0.00</span>
+                            </div>
+                            
+                            <button class="btn-checkout" id="checkoutBtn" onclick="proceedToCheckout()" disabled>
+                                <i class="fas fa-credit-card me-2"></i>
+                                Proceed to Checkout
+                            </button>
+                            
+                            <a href="dashboard.html" class="btn btn-continue-shopping w-100 mt-2" style="justify-content: center;">
+                                <i class="fas fa-arrow-left"></i>
+                                Continue Shopping
+                            </a>
+                        </div>
+                        
+                        <!-- Delivery Address Section -->
+                        <div class="cart-summary">
+                            <div class="delivery-address-section" id="deliveryAddressSection">
+                            <div class="address-header">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Delivery Address</span>
+                            </div>
+                            <div id="addressContent" class="address-content">
+                                <div class="empty-address" id="emptyAddress">
+                                    <p>No delivery address set</p>
+                                    <button class="btn-add-address" onclick="openAddressModal()">
+                                        <i class="fas fa-plus me-2"></i>
+                                        Add Delivery Address
+                                    </button>
+                                </div>
+                                <div class="address-display" id="addressDisplay" style="display: none;">
+                                    <div class="address-header-row">
+                                        <div class="address-info">
+                                            <div class="address-name-phone">
+                                                <strong id="addressName"></strong>
+                                                <span id="addressPhone"></span>
+                                            </div>
+                                        </div>
+                                        <div class="address-actions">
+                                            <span class="badge-default" id="defaultBadge" style="display: none;">Default</span>
+                                        </div>
+                                    </div>
+                                    <div class="address-text" id="addressText"></div>
+                                    <div class="address-buttons" style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+                                        <button class="btn-change-address" onclick="openAddressModal()">Change</button>
+                                        <button class="btn-delete-address" onclick="deleteAddress()" title="Delete address">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="address-actions">
-                                <span class="badge-default" id="defaultBadge" style="display: none;">Default</span>
-                            </div>
-                        </div>
-                        <div class="address-text" id="addressText"></div>
-                        <div class="address-buttons" style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
-                            <button class="btn-change-address" onclick="openAddressModal()">Change</button>
-                            <button class="btn-delete-address" onclick="deleteAddress()" title="Delete address">
-                                <i class="fas fa-trash"></i>
-                            </button>
                         </div>
                     </div>
                 </div>

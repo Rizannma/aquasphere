@@ -431,6 +431,94 @@
             z-index: 1;
         }
         
+        /* Quantity Controls */
+        .quantity-controls {
+            display: flex;
+            align-items: stretch;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .quantity-controls:hover {
+            border-color: #0ea5e9;
+            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.15);
+        }
+        
+        .quantity-controls:focus-within {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+        
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #475569;
+            font-weight: 600;
+            font-size: 1.2rem;
+            position: relative;
+            border-right: 1px solid #e2e8f0;
+        }
+        
+        .quantity-btn:last-of-type {
+            border-right: none;
+            border-left: 1px solid #e2e8f0;
+        }
+        
+        .quantity-btn:hover {
+            background: #e0f2fe;
+            color: #0ea5e9;
+        }
+        
+        .quantity-btn:active {
+            background: #bae6fd;
+            transform: scale(0.95);
+        }
+        
+        .quantity-btn.decrease {
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .quantity-btn.increase {
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .quantity-input {
+            flex: 1;
+            height: 40px;
+            border: none;
+            border-left: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #0369a1;
+            background: white;
+            padding: 0;
+        }
+        
+        .quantity-input:focus {
+            outline: none;
+            background: #f0f9ff;
+        }
+        
+        .quantity-input::-webkit-inner-spin-button,
+        .quantity-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
         /* Quick Stats */
         .quick-stats {
             display: grid;

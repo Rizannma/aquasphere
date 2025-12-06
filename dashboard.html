@@ -438,10 +438,10 @@
             background: white;
             border: 2px solid #e2e8f0;
             border-radius: 10px;
-            overflow: visible;
+            overflow: hidden;
             width: 120px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
             flex-wrap: nowrap;
         }
         
@@ -464,19 +464,31 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, color 0.2s ease;
             color: #475569;
             font-weight: 600;
             font-size: 1.2rem;
             position: relative;
-            border-right: 1px solid #e2e8f0;
             flex-shrink: 0;
             min-width: 40px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .quantity-btn.decrease {
+            border-right: 1px solid #e2e8f0;
         }
         
         .quantity-btn.increase {
-            border-right: none;
             border-left: 1px solid #e2e8f0;
+        }
+        
+        .quantity-controls:hover .quantity-btn.decrease {
+            border-right-color: #0ea5e9;
+        }
+        
+        .quantity-controls:hover .quantity-btn.increase {
+            border-left-color: #0ea5e9;
         }
         
         .quantity-btn:hover {
@@ -487,14 +499,6 @@
         .quantity-btn:active {
             background: #bae6fd;
             transform: scale(0.95);
-        }
-        
-        .quantity-btn.decrease {
-            border-radius: 8px 0 0 8px;
-        }
-        
-        .quantity-btn.increase {
-            border-radius: 0 8px 8px 0;
         }
         
         .quantity-input {
@@ -512,12 +516,23 @@
             min-width: 40px;
             display: block;
             -moz-appearance: textfield;
+            margin: 0;
+        }
+        
+        .quantity-controls:hover .quantity-input {
+            border-left-color: #0ea5e9;
+            border-right-color: #0ea5e9;
         }
         
         .quantity-input:focus {
             outline: none;
             background: #f0f9ff;
             border-bottom: 2px solid #0ea5e9;
+        }
+        
+        .quantity-controls:focus-within .quantity-input {
+            border-left-color: #0ea5e9;
+            border-right-color: #0ea5e9;
         }
         
         .quantity-input::-webkit-inner-spin-button,

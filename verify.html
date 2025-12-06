@@ -801,16 +801,21 @@
         });
         
         function startResendTimer() {
-            resendCountdown = 60;
-            resendLink.style.pointerEvents = 'none';
-            resendLink.style.opacity = '0.5';
+            resendCountdown = 60; // 1 minute cooldown
+            const resendTimerElement = document.getElementById('resendTimer');
             
             if (resendTimer) clearInterval(resendTimer);
             
             resendTimer = setInterval(() => {
                 if (resendCountdown > 0) {
+                    const minutes = Math.floor(resendCountdown / 60);
+                    const seconds = resendCountdown % 60;
+                    resendTimerElement.textContent = `(${minutes}:${seconds.toString().padStart(2, '0')})`;
+                    resendLink.style.pointerEvents = 'none';
+                    resendLink.style.opacity = '0.5';
                     resendCountdown--;
                 } else {
+                    resendTimerElement.textContent = '';
                     resendLink.style.pointerEvents = 'auto';
                     resendLink.style.opacity = '1';
                     clearInterval(resendTimer);

@@ -555,10 +555,20 @@
         }
         
         .address-display {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 1rem;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .address-display:hover {
+            border-color: #0ea5e9;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
         }
         
         .address-info {
@@ -566,54 +576,71 @@
         }
         
         .address-name-phone {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.15rem;
+            font-weight: 700;
             color: #0f172a;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .address-name-phone strong {
+            color: #0369a1;
         }
         
         .address-name-phone span {
             color: #64748b;
-            font-weight: 400;
-            margin-left: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
         }
         
         .address-text {
             color: #475569;
-            line-height: 1.6;
+            line-height: 1.8;
             font-size: 0.95rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid #0ea5e9;
         }
         
         .address-actions {
             display: flex;
-            align-items: center;
-            gap: 1rem;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
             flex-shrink: 0;
         }
         
         .badge-default {
-            background: #fff7ed;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
             color: #ea580c;
-            border: 1px solid #ea580c;
-            padding: 4px 12px;
-            border-radius: 4px;
+            border: 2px solid #ea580c;
+            padding: 6px 14px;
+            border-radius: 6px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(234, 88, 12, 0.2);
         }
         
         .btn-change-address {
-            background: none;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
             border: none;
-            color: #0ea5e9;
+            color: white;
             font-weight: 600;
             cursor: pointer;
-            padding: 5px 10px;
-            transition: all 0.2s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
         }
         
         .btn-change-address:hover {
-            color: #0284c7;
-            text-decoration: underline;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3);
+            color: white;
         }
         
         /* Address Modal */

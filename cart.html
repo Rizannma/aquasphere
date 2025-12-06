@@ -168,6 +168,14 @@
             border-radius: 10px;
             font-weight: 600;
             transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-continue-shopping i {
+            display: inline-flex;
+            align-items: center;
         }
         
         .btn-continue-shopping:hover {
@@ -688,17 +696,18 @@
         }
         
         .modal-header {
-            background: white;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
             padding: 2rem 2rem 1.5rem;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: none;
             border-radius: 20px 20px 0 0;
         }
         
         .modal-header h2 {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #0369a1;
+            color: white;
             margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .modal-body {
@@ -1002,7 +1011,7 @@
                             <h3>Your cart is empty</h3>
                             <p>Looks like you haven't added any items to your cart yet.</p>
                             <a href="dashboard.html" class="btn btn-continue-shopping">
-                                <i class="fas fa-arrow-left me-2"></i>
+                                <i class="fas fa-arrow-left"></i>
                                 Continue Shopping
                             </a>
                         </div>

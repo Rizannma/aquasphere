@@ -361,6 +361,11 @@ function get_system_setting($key, $default = null) {
         $value = $row ? $row['setting_value'] : null;
     }
     
+    // Debug logging
+    if (in_array($key, ['brevo_api_key', 'brevo_sender_email', 'enable_email_notifications'])) {
+        error_log("get_system_setting('$key') - found: " . ($value !== null ? "YES (length: " . strlen($value) . ")" : "NO") . ", returning: " . ($value !== null ? $value : ($default !== null ? "default: $default" : "null")));
+    }
+    
     close_connection($conn);
     return $value !== null ? $value : $default;
 }
@@ -401,7 +406,7 @@ function update_system_setting($key, $value, $user_id = null) {
         $success = $result !== false;
     }
     
-    // Verify the save was successful
+    // Verify the save was successful - use same connection
     if ($success) {
         $verify_query = "SELECT setting_value FROM system_settings WHERE setting_key = ?";
         $verify_result = execute_sql($conn, $verify_query, [$key]);
@@ -415,8 +420,14 @@ function update_system_setting($key, $value, $user_id = null) {
         }
         
         if ($saved_value !== $value) {
-            error_log("Warning: Setting $key was saved but verification failed. Expected: $value, Got: " . ($saved_value ?? 'null'));
+            error_log("Warning: Setting $key was saved but verification failed. Expected: " . (in_array($key, ['brevo_api_key']) ? '***HIDDEN***' : $value) . ", Got: " . ($saved_value ?? 'null'));
             $success = false;
+        } else {
+            // Commit the transaction if using PostgreSQL
+            if ($GLOBALS['use_postgres']) {
+                // PostgreSQL auto-commits by default, but let's make sure
+                pg_query($conn, "COMMIT");
+            }
         }
     }
     

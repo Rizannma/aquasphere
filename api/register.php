@@ -3,7 +3,17 @@
  * Registration Handler for AquaSphere
  */
 
+// Start output buffering to catch any unexpected output
+ob_start();
+
+// Set headers first
 header('Content-Type: application/json');
+
+// Suppress any warnings/notices that might break JSON
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
 require_once 'database.php';
 
 // Only allow POST requests
@@ -132,6 +142,9 @@ session_start();
 $_SESSION['pending_email'] = $email;
 $_SESSION['pending_username'] = $username;
 
+// Clear any output buffer before sending JSON
+ob_clean();
+
 if ($email_sent) {
     echo json_encode([
         'success' => true, 
@@ -161,5 +174,9 @@ if ($email_sent) {
         ]);
     }
 }
+
+// End output buffering
+ob_end_flush();
+exit;
 ?>
 

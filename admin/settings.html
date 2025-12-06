@@ -476,7 +476,24 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is ok
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                    });
+                }
+                // Try to parse as JSON
+                return response.text().then(text => {
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        console.error('Response text:', text);
+                        throw new Error('Invalid JSON response from server: ' + text.substring(0, 100));
+                    }
+                });
+            })
             .then(data => {
                 if (data.success) {
                     showToast('success', 'Settings Saved', 'All settings have been saved successfully!');
@@ -488,12 +505,19 @@
                         document.getElementById('api-key-help').textContent = 'API key is saved - enter new key to change';
                         document.getElementById('api-key-help').className = 'text-success';
                     }
+                    // Reload settings to show updated values
+                    setTimeout(() => {
+                        loadSettings();
+                    }, 1000);
                 } else {
-                    showToast('error', 'Save Failed', data.message || 'Failed to save settings.');
+                    const errorMsg = data.message || 'Failed to save settings.';
+                    const errors = data.errors ? data.errors.join(', ') : '';
+                    showToast('error', 'Save Failed', errorMsg + (errors ? ' Errors: ' + errors : ''));
                 }
             })
             .catch(error => {
-                showToast('error', 'Error', 'An error occurred while saving settings.');
+                console.error('Save settings error:', error);
+                showToast('error', 'Error', 'An error occurred while saving settings. Check console for details.');
             });
         });
         

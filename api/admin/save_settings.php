@@ -3,7 +3,17 @@
  * Save System Settings API
  */
 
+// Start output buffering to catch any unexpected output
+ob_start();
+
+// Set headers first
 header('Content-Type: application/json');
+
+// Suppress any warnings/notices that might break JSON
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
 require_once '../database.php';
 
 // Check if user is admin (you should implement proper session/auth check)
@@ -84,6 +94,9 @@ if (!empty($errors)) {
     error_log("Settings save errors: " . implode(', ', $errors));
 }
 
+// Clear any output buffer before sending JSON
+ob_clean();
+
 if (empty($errors)) {
     echo json_encode([
         'success' => true,
@@ -100,5 +113,9 @@ if (empty($errors)) {
         'saved_count' => count($saved_settings)
     ]);
 }
+
+// End output buffering
+ob_end_flush();
+exit;
 ?>
 

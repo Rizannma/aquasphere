@@ -119,7 +119,7 @@
         .cart-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             padding-bottom: 1.5rem;
             border-bottom: 2px solid #f1f5f9;
             margin-bottom: 1.5rem;
@@ -132,9 +132,15 @@
             margin: 0;
         }
         
-        .cart-header .item-count {
-            color: #64748b;
-            font-size: 1rem;
+        .item-count-badge {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+            white-space: nowrap;
         }
         
         /* Empty Cart */
@@ -435,8 +441,13 @@
             padding: 2rem;
             position: sticky;
             top: 100px;
-            max-height: calc(100vh - 120px);
-            overflow-y: auto;
+            align-self: flex-start;
+        }
+        
+        .cart-summary-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
         
         .cart-summary::-webkit-scrollbar {
@@ -1064,8 +1075,6 @@
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <h1 class="page-title">Shopping Cart</h1>
-            <p class="page-subtitle">Review your items before checkout</p>
             
             <div class="row">
                 <!-- Cart Items -->
@@ -1073,9 +1082,10 @@
                     <div class="cart-container">
                         <div class="cart-header">
                             <div>
-                                <h2>My Cart</h2>
-                                <span class="item-count" id="itemCount">0 items</span>
+                                <h2>Shopping Cart</h2>
+                                <p class="page-subtitle" style="margin: 0.5rem 0 0 0; font-size: 0.95rem;">Review your items before checkout</p>
                             </div>
+                            <div class="item-count-badge" id="itemCount">0 items</div>
                         </div>
                         
                         <!-- Select All -->
@@ -1104,38 +1114,39 @@
                 
                 <!-- Cart Summary -->
                 <div class="col-lg-4">
-                    <div class="cart-summary">
-                        <h3 class="summary-title">Order Summary</h3>
-                        
-                        <div class="summary-row">
-                            <span class="summary-label">Subtotal</span>
-                            <span class="summary-value" id="subtotal">₱0.00</span>
+                    <div class="cart-summary-wrapper">
+                        <div class="cart-summary">
+                            <h3 class="summary-title">Order Summary</h3>
+                            
+                            <div class="summary-row">
+                                <span class="summary-label">Subtotal</span>
+                                <span class="summary-value" id="subtotal">₱0.00</span>
+                            </div>
+                            
+                            <div class="summary-row">
+                                <span class="summary-label">Delivery Fee</span>
+                                <span class="summary-value" id="deliveryFee">₱50.00</span>
+                            </div>
+                            
+                            <div class="summary-row total">
+                                <span class="summary-label">Total</span>
+                                <span class="summary-value" id="total">₱0.00</span>
+                            </div>
+                            
+                            <button class="btn-checkout" id="checkoutBtn" onclick="proceedToCheckout()" disabled>
+                                <i class="fas fa-credit-card me-2"></i>
+                                Proceed to Checkout
+                            </button>
+                            
+                            <a href="dashboard.html" class="btn btn-continue-shopping w-100 mt-2" style="justify-content: center;">
+                                <i class="fas fa-arrow-left"></i>
+                                Continue Shopping
+                            </a>
                         </div>
                         
-                        <div class="summary-row">
-                            <span class="summary-label">Delivery Fee</span>
-                            <span class="summary-value" id="deliveryFee">₱50.00</span>
-                        </div>
-                        
-                        <div class="summary-row total">
-                            <span class="summary-label">Total</span>
-                            <span class="summary-value" id="total">₱0.00</span>
-                        </div>
-                        
-                        <button class="btn-checkout" id="checkoutBtn" onclick="proceedToCheckout()" disabled>
-                            <i class="fas fa-credit-card me-2"></i>
-                            Proceed to Checkout
-                        </button>
-                        
-                        <a href="dashboard.html" class="btn btn-continue-shopping w-100 mt-2" style="justify-content: center;">
-                            <i class="fas fa-arrow-left"></i>
-                            Continue Shopping
-                        </a>
-                    </div>
-                    
-                    <!-- Delivery Address Section -->
-                    <div class="cart-summary mt-3">
-                        <div class="delivery-address-section" id="deliveryAddressSection">
+                        <!-- Delivery Address Section -->
+                        <div class="cart-summary">
+                            <div class="delivery-address-section" id="deliveryAddressSection">
                             <div class="address-header">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <span>Delivery Address</span>
@@ -1270,14 +1281,20 @@
             if (cart.length === 0) {
                 cartItemsList.innerHTML = '';
                 emptyCart.style.display = 'block';
-                itemCount.textContent = '0 items';
+                const itemCountBadge = document.getElementById('itemCount');
+                if (itemCountBadge) {
+                    itemCountBadge.textContent = '0 items';
+                }
                 checkoutBtn.disabled = true;
                 updateSummary();
                 return;
             }
             
             emptyCart.style.display = 'none';
-            itemCount.textContent = `${cart.length} ${cart.length === 1 ? 'item' : 'items'}`;
+            const itemCountBadge = document.getElementById('itemCount');
+            if (itemCountBadge) {
+                itemCountBadge.textContent = `${cart.length} ${cart.length === 1 ? 'item' : 'items'}`;
+            }
             updateCheckoutButton(); // Check both cart items and address
             
             cartItemsList.innerHTML = cart.map((item, index) => {

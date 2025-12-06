@@ -690,22 +690,23 @@
             });
         });
         
-        // Resend OTP (exactly like AnemoCheck)
+        // Resend OTP (exactly like AnemoCheck - no cooldown check at start)
         resendLink.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Check cooldown - but don't block if timer element doesn't exist or is empty
+            // Check cooldown - only block if timer is actively showing
             const resendTimerElement = document.getElementById('resendTimer');
             if (resendCountdown > 0 && resendTimerElement && resendTimerElement.textContent.trim() !== '') {
                 return; // Still in cooldown
             }
             
-            // Hide any existing messages (like AnemoCheck)
+            // Hide any existing flash messages (like AnemoCheck)
             errorMessage.style.display = 'none';
             successMessage.style.display = 'none';
             
-            // Show loading state immediately (like AnemoCheck - spinner only)
-            resendSpinner.style.display = 'inline-block';
+            // Show loading state immediately (like AnemoCheck)
+            const spinner = resendLink.querySelector('.fa-spinner');
+            spinner.style.display = 'inline-block';
             resendLink.style.pointerEvents = 'none';
             resendLink.style.opacity = '0.7';
             
@@ -800,7 +801,8 @@
             })
             .finally(() => {
                 // Hide loading state (like AnemoCheck)
-                resendSpinner.style.display = 'none';
+                const spinner = resendLink.querySelector('.fa-spinner');
+                spinner.style.display = 'none';
                 resendLink.style.pointerEvents = 'auto';
                 resendLink.style.opacity = '1';
             });
@@ -809,6 +811,11 @@
         function startResendTimer() {
             resendCountdown = 60; // 1 minute cooldown
             const resendTimerElement = document.getElementById('resendTimer');
+            
+            if (!resendTimerElement) {
+                console.error('resendTimer element not found');
+                return;
+            }
             
             if (resendTimer) clearInterval(resendTimer);
             
@@ -825,6 +832,7 @@
                     resendLink.style.pointerEvents = 'auto';
                     resendLink.style.opacity = '1';
                     clearInterval(resendTimer);
+                    resendTimer = null;
                 }
             }, 1000);
         }

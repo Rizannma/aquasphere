@@ -452,9 +452,8 @@
             <div class="resend-section">
                 <a href="#" class="resend-link" id="resendLink">
                     <i class="fas fa-spinner fa-spin me-1" id="resendSpinner" style="display: none;"></i>
-                    <span id="resendText">Resend Code</span>
-                </a>
-                <span id="resendTimer" class="text-muted"></span>
+                    Resend Code
+                </a> <span id="resendTimer" class="text-muted"></span>
                 <div class="timer-text">
                     Code expires in <span id="countdown">10:00</span>
                 </div>
@@ -514,7 +513,6 @@
         const verifyBtn = document.getElementById('verifyBtn');
         const verifyBtnText = document.getElementById('verifyBtnText');
         const resendLink = document.getElementById('resendLink');
-        const resendText = document.getElementById('resendText');
         const resendSpinner = document.getElementById('resendSpinner');
         const errorMessage = document.getElementById('error-message');
         const errorText = document.getElementById('error-text');
@@ -692,19 +690,21 @@
             });
         });
         
-        // Resend OTP
+        // Resend OTP (exactly like AnemoCheck)
         resendLink.addEventListener('click', function(e) {
             e.preventDefault();
             
-            if (resendCountdown > 0) {
+            // Check cooldown - but don't block if timer element doesn't exist or is empty
+            const resendTimerElement = document.getElementById('resendTimer');
+            if (resendCountdown > 0 && resendTimerElement && resendTimerElement.textContent.trim() !== '') {
                 return; // Still in cooldown
             }
             
-            // Hide any existing messages
+            // Hide any existing messages (like AnemoCheck)
             errorMessage.style.display = 'none';
             successMessage.style.display = 'none';
             
-            // Show loading state immediately (like AnemoCheck)
+            // Show loading state immediately (like AnemoCheck - spinner only)
             resendSpinner.style.display = 'inline-block';
             resendLink.style.pointerEvents = 'none';
             resendLink.style.opacity = '0.7';
@@ -758,7 +758,10 @@
                     // Start resend timer
                     startResendTimer();
                     
-                    // Show OTP if in development mode
+                    // Show success feedback (like AnemoCheck - simple message)
+                    showSuccess('Verification code has been resent to your email.');
+                    
+                    // Show OTP if in development mode (after success message)
                     if (data.dev_mode && data.otp) {
                         // Remove existing dev notice if any
                         const existingNotice = document.querySelector('.alert-warning');
@@ -774,11 +777,14 @@
                             <strong><i class="fas fa-exclamation-triangle me-2"></i>Development Mode:</strong><br>
                             Email service not configured. Your new OTP code is: <strong style="font-size: 1.2rem; color: #0ea5e9;">${data.otp}</strong>
                         `;
-                        document.querySelector('.verification-card').insertBefore(devNotice, document.querySelector('.email-badge'));
-                        showSuccess('New verification code generated. See code above.');
-                    } else {
-                        // Show success feedback
-                        showSuccess('Verification code has been resent to your email.');
+                        const emailBadge = document.querySelector('.email-badge');
+                        if (emailBadge) {
+                            document.querySelector('.verification-card').insertBefore(devNotice, emailBadge);
+                        } else {
+                            // Fallback: insert after form
+                            const form = document.getElementById('verifyForm');
+                            form.parentNode.insertBefore(devNotice, form.nextSibling);
+                        }
                     }
                     
                     // Focus first input

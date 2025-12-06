@@ -318,11 +318,17 @@
         
         .product-footer {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 0.75rem;
             margin-top: auto;
             padding-top: 1rem;
             border-top: 1px solid #f1f5f9;
+        }
+        
+        .product-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .product-price {
@@ -615,8 +621,15 @@
                         <h3 class="product-title">5-Gallon Refill</h3>
                         <p class="product-description">Refill your existing container with fresh, clean water</p>
                         <div class="product-footer">
-                            <div class="product-price">
-                                ₱25<span>/refill</span>
+                            <div class="product-price-row">
+                                <div class="product-price">
+                                    ₱25<span>/refill</span>
+                                </div>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="decreaseQuantity(1)">-</button>
+                                    <input type="number" class="quantity-input" id="qty-1" value="1" min="1" onchange="validateQuantity(1)">
+                                    <button class="quantity-btn" onclick="increaseQuantity(1)">+</button>
+                                </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(1, '5-Gallon Refill', 25)">
                                 <i class="fas fa-cart-plus"></i>
@@ -635,8 +648,15 @@
                         <h3 class="product-title">New 5-Gallon + Container</h3>
                         <p class="product-description">Includes new gallon container with fresh water</p>
                         <div class="product-footer">
-                            <div class="product-price">
-                                ₱150<span>/unit</span>
+                            <div class="product-price-row">
+                                <div class="product-price">
+                                    ₱150<span>/unit</span>
+                                </div>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="decreaseQuantity(2)">-</button>
+                                    <input type="number" class="quantity-input" id="qty-2" value="1" min="1" onchange="validateQuantity(2)">
+                                    <button class="quantity-btn" onclick="increaseQuantity(2)">+</button>
+                                </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(2, 'New 5-Gallon + Container', 150)">
                                 <i class="fas fa-cart-plus"></i>
@@ -655,8 +675,15 @@
                         <h3 class="product-title">1-Liter Bottle (12-pack)</h3>
                         <p class="product-description">Convenient bottles perfect for home and office</p>
                         <div class="product-footer">
-                            <div class="product-price">
-                                ₱120<span>/pack</span>
+                            <div class="product-price-row">
+                                <div class="product-price">
+                                    ₱120<span>/pack</span>
+                                </div>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="decreaseQuantity(3)">-</button>
+                                    <input type="number" class="quantity-input" id="qty-3" value="1" min="1" onchange="validateQuantity(3)">
+                                    <button class="quantity-btn" onclick="increaseQuantity(3)">+</button>
+                                </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(3, '1-Liter Bottle (12-pack)', 120)">
                                 <i class="fas fa-cart-plus"></i>
@@ -675,8 +702,15 @@
                         <h3 class="product-title">500ml Bottle (24-pack)</h3>
                         <p class="product-description">Perfect for on-the-go hydration</p>
                         <div class="product-footer">
-                            <div class="product-price">
-                                ₱100<span>/pack</span>
+                            <div class="product-price-row">
+                                <div class="product-price">
+                                    ₱100<span>/pack</span>
+                                </div>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="decreaseQuantity(4)">-</button>
+                                    <input type="number" class="quantity-input" id="qty-4" value="1" min="1" onchange="validateQuantity(4)">
+                                    <button class="quantity-btn" onclick="increaseQuantity(4)">+</button>
+                                </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(4, '500ml Bottle (24-pack)', 100)">
                                 <i class="fas fa-cart-plus"></i>
@@ -695,8 +729,15 @@
                         <h3 class="product-title">Bring Your Jug (Refill)</h3>
                         <p class="product-description">Use your own container for eco-friendly refills</p>
                         <div class="product-footer">
-                            <div class="product-price">
-                                ₱20<span>/refill</span>
+                            <div class="product-price-row">
+                                <div class="product-price">
+                                    ₱20<span>/refill</span>
+                                </div>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="decreaseQuantity(5)">-</button>
+                                    <input type="number" class="quantity-input" id="qty-5" value="1" min="1" onchange="validateQuantity(5)">
+                                    <button class="quantity-btn" onclick="increaseQuantity(5)">+</button>
+                                </div>
                             </div>
                             <button class="btn-add-cart" onclick="addToCart(5, 'Bring Your Jug (Refill)', 20)">
                                 <i class="fas fa-cart-plus"></i>
@@ -737,16 +778,20 @@
         }
         
         function addToCart(productId, productName, price) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const quantityInput = document.getElementById('qty-' + productId);
+            const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+            
             const existingItem = cart.find(item => item.id === productId);
             
             if (existingItem) {
-                existingItem.quantity += 1;
+                existingItem.quantity += quantity;
             } else {
                 cart.push({
                     id: productId,
                     name: productName,
                     price: price,
-                    quantity: 1
+                    quantity: quantity
                 });
             }
             
@@ -754,7 +799,12 @@
             updateCartCount();
             
             // Show success feedback
-            showNotification('Product added to cart!', 'success');
+            showNotification(`${quantity}x ${productName} added to cart!`, 'success');
+            
+            // Reset quantity to 1
+            if (quantityInput) {
+                quantityInput.value = 1;
+            }
         }
         
         // Search functionality
@@ -844,6 +894,36 @@
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
+        
+        // Quantity control functions
+        function increaseQuantity(productId) {
+            const input = document.getElementById('qty-' + productId);
+            if (input) {
+                let value = parseInt(input.value) || 1;
+                input.value = value + 1;
+            }
+        }
+        
+        function decreaseQuantity(productId) {
+            const input = document.getElementById('qty-' + productId);
+            if (input) {
+                let value = parseInt(input.value) || 1;
+                if (value > 1) {
+                    input.value = value - 1;
+                }
+            }
+        }
+        
+        function validateQuantity(productId) {
+            const input = document.getElementById('qty-' + productId);
+            if (input) {
+                let value = parseInt(input.value) || 1;
+                if (value < 1) {
+                    input.value = 1;
+                }
+            }
+        }
+        
         
         // Initialize
         updateCartCount();

@@ -446,7 +446,7 @@
         .cart-summary-wrapper {
             position: fixed !important;
             top: 100px !important;
-            right: calc((100% - 1200px) / 2 + 1rem) !important; /* Position from right edge with container margin */
+            left: calc((100vw - 1200px) / 2 + 800px + 2rem) !important; /* Position beside shopping cart: container left margin + 66.666% width + spacing */
             width: 380px !important;
             max-width: 380px !important;
             z-index: 1000 !important;
@@ -458,13 +458,6 @@
             will-change: auto;
             margin: 0 !important;
             padding: 0 !important;
-        }
-        
-        @media (max-width: 1400px) {
-            .cart-summary-wrapper {
-                right: 1rem !important;
-                width: 360px !important;
-            }
         }
         
         .cart-summary-wrapper > * {

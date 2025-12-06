@@ -138,14 +138,13 @@
         }
         
         .custom-error {
-            background-color: #fee;
-            color: #c33;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin-top: 4px;
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 5px;
             display: none;
-            border-left: 3px solid #dc3545;
             font-weight: 500;
         }
         
@@ -342,7 +341,6 @@
                                 <input type="text" class="form-control" id="username" name="username" 
                                        placeholder="Enter your username" autocomplete="off" required>
                                 <div class="custom-error" id="username-error">Username is required.</div>
-                                <div class="custom-error" id="auth-error" style="display: none;">Invalid username or password.</div>
                             </div>
                             
                             <div class="mb-3">
@@ -355,6 +353,7 @@
                                     </button>
                                 </div>
                                 <div class="custom-error" id="password-error">Password is required.</div>
+                                <div class="custom-error" id="auth-error" style="display: none;">Invalid username or password.</div>
                             </div>
                             
                             <div class="mb-3 d-flex justify-content-between align-items-center">
@@ -495,10 +494,15 @@
                     field.addEventListener('blur', () => validateField(fieldName));
                     field.addEventListener('input', () => {
                         validateField(fieldName);
-                        // Clear authentication error when user starts typing
+                        // Clear authentication error when user starts typing (like AnemoCheck)
                         const authError = document.getElementById('auth-error');
                         if (authError) {
                             authError.style.display = 'none';
+                            // Remove error class from fields when user starts typing
+                            const usernameField = document.getElementById('username');
+                            const passwordField = document.getElementById('password');
+                            if (usernameField) usernameField.classList.remove('error');
+                            if (passwordField) passwordField.classList.remove('error');
                         }
                     });
                 }
@@ -571,11 +575,22 @@
                                 showError(field, data.errors[field]);
                             });
                         } else if (data.message) {
+                            // Show authentication error below password field (like AnemoCheck)
                             const authError = document.getElementById('auth-error');
+                            const usernameField = document.getElementById('username');
+                            const passwordField = document.getElementById('password');
+                            
                             if (authError) {
                                 authError.style.display = 'block';
-                                document.getElementById('username').classList.add('error');
-                                document.getElementById('password').classList.add('error');
+                                // Make both fields red immediately
+                                if (usernameField) {
+                                    usernameField.classList.add('error');
+                                    usernameField.classList.remove('success');
+                                }
+                                if (passwordField) {
+                                    passwordField.classList.add('error');
+                                    passwordField.classList.remove('success');
+                                }
                             } else {
                                 alert(data.message);
                             }

@@ -15,19 +15,22 @@ if ($GLOBALS['use_postgres']) {
     // PostgreSQL connection
     function get_db_connection() {
         if (!empty($_ENV['DATABASE_URL'])) {
-            $conn = pg_connect($_ENV['DATABASE_URL']);
+            $conn = pg_connect($_ENV['DATABASE_URL'], PGSQL_CONNECT_FORCE_NEW);
         } else {
             $conn = pg_connect(
                 "host=" . $_ENV['PGHOST'] . 
                 " port=" . ($_ENV['PGPORT'] ?? 5432) . 
                 " dbname=" . $_ENV['PGDATABASE'] . 
                 " user=" . $_ENV['PGUSER'] . 
-                " password=" . $_ENV['PGPASSWORD']
+                " password=" . $_ENV['PGPASSWORD'],
+                PGSQL_CONNECT_FORCE_NEW
             );
         }
         if (!$conn) {
             die("PostgreSQL connection failed");
         }
+        // Ensure autocommit is on (default, but explicit)
+        pg_query($conn, "SET autocommit = ON");
         return $conn;
     }
     
@@ -422,12 +425,6 @@ function update_system_setting($key, $value, $user_id = null) {
         if ($saved_value !== $value) {
             error_log("Warning: Setting $key was saved but verification failed. Expected: " . (in_array($key, ['brevo_api_key']) ? '***HIDDEN***' : $value) . ", Got: " . ($saved_value ?? 'null'));
             $success = false;
-        } else {
-            // Commit the transaction if using PostgreSQL
-            if ($GLOBALS['use_postgres']) {
-                // PostgreSQL auto-commits by default, but let's make sure
-                pg_query($conn, "COMMIT");
-            }
         }
     }
     

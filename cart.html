@@ -164,27 +164,53 @@
             background: linear-gradient(135deg, #0ea5e9, #0284c7);
             border: none;
             color: white;
-            padding: 12px 30px;
-            border-radius: 10px;
+            padding: 14px 32px;
+            border-radius: 12px;
             font-weight: 600;
+            font-size: 1rem;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-continue-shopping::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-continue-shopping:hover::before {
+            left: 100%;
         }
         
         .btn-continue-shopping i {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             line-height: 1;
-            vertical-align: middle;
+            font-size: 1rem;
+            width: 20px;
+            height: 20px;
         }
         
         .btn-continue-shopping:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
             color: white;
+        }
+        
+        .btn-continue-shopping:active {
+            transform: translateY(-1px);
         }
         
         /* Cart Items */
@@ -410,6 +436,26 @@
             padding: 2rem;
             position: sticky;
             top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+        
+        .cart-summary::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .cart-summary::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        
+        .cart-summary::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        .cart-summary::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
         
         .summary-title {
@@ -570,10 +616,6 @@
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             padding: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 1.5rem;
             transition: all 0.3s ease;
         }
         
@@ -582,28 +624,35 @@
             box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
         }
         
+        .address-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+        
         .address-info {
             flex: 1;
         }
         
         .address-name-phone {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
         }
         
         .address-name-phone strong {
-            color: #0369a1;
+            display: block;
+            margin-bottom: 0.25rem;
         }
         
         .address-name-phone span {
             color: #64748b;
             font-weight: 500;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
         
         .address-text {
@@ -614,6 +663,7 @@
             padding: 1rem;
             border-radius: 8px;
             border-left: 3px solid #0ea5e9;
+            margin-top: 0.75rem;
         }
         
         .address-actions {
@@ -633,6 +683,7 @@
             font-size: 0.85rem;
             font-weight: 700;
             box-shadow: 0 2px 4px rgba(234, 88, 12, 0.2);
+            white-space: nowrap;
         }
         
         .address-buttons {
@@ -652,6 +703,7 @@
             transition: all 0.3s ease;
             font-size: 0.9rem;
             box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+            white-space: nowrap;
         }
         
         .btn-change-address:hover {
@@ -674,6 +726,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+            min-width: 40px;
         }
         
         .btn-delete-address:hover {
@@ -1097,21 +1150,23 @@
                                     </button>
                                 </div>
                                 <div class="address-display" id="addressDisplay" style="display: none;">
-                                    <div class="address-info">
-                                        <div class="address-name-phone">
-                                            <strong id="addressName"></strong>
-                                            <span id="addressPhone"></span>
+                                    <div class="address-header-row">
+                                        <div class="address-info">
+                                            <div class="address-name-phone">
+                                                <strong id="addressName"></strong>
+                                                <span id="addressPhone"></span>
+                                            </div>
                                         </div>
-                                        <div class="address-text" id="addressText"></div>
+                                        <div class="address-actions">
+                                            <span class="badge-default" id="defaultBadge" style="display: none;">Default</span>
+                                        </div>
                                     </div>
-                                    <div class="address-actions">
-                                        <span class="badge-default" id="defaultBadge" style="display: none;">Default</span>
-                                        <div class="address-buttons">
-                                            <button class="btn-change-address" onclick="openAddressModal()">Change</button>
-                                            <button class="btn-delete-address" onclick="deleteAddress()" title="Delete address">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
+                                    <div class="address-text" id="addressText"></div>
+                                    <div class="address-buttons" style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+                                        <button class="btn-change-address" onclick="openAddressModal()">Change</button>
+                                        <button class="btn-delete-address" onclick="deleteAddress()" title="Delete address">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

@@ -37,16 +37,75 @@
         
         /* Main Content */
         .main-content {
-            padding: 2rem 0;
+            padding: 1.5rem 0;
             min-height: calc(100vh - 70px - 200px);
+        }
+        
+        /* Hero Carousel Container */
+        .hero-carousel {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 28px;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Water Wave Animation Background */
+        .hero-carousel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%);
+            opacity: 0.1;
+            z-index: 0;
+            animation: waterWave 8s ease-in-out infinite;
+        }
+        
+        @keyframes waterWave {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+                border-radius: 50% 40% 60% 30%;
+            }
+            25% {
+                transform: translateY(-10px) scale(1.05);
+                border-radius: 40% 60% 30% 50%;
+            }
+            50% {
+                transform: translateY(-5px) scale(1.02);
+                border-radius: 60% 30% 50% 40%;
+            }
+            75% {
+                transform: translateY(-15px) scale(1.03);
+                border-radius: 30% 50% 40% 60%;
+            }
+        }
+        
+        /* Carousel Wrapper */
+        .carousel-wrapper {
+            position: relative;
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+        
+        /* Carousel Slide */
+        .carousel-slide {
+            min-width: 100%;
+            width: 100%;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
         }
         
         .profile-container {
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f0f9ff 100%);
             border-radius: 28px;
             width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
             overflow: hidden;
             box-shadow: 0 30px 100px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
             position: relative;
@@ -76,7 +135,7 @@
         
         .profile-header {
             background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%);
-            padding: 2rem 2rem 1.5rem;
+            padding: 1.25rem 1.5rem 1rem;
             border-bottom: none;
             border-radius: 28px 28px 0 0;
             position: relative;
@@ -134,7 +193,7 @@
         
         .profile-body {
             background: transparent;
-            padding: 2rem 2rem 1.5rem;
+            padding: 1.25rem 1.5rem 1rem;
             position: relative;
             z-index: 1;
         }
@@ -142,12 +201,12 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-            margin-bottom: 0.75rem;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
         }
         
         .form-group {
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             position: relative;
         }
         
@@ -172,13 +231,18 @@
         
         .profile-section {
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 1.5rem;
-            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
         }
         
         .profile-section:last-of-type {
             border-bottom: none;
             margin-bottom: 0;
+        }
+        
+        .profile-section h5 {
+            margin-bottom: 0.75rem !important;
+            font-size: 1rem !important;
         }
         
         #updateProfileBtn:disabled {
@@ -288,7 +352,7 @@
         }
         
         .profile-footer {
-            padding: 1.5rem 2rem;
+            padding: 1rem 1.5rem;
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
@@ -887,10 +951,25 @@
         /* Cart Summary Style for Address Container */
         .cart-summary {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 28px;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
             padding: 1.25rem;
             width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cart-summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #0ea5e9, #0284c7, #06b6d4, #0891b2, #0ea5e9);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease infinite;
+            z-index: 1;
         }
         
         /* Delivery Address Section */
@@ -902,9 +981,107 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding-bottom: 1rem;
+            padding-bottom: 0.75rem;
             border-bottom: 2px solid #f1f5f9;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Carousel Navigation */
+        .carousel-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.75rem;
+            z-index: 10;
+        }
+        
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid rgba(14, 165, 233, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .carousel-dot.active {
+            background: #0ea5e9;
+            border-color: #0ea5e9;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+        }
+        
+        .carousel-dot::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .carousel-dot.active::before {
+            opacity: 1;
+            animation: ripple 1.5s ease-out infinite;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+        
+        /* Carousel Navigation Arrows */
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #0ea5e9;
+            color: #0ea5e9;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .carousel-arrow:hover {
+            background: #0ea5e9;
+            color: white;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .carousel-arrow.prev {
+            left: 15px;
+        }
+        
+        .carousel-arrow.next {
+            right: 15px;
+        }
+        
+        .carousel-arrow:active {
+            transform: translateY(-50%) scale(0.95);
         }
         
         .address-header i {
@@ -1575,12 +1752,16 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <div class="profile-container">
-                <div class="profile-header">
-                    <h2>Profile</h2>
-                </div>
-                <div class="profile-body">
-                    <form id="profileForm" onsubmit="saveProfile(event)" novalidate>
+            <div class="hero-carousel">
+                <div class="carousel-wrapper" id="carouselWrapper">
+                    <!-- Profile Slide -->
+                    <div class="carousel-slide">
+                        <div class="profile-container">
+                            <div class="profile-header">
+                                <h2>Profile</h2>
+                            </div>
+                            <div class="profile-body">
+                                <form id="profileForm" onsubmit="saveProfile(event)" novalidate>
                         <div class="profile-section">
                             <h5 style="color: #0369a1; font-weight: 600; margin-bottom: 1rem; font-size: 1.1rem;">Account Information</h5>
                             <div class="form-row">
@@ -1682,12 +1863,15 @@
                             <button type="submit" class="btn-submit" id="updateProfileBtn" disabled>Save Changes</button>
                         </div>
                     </form>
-                </div>
-            </div>
-            
-            <!-- My Address Section (Separate Container) -->
-            <div class="cart-summary" style="max-width: 800px; margin: 2rem auto 0;">
-                <div class="delivery-address-section" id="profileAddressSection">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- My Address Slide -->
+                    <div class="carousel-slide">
+                        <div class="cart-summary">
+                            <div class="delivery-address-section" id="profileAddressSection">
                     <div class="address-header">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>My Address</span>
@@ -1769,7 +1953,23 @@
                                 </button>
                             </div>
                         </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                
+                <!-- Carousel Navigation Arrows -->
+                <button class="carousel-arrow prev" onclick="previousSlide()" aria-label="Previous slide">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-arrow next" onclick="nextSlide()" aria-label="Next slide">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <!-- Carousel Dots -->
+                <div class="carousel-nav">
+                    <div class="carousel-dot active" onclick="goToSlide(0)" aria-label="Go to Profile"></div>
+                    <div class="carousel-dot" onclick="goToSlide(1)" aria-label="Go to My Address"></div>
                 </div>
             </div>
         </div>
@@ -2906,6 +3106,61 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadProfileData();
             loadProfileAddress();
+            initCarousel();
+        });
+        
+        // Carousel Functionality
+        let currentSlide = 0;
+        const totalSlides = 2;
+        
+        function initCarousel() {
+            updateCarousel();
+            
+            // Auto-play carousel (optional - can be removed if not needed)
+            // setInterval(() => {
+            //     nextSlide();
+            // }, 5000);
+        }
+        
+        function updateCarousel() {
+            const wrapper = document.getElementById('carouselWrapper');
+            const dots = document.querySelectorAll('.carousel-dot');
+            
+            if (wrapper) {
+                wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+            
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
+        
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+        
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                previousSlide();
+            } else if (e.key === 'ArrowRight') {
+                nextSlide();
+            }
         });
         
         // Address Management for Profile Page

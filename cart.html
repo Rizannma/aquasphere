@@ -1568,6 +1568,98 @@
             transform: translateY(0);
         }
         
+        .map-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 0.75rem;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-container #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-map-control {
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: #475569;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-map-control:hover {
+            background: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+        
+        .map-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1001;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            font-weight: 600;
+            color: #0ea5e9;
+        }
+        
+        .map-loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Leaflet custom styles */
+        .leaflet-container {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .leaflet-popup-content {
+            margin: 12px 16px;
+            font-weight: 600;
+            color: #0369a1;
+        }
+        
         .label-section {
             display: flex;
             align-items: center;
@@ -2255,21 +2347,20 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Google Maps API -->
-    <!-- TODO: Replace YOUR_API_KEY with your actual Google Maps API key -->
-    <!-- Get your API key from: https://console.cloud.google.com/google/maps-apis -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initGoogleMaps" async defer></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
     
     <script>
-        // Google Maps API callback - will be called when API loads
-        function initGoogleMaps() {
-            console.log('Google Maps API loaded');
-            window.googleMapsReady = true;
-        }
-        
-        // Check if Google Maps is ready
-        function isGoogleMapsReady() {
-            return typeof google !== 'undefined' && typeof google.maps !== 'undefined';
+        // Check if Leaflet is ready
+        function isMapReady() {
+            return typeof L !== 'undefined';
         }
         // Preload cart data immediately to prevent layout shifts
         (function() {
@@ -3007,6 +3098,7 @@
         let map = null;
         let marker = null;
         let mapInitialized = false;
+        let popup = null;
         
         // Initialize map
         function initMap() {
@@ -3019,9 +3111,9 @@
                 return;
             }
             
-            // Check if Google Maps API is loaded
-            if (!isGoogleMapsReady()) {
-                alert('Google Maps is still loading. Please wait a moment and try again.\n\nIf this persists, make sure you have added your Google Maps API key in the script tag.');
+            // Check if Leaflet is loaded
+            if (!isMapReady()) {
+                alert('Map library is still loading. Please wait a moment and try again.');
                 return;
             }
             
@@ -3038,7 +3130,7 @@
                 try {
                     if (!mapInitialized) {
                         // Default center: Laguna, Philippines
-                        const defaultCenter = { lat: 14.3294, lng: 121.2781 };
+                        const defaultCenter = [14.3294, 121.2781];
                         
                         // Check if we have saved coordinates
                         const address = JSON.parse(localStorage.getItem('deliveryAddress'));
@@ -3046,22 +3138,31 @@
                         let zoom = 13;
                         
                         if (address && address.latitude && address.longitude) {
-                            center = {
-                                lat: parseFloat(address.latitude),
-                                lng: parseFloat(address.longitude)
-                            };
+                            center = [parseFloat(address.latitude), parseFloat(address.longitude)];
                             zoom = 16;
                         }
                         
-                        // Initialize Google Map
-                        map = new google.maps.Map(mapDiv, {
+                        // Initialize Leaflet Map
+                        map = L.map(mapDiv, {
                             center: center,
                             zoom: zoom,
-                            mapTypeId: 'roadmap',
-                            streetViewControl: true,
-                            fullscreenControl: true,
-                            mapTypeControl: true,
                             zoomControl: true
+                        });
+                        
+                        // Add OpenStreetMap tile layer
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                            maxZoom: 19
+                        }).addTo(map);
+                        
+                        // Custom marker icon (blue to match theme)
+                        const customIcon = L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
                         });
                         
                         // Add marker if we have saved coordinates
@@ -3069,19 +3170,14 @@
                             const savedLat = parseFloat(address.latitude);
                             const savedLng = parseFloat(address.longitude);
                             
-                            marker = new google.maps.Marker({
-                                position: { lat: savedLat, lng: savedLng },
-                                map: map,
-                                draggable: true,
-                                title: 'Your location',
-                                animation: google.maps.Animation.DROP
-                            });
+                            marker = L.marker([savedLat, savedLng], {
+                                icon: customIcon,
+                                draggable: true
+                            }).addTo(map);
                             
-                            // Add info window
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: '<div style="padding: 8px;"><strong>Your location</strong></div>'
-                            });
-                            infoWindow.open(map, marker);
+                            // Add popup
+                            popup = L.popup().setContent('<div style="padding: 8px;"><strong>Your location</strong></div>');
+                            marker.bindPopup(popup).openPopup();
                             
                             // Update hidden inputs
                             document.getElementById('latitude').value = savedLat;
@@ -3091,9 +3187,10 @@
                             updateLocationDisplay(savedLat, savedLng);
                             
                             // Handle marker drag
-                            marker.addListener('dragend', function(e) {
-                                const lat = marker.getPosition().lat();
-                                const lng = marker.getPosition().lng();
+                            marker.on('dragend', function(e) {
+                                const position = marker.getLatLng();
+                                const lat = position.lat;
+                                const lng = position.lng;
                                 document.getElementById('latitude').value = lat;
                                 document.getElementById('longitude').value = lng;
                                 updateLocationDisplay(lat, lng);
@@ -3101,29 +3198,24 @@
                         }
                         
                         // Add click handler to set marker
-                        map.addListener('click', function(e) {
-                            const lat = e.latLng.lat();
-                            const lng = e.latLng.lng();
+                        map.on('click', function(e) {
+                            const lat = e.latlng.lat;
+                            const lng = e.latlng.lng;
                             
                             // Remove existing marker
                             if (marker) {
-                                marker.setMap(null);
+                                map.removeLayer(marker);
                             }
                             
                             // Add new marker
-                            marker = new google.maps.Marker({
-                                position: { lat: lat, lng: lng },
-                                map: map,
-                                draggable: true,
-                                title: 'Your location',
-                                animation: google.maps.Animation.DROP
-                            });
+                            marker = L.marker([lat, lng], {
+                                icon: customIcon,
+                                draggable: true
+                            }).addTo(map);
                             
-                            // Add info window
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: '<div style="padding: 8px;"><strong>Your location</strong></div>'
-                            });
-                            infoWindow.open(map, marker);
+                            // Add popup
+                            popup = L.popup().setContent('<div style="padding: 8px;"><strong>Your location</strong></div>');
+                            marker.bindPopup(popup).openPopup();
                             
                             // Update hidden inputs
                             document.getElementById('latitude').value = lat;
@@ -3133,9 +3225,10 @@
                             updateLocationDisplay(lat, lng);
                             
                             // Handle marker drag
-                            marker.addListener('dragend', function(e) {
-                                const newLat = marker.getPosition().lat();
-                                const newLng = marker.getPosition().lng();
+                            marker.on('dragend', function(e) {
+                                const position = marker.getLatLng();
+                                const newLat = position.lat;
+                                const newLng = position.lng;
                                 document.getElementById('latitude').value = newLat;
                                 document.getElementById('longitude').value = newLng;
                                 updateLocationDisplay(newLat, newLng);
@@ -3148,14 +3241,14 @@
                     // Trigger resize to ensure map renders correctly
                     setTimeout(() => {
                         if (map) {
-                            google.maps.event.trigger(map, 'resize');
+                            map.invalidateSize();
                         }
                         if (mapLoading) mapLoading.style.display = 'none';
                     }, 100);
                 } catch(error) {
                     console.error('Error initializing map:', error);
                     if (mapLoading) mapLoading.style.display = 'none';
-                    alert('Error loading map. Please check your Google Maps API key and try again.');
+                    alert('Error loading map. Please try again.');
                 }
             }, 50);
         }
@@ -3269,29 +3362,33 @@
             }
             
             try {
+                // Custom marker icon (blue to match theme)
+                const customIcon = L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                });
+                
                 // Remove existing marker
                 if (marker) {
-                    marker.setMap(null);
+                    map.removeLayer(marker);
                 }
                 
                 // Set map center and zoom
-                map.setCenter({ lat: lat, lng: lng });
-                map.setZoom(16);
+                map.setView([lat, lng], 16);
                 
                 // Add new marker
-                marker = new google.maps.Marker({
-                    position: { lat: lat, lng: lng },
-                    map: map,
-                    draggable: true,
-                    title: 'Your location',
-                    animation: google.maps.Animation.DROP
-                });
+                marker = L.marker([lat, lng], {
+                    icon: customIcon,
+                    draggable: true
+                }).addTo(map);
                 
-                // Add info window
-                const infoWindow = new google.maps.InfoWindow({
-                    content: '<div style="padding: 8px;"><strong>Your location</strong></div>'
-                });
-                infoWindow.open(map, marker);
+                // Add popup
+                popup = L.popup().setContent('<div style="padding: 8px;"><strong>Your location</strong></div>');
+                marker.bindPopup(popup).openPopup();
                 
                 // Update hidden inputs
                 const latInput = document.getElementById('latitude');
@@ -3303,9 +3400,10 @@
                 updateLocationDisplay(lat, lng);
                 
                 // Allow dragging marker
-                marker.addListener('dragend', function(e) {
-                    const newLat = marker.getPosition().lat();
-                    const newLng = marker.getPosition().lng();
+                marker.on('dragend', function(e) {
+                    const position = marker.getLatLng();
+                    const newLat = position.lat;
+                    const newLng = position.lng;
                     const latInput = document.getElementById('latitude');
                     const lngInput = document.getElementById('longitude');
                     if (latInput) latInput.value = newLat;
@@ -3316,7 +3414,7 @@
                 // Trigger resize to ensure map renders correctly
                 setTimeout(() => {
                     if (map) {
-                        google.maps.event.trigger(map, 'resize');
+                        map.invalidateSize();
                     }
                 }, 100);
             } catch(error) {
@@ -3344,7 +3442,7 @@
         function clearLocation() {
             // Remove marker
             if (marker && map) {
-                marker.setMap(null);
+                map.removeLayer(marker);
                 marker = null;
             }
             

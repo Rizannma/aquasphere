@@ -128,6 +128,15 @@ body {
     display: block;
 }
 
+/* Cart icon specific styling for badge positioning */
+#navCart {
+    position: relative;
+}
+
+#navCart i {
+    position: relative;
+}
+
 /* User dropdown styling */
 .nav-item.dropdown .nav-link {
     display: flex !important;
@@ -192,6 +201,15 @@ body {
     min-width: 20px;
     min-height: 20px;
     box-sizing: border-box;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+/* Ensure badge is positioned relative to the cart icon, not the nav-link hover area */
+#navCart .cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
 }
 
 

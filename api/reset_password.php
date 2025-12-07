@@ -92,9 +92,17 @@ try {
     
     // Get user to check current password - use user_id if available, otherwise use email
     $user = null;
+    $user_id = null;
+    
     if (!empty($reset_data['user_id'])) {
+        $user_id = $reset_data['user_id'];
+        // Ensure user_id is an integer for PostgreSQL
+        if ($GLOBALS['use_postgres']) {
+            $user_id = (int)$user_id;
+        }
+        
         $query = "SELECT id, password_hash FROM users WHERE id = ?";
-        $result = execute_sql($conn, $query, [$reset_data['user_id']]);
+        $result = execute_sql($conn, $query, [$user_id]);
         
         if ($GLOBALS['use_postgres']) {
             $user = pg_fetch_assoc($result);
@@ -113,6 +121,12 @@ try {
         } else {
             $user = $result->fetchArray(SQLITE3_ASSOC);
         }
+        
+        if ($user) {
+            $user_id = $user['id'];
+        }
+    } else if ($user) {
+        $user_id = $user['id'];
     }
     
     if (!$user) {
@@ -138,16 +152,17 @@ try {
     $new_password_hash = password_hash($new_password, PASSWORD_DEFAULT);
     
     // Log for debugging
-    error_log("Password reset - User ID: " . $user['id'] . ", Email: " . $email);
+    error_log("Password reset - User ID: " . $user_id . ", Email: " . $email);
     error_log("Password reset - New password hash length: " . strlen($new_password_hash));
     
     // Update password
     $updateQuery = "UPDATE users SET password_hash = ? WHERE id = ?";
     
     if ($GLOBALS['use_postgres']) {
-        // PostgreSQL
+        // PostgreSQL - ensure user_id is integer
+        $user_id_int = (int)$user_id;
         $pg_query = "UPDATE users SET password_hash = $1 WHERE id = $2";
-        $updateResult = pg_query_params($conn, $pg_query, [$new_password_hash, $user['id']]);
+        $updateResult = pg_query_params($conn, $pg_query, [$new_password_hash, $user_id_int]);
         
         if ($updateResult === false) {
             $error = pg_last_error($conn);
@@ -176,7 +191,7 @@ try {
         
         // Verify the update by fetching the user again
         $verifyQuery = "SELECT password_hash FROM users WHERE id = $1";
-        $verifyResult = pg_query_params($conn, $verifyQuery, [$user['id']]);
+        $verifyResult = pg_query_params($conn, $verifyQuery, [$user_id_int]);
         if ($verifyResult) {
             $verifyUser = pg_fetch_assoc($verifyResult);
             if ($verifyUser && password_verify($new_password, $verifyUser['password_hash'])) {
@@ -189,7 +204,7 @@ try {
         // SQLite
         $stmt = $conn->prepare($updateQuery);
         $stmt->bindValue(1, $new_password_hash);
-        $stmt->bindValue(2, $user['id']);
+        $stmt->bindValue(2, $user_id);
         $updateResult = $stmt->execute();
         
         if ($updateResult === false) {
@@ -218,7 +233,7 @@ try {
         
         // Verify the update by fetching the user again
         $verifyStmt = $conn->prepare("SELECT password_hash FROM users WHERE id = ?");
-        $verifyStmt->bindValue(1, $user['id']);
+        $verifyStmt->bindValue(1, $user_id);
         $verifyResult = $verifyStmt->execute();
         if ($verifyResult) {
             $verifyUser = $verifyResult->fetchArray(SQLITE3_ASSOC);

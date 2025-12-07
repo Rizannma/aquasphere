@@ -2009,7 +2009,21 @@
                         </div>
                         <input type="hidden" id="latitude" name="latitude">
                         <input type="hidden" id="longitude" name="longitude">
-                        <small style="color: #64748b; margin-top: 0.5rem; display: block;">Click on the map to set your location, or use "My Location" to automatically detect it</small>
+                        <div class="form-group full-width" id="locationDisplayGroup" style="display: none; margin-top: 1rem;">
+                            <label>Location Coordinates</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="latitudeDisplay" class="form-control" placeholder="Latitude" readonly style="background: #f8f9fa; cursor: not-allowed;">
+                                <input type="text" id="longitudeDisplay" class="form-control" placeholder="Longitude" readonly style="background: #f8f9fa; cursor: not-allowed;">
+                                <button type="button" class="btn-map-control" onclick="clearLocation()" title="Clear location" style="white-space: nowrap; padding: 10px 16px;">
+                                    <i class="fas fa-times"></i>
+                                    Clear
+                                </button>
+                            </div>
+                            <small style="color: #64748b; margin-top: 0.5rem; display: block;">
+                                <i class="fas fa-info-circle"></i> Location has been set. You can click on the map or use "My Location" to change it.
+                            </small>
+                        </div>
+                        <small id="locationHint" style="color: #64748b; margin-top: 0.5rem; display: block;">Click on the map to set your location, or use "My Location" to automatically detect it</small>
                     </div>
                     
                     <div class="label-section">
@@ -2715,9 +2729,16 @@
                 if (address.latitude && address.longitude) {
                     document.getElementById('latitude').value = address.latitude;
                     document.getElementById('longitude').value = address.longitude;
+                    // Update visible display
+                    updateLocationDisplay(parseFloat(address.latitude), parseFloat(address.longitude));
                 } else {
                     document.getElementById('latitude').value = '';
                     document.getElementById('longitude').value = '';
+                    // Hide location display
+                    const locationDisplayGroup = document.getElementById('locationDisplayGroup');
+                    const locationHint = document.getElementById('locationHint');
+                    if (locationDisplayGroup) locationDisplayGroup.style.display = 'none';
+                    if (locationHint) locationHint.style.display = 'block';
                 }
                 
                 // Restore location if saved
@@ -2764,6 +2785,9 @@
                     btn.classList.remove('active');
                 });
                 document.querySelector('.label-btn[data-label="home"]').classList.add('active');
+                
+                // Clear location display
+                clearLocation();
             }
             
             // Add validation listeners using event delegation
@@ -2858,6 +2882,9 @@
                             // Update hidden inputs
                             document.getElementById('latitude').value = savedLat;
                             document.getElementById('longitude').value = savedLng;
+                            
+                            // Update visible display
+                            updateLocationDisplay(savedLat, savedLng);
                         }
                         
                         // Add click handler to set marker
@@ -2880,6 +2907,9 @@
                             // Update hidden inputs
                             document.getElementById('latitude').value = lat;
                             document.getElementById('longitude').value = lng;
+                            
+                            // Update visible display
+                            updateLocationDisplay(lat, lng);
                         });
                         
                         // Allow dragging marker
@@ -3040,6 +3070,9 @@
                 if (latInput) latInput.value = lat;
                 if (lngInput) lngInput.value = lng;
                 
+                // Update visible display inputs
+                updateLocationDisplay(lat, lng);
+                
                 // Allow dragging marker
                 marker.on('dragend', function(e) {
                     const newLat = e.target.getLatLng().lat;
@@ -3048,6 +3081,7 @@
                     const lngInput = document.getElementById('longitude');
                     if (latInput) latInput.value = newLat;
                     if (lngInput) lngInput.value = newLng;
+                    updateLocationDisplay(newLat, newLng);
                 });
                 
                 // Invalidate size to ensure map renders correctly
@@ -3060,6 +3094,47 @@
                 console.error('Error setting map location:', error);
                 alert('Error setting location on map. Please try again.');
             }
+        }
+        
+        // Update location display inputs
+        function updateLocationDisplay(lat, lng) {
+            const latDisplay = document.getElementById('latitudeDisplay');
+            const lngDisplay = document.getElementById('longitudeDisplay');
+            const locationDisplayGroup = document.getElementById('locationDisplayGroup');
+            const locationHint = document.getElementById('locationHint');
+            
+            if (latDisplay && lngDisplay && locationDisplayGroup) {
+                latDisplay.value = lat.toFixed(6);
+                lngDisplay.value = lng.toFixed(6);
+                locationDisplayGroup.style.display = 'block';
+                if (locationHint) locationHint.style.display = 'none';
+            }
+        }
+        
+        // Clear location
+        function clearLocation() {
+            // Remove marker
+            if (marker && map) {
+                map.removeLayer(marker);
+                marker = null;
+            }
+            
+            // Clear hidden inputs
+            const latInput = document.getElementById('latitude');
+            const lngInput = document.getElementById('longitude');
+            if (latInput) latInput.value = '';
+            if (lngInput) lngInput.value = '';
+            
+            // Clear display inputs
+            const latDisplay = document.getElementById('latitudeDisplay');
+            const lngDisplay = document.getElementById('longitudeDisplay');
+            const locationDisplayGroup = document.getElementById('locationDisplayGroup');
+            const locationHint = document.getElementById('locationHint');
+            
+            if (latDisplay) latDisplay.value = '';
+            if (lngDisplay) lngDisplay.value = '';
+            if (locationDisplayGroup) locationDisplayGroup.style.display = 'none';
+            if (locationHint) locationHint.style.display = 'block';
         }
         
         // Hide map

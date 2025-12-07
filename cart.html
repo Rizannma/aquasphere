@@ -3651,18 +3651,31 @@
         function saveProfile(event) {
             event.preventDefault();
             
-            const password = document.getElementById('profilePassword').value;
+            const currentPassword = document.getElementById('profilePassword').value;
+            const newPassword = document.getElementById('profileNewPassword').value;
             const confirmPassword = document.getElementById('profileConfirmPassword').value;
             
-            // Validate password if provided
-            if (password && password.length < 8) {
-                showNotification('Password must be at least 8 characters', 'error');
-                return;
-            }
-            
-            if (password && password !== confirmPassword) {
-                showNotification('Passwords do not match', 'error');
-                return;
+            // Validate passwords if provided
+            if (newPassword || confirmPassword || currentPassword) {
+                if (!currentPassword) {
+                    showNotification('Please enter your current password to change it', 'error');
+                    return;
+                }
+                
+                if (!newPassword) {
+                    showNotification('Please enter a new password', 'error');
+                    return;
+                }
+                
+                if (newPassword.length < 8) {
+                    showNotification('New password must be at least 8 characters', 'error');
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    showNotification('New passwords do not match', 'error');
+                    return;
+                }
             }
             
             // Get the form
@@ -3691,15 +3704,23 @@
                 firstName: document.getElementById('profileFirstName').value.trim(),
                 lastName: document.getElementById('profileLastName').value.trim(),
                 gender: document.getElementById('profileGender').value,
-                birthday: document.getElementById('profileBirthday').value
+                birthday: document.getElementById('profileBirthday').value,
+                first_name: document.getElementById('profileFirstName').value.trim(),
+                last_name: document.getElementById('profileLastName').value.trim(),
+                date_of_birth: document.getElementById('profileBirthday').value
             };
             
             // Only update password if provided
-            if (password) {
-                userData.password = password;
+            if (newPassword) {
+                userData.password = newPassword;
+                userData.password_hash = newPassword; // For compatibility
             }
             
+            // Save to both localStorage keys for compatibility
             localStorage.setItem('userData', JSON.stringify(userData));
+            localStorage.setItem('loggedInUser', JSON.stringify(userData));
+            sessionStorage.setItem('userData', JSON.stringify(userData));
+            
             loadUserData();
             closeProfileModal();
             showNotification('Profile updated successfully!', 'success');

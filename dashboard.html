@@ -14,6 +14,9 @@
     <!-- Google Fonts Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Shared Navbar CSS -->
+    <link rel="stylesheet" href="navbar.css">
+    
     <style>
         * {
             margin: 0;
@@ -21,160 +24,19 @@
             box-sizing: border-box;
         }
         
-        /* Prevent layout shift - set navbar size immediately */
-        html {
-            scroll-padding-top: 70px;
-        }
-        
         body {
             font-family: 'Poppins', sans-serif !important;
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             min-height: 100vh;
-            padding-top: 70px !important; /* Fixed navbar height */
             display: flex;
             flex-direction: column;
-            /* Prevent any layout shifts */
             overflow-y: auto;
         }
         
         .main-content {
             flex: 1;
             padding: 2rem 0;
-            padding-top: 1rem; /* Match cart page spacing */
-        }
-        
-        /* Navbar Styles - Fixed Dimensions */
-        .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            height: 70px !important;
-            min-height: 70px !important;
-            max-height: 70px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            line-height: 70px !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100% !important;
-            z-index: 1000 !important;
-            /* Prevent any transitions that could cause shake */
-            transition: none !important;
-        }
-        
-        .navbar .container {
-            height: 70px !important;
-            display: flex;
-            align-items: center;
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 24px;
-            color: #0ea5e9 !important;
-            display: flex !important;
-            align-items: center !important;
-            height: 70px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            line-height: 70px !important;
-        }
-        
-        .navbar-brand:hover {
-            color: #0369a1 !important;
-        }
-        
-        .navbar-brand img {
-            height: 45px !important;
-            width: auto !important;
-            margin-right: 10px !important;
-            display: block !important;
-        }
-        
-        .navbar-collapse {
-            height: 70px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: flex-end !important;
-            flex-grow: 1 !important;
-        }
-        
-        .navbar-nav {
-            height: 70px !important;
-            display: flex !important;
-            align-items: center !important;
-            margin: 0 !important;
-            gap: 0.5rem;
-        }
-        
-        .nav-item {
-            height: 70px !important;
-            display: flex !important;
-            align-items: center !important;
-        }
-        
-        .nav-link {
-            font-weight: 500;
-            color: #4a5568 !important;
-            padding: 0 16px !important;
-            height: 70px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            margin: 0 !important;
-            line-height: 70px !important;
-            position: relative;
-            transition: color 0.3s ease;
-            border-radius: 10px;
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 3px;
-            bottom: 0;
-            left: 50%;
-            background: linear-gradient(90deg, #0ea5e9, #0369a1);
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-        
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 80%;
-        }
-        
-        .nav-link:hover {
-            color: #0ea5e9 !important;
-            background: rgba(14, 165, 233, 0.1);
-        }
-        
-        .nav-link.active {
-            color: #0ea5e9 !important;
-            background: rgba(14, 165, 233, 0.1);
-        }
-        
-        .nav-link i {
-            font-size: 20.8px;
-            display: block;
-        }
-        
-        .nav-item.dropdown .nav-link i.fa-user-circle {
-            font-size: 1.3rem;
-            color: #0ea5e9;
-        }
-        
-        .nav-item.dropdown .nav-link #usernameDisplay {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #4a5568;
-        }
-        
-        .nav-item.dropdown .nav-link:hover #usernameDisplay {
-            color: #0ea5e9;
+            padding-top: 1rem;
         }
         
         /* Logout Confirm Modal Styles - Blue Theme */
@@ -379,37 +241,6 @@
             50% {
                 background-position: 100% 50%;
             }
-        }
-        
-        .cart-badge {
-            position: absolute;
-            top: 5px;
-            right: -5px;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 700;
-            border: 2px solid white;
-            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
-        }
-        
-        .navbar-toggler {
-            height: 40px !important;
-            width: 40px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        
-        .navbar-nav {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
         
         /* Footer Styles */
@@ -976,50 +807,8 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.html">
-                <img src="systemlogo.png" alt="AquaSphere Logo">
-                AquaSphere
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="dashboard.html" title="Home">
-                            <i class="fas fa-home"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="cart.html" title="Shopping Cart" style="position: relative;">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="cart-badge" id="cartCount">0</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="orders.html" title="My Orders">
-                            <i class="fas fa-box"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fas fa-user-circle"></i>
-                            <span id="usernameDisplay">User</span>
-                            <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="#" onclick="openProfileModal(); return false;"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="openSettingsModal(); return false;"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <!-- Navbar will be loaded here by navbar.js -->
+    <div id="navbar-container"></div>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -1235,6 +1024,9 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Shared Navbar JS -->
+    <script src="navbar.js"></script>
+    
     <script>
         // Cart functionality
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -1443,63 +1235,14 @@
             void document.body.offsetHeight;
         });
         
-        // Fix immediately on script execution
-        fixNavbarSize();
-        
-        // Load user data
-        function loadUserData() {
-            // Try to fetch from server first, then fallback to localStorage
-            fetch('api/get_current_user.php')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch user data');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success && data.user) {
-                        const userData = data.user;
-                        // Save to localStorage
-                        localStorage.setItem('loggedInUser', JSON.stringify(userData));
-                        localStorage.setItem('userData', JSON.stringify(userData));
-                        
-                        const usernameDisplay = document.getElementById('usernameDisplay');
-                        if (usernameDisplay) {
-                            usernameDisplay.textContent = userData.username || 'User';
-                        }
-                    } else {
-                        // Fallback to localStorage
-                        const userData = JSON.parse(localStorage.getItem('loggedInUser')) || 
-                                       JSON.parse(localStorage.getItem('userData')) || 
-                                       JSON.parse(sessionStorage.getItem('userData')) || {};
-                        const usernameDisplay = document.getElementById('usernameDisplay');
-                        if (usernameDisplay) {
-                            usernameDisplay.textContent = userData.username || 'User';
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading user data:', error);
-                    // Fallback to localStorage
-                    const userData = JSON.parse(localStorage.getItem('loggedInUser')) || 
-                                   JSON.parse(localStorage.getItem('userData')) || 
-                                   JSON.parse(sessionStorage.getItem('userData')) || {};
-                    const usernameDisplay = document.getElementById('usernameDisplay');
-                    if (usernameDisplay) {
-                        usernameDisplay.textContent = userData.username || 'User';
-                    }
-                });
-        }
-        
+        // Page-specific functions
         // Open Profile Modal - redirect to cart page where profile modal exists
         function openProfileModal() {
-            // Redirect to cart page where the profile modal is implemented
             window.location.href = 'cart.html#profile';
         }
         
         // Open Settings Modal
         function openSettingsModal() {
-            // Placeholder for settings modal
             alert('Settings feature coming soon!');
         }
         
@@ -1534,19 +1277,15 @@
         
         // Perform Logout
         function performLogout() {
-            // Call logout API
             fetch('api/logout.php', {
                 method: 'POST'
             })
             .then(() => {
-                // Clear session/localStorage
                 localStorage.clear();
                 sessionStorage.clear();
-                // Redirect to login
                 window.location.href = 'login.html';
             })
             .catch(() => {
-                // Even if API fails, clear local data and redirect
                 localStorage.clear();
                 sessionStorage.clear();
                 window.location.href = 'login.html';
@@ -1557,9 +1296,6 @@
         function logout() {
             showLogoutConfirmModal();
         }
-        
-        // Initialize
-        loadUserData();
     </script>
     
     <!-- Logout Confirmation Modal -->

@@ -3686,14 +3686,20 @@
             // Fetch user data from server
             fetch('api/get_current_user.php')
                 .then(response => {
+                    console.log('Response status:', response.status);
                     if (!response.ok) {
-                        throw new Error('Failed to fetch user data');
+                        return response.json().then(err => {
+                            console.error('API Error:', err);
+                            throw new Error(err.message || 'Failed to fetch user data');
+                        });
                     }
                     return response.json();
                 })
                 .then(data => {
+                    console.log('User data received:', data);
                     if (data.success && data.user) {
                         const userData = data.user;
+                        console.log('User data to populate:', userData);
                         
                         // Save to localStorage for future use
                         localStorage.setItem('loggedInUser', JSON.stringify(userData));
@@ -3720,6 +3726,15 @@
                         document.getElementById('profileNewPassword').value = '';
                         document.getElementById('profileConfirmPassword').value = '';
                         
+                        console.log('Form populated with:', {
+                            username: document.getElementById('profileUsername').value,
+                            email: document.getElementById('profileEmail').value,
+                            firstName: document.getElementById('profileFirstName').value,
+                            lastName: document.getElementById('profileLastName').value,
+                            gender: document.getElementById('profileGender').value,
+                            birthday: document.getElementById('profileBirthday').value
+                        });
+                        
                         // Set max date to today
                         const today = new Date();
                         const yyyy = today.getFullYear();
@@ -3742,6 +3757,7 @@
                         modal.style.display = 'flex';
                         document.body.style.overflow = 'hidden';
                     } else {
+                        console.warn('No user data in response:', data);
                         // Fallback to localStorage if server fetch fails
                         let userData = JSON.parse(localStorage.getItem('loggedInUser')) || 
                                       JSON.parse(localStorage.getItem('userData')) || 

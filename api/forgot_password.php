@@ -66,6 +66,9 @@ try {
     // Set expiration (10 minutes from now)
     $expires_at = date('Y-m-d H:i:s', strtotime('+10 minutes'));
     
+    // Log for debugging
+    error_log("Forgot password - Email: " . $email . ", User ID: " . $user['id'] . ", Username: " . ($user['username'] ?? 'NOT FOUND'));
+    
     // Store OTP in database
     $stored = store_password_reset_otp($email, $otp_code, $user['id'], $expires_at);
     

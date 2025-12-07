@@ -2153,6 +2153,7 @@
                                 </div>
                                 <div class="error-message" id="profilePassword-required" style="display: none;">Password is required.</div>
                                 <div class="error-message" id="profilePassword-min" style="display: none;">Password must be at least 8 characters.</div>
+                                <div class="error-message" id="profilePassword-incorrect" style="display: none;">Current password is incorrect.</div>
                             </div>
                             <div class="form-group">
                                 <label for="profileNewPassword">New Password</label>
@@ -4001,7 +4002,7 @@
         }
         
         function hideProfileErrors(idBase) {
-            const errors = ['error', 'format-error', 'required', 'min', 'same', 'mismatch'];
+            const errors = ['error', 'format-error', 'required', 'min', 'same', 'mismatch', 'incorrect'];
             errors.forEach(suffix => {
                 const errEl = document.getElementById(idBase + '-' + suffix);
                 if (errEl) errEl.style.display = 'none';
@@ -4146,6 +4147,11 @@
         function validateProfilePassword(el, idBase) {
             if (!el) return true;
             hideProfileErrors(idBase);
+            // Also hide incorrect password error when user types
+            if (idBase === 'profilePassword') {
+                const incorrectEl = document.getElementById('profilePassword-incorrect');
+                if (incorrectEl) incorrectEl.style.display = 'none';
+            }
             const v = (el.value || '').trim();
             const requireNow = anyPasswordFilled();
             
@@ -4422,7 +4428,25 @@
                     if (data.errors) {
                         Object.keys(data.errors).forEach(field => {
                             const errorMsg = data.errors[field];
-                            showNotification(errorMsg, 'error');
+                            
+                            // Handle password error specifically - show inline below the field
+                            if (field === 'password' && errorMsg.includes('incorrect')) {
+                                const errorEl = document.getElementById('profilePassword-incorrect');
+                                if (errorEl) {
+                                    errorEl.style.display = 'block';
+                                    const passwordInput = document.getElementById('profilePassword');
+                                    if (passwordInput) {
+                                        markProfileError(passwordInput);
+                                        const formGroup = passwordInput.closest('.form-group');
+                                        if (formGroup) {
+                                            formGroup.classList.add('error');
+                                        }
+                                    }
+                                }
+                            } else {
+                                // For other errors, show notification
+                                showNotification(errorMsg, 'error');
+                            }
                         });
                     } else {
                         showNotification(data.message || 'Failed to update profile. Please try again.', 'error');

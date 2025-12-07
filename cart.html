@@ -2679,25 +2679,22 @@
                 document.querySelector('.label-btn[data-label="home"]').classList.add('active');
             }
             
-            // Add validation listeners
+            // Add validation listeners using event delegation
             const form = document.getElementById('addressForm');
             if (form) {
-                const fields = form.querySelectorAll('input, select');
-                fields.forEach(field => {
-                    // Remove existing listeners to avoid duplicates
-                    const newField = field.cloneNode(true);
-                    field.parentNode.replaceChild(newField, field);
-                    
-                    // Add new listeners
-                    newField.addEventListener('input', function() {
-                        if (this.checkValidity()) {
-                            validateField(this);
+                // Use event delegation to handle all input/change events
+                form.addEventListener('input', function(e) {
+                    if (e.target.matches('input, select')) {
+                        if (e.target.checkValidity()) {
+                            validateField(e.target);
                         }
-                    });
-                    newField.addEventListener('change', function() {
-                        validateField(this);
-                    });
-                });
+                    }
+                }, true);
+                form.addEventListener('change', function(e) {
+                    if (e.target.matches('input, select')) {
+                        validateField(e.target);
+                    }
+                }, true);
             }
             
             // Show modal

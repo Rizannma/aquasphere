@@ -157,6 +157,59 @@
             display: block;
         }
         
+        /* User dropdown styling */
+        .nav-item.dropdown .nav-link {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem;
+            padding: 0 12px !important;
+        }
+        
+        .nav-item.dropdown .nav-link i.fa-user-circle {
+            font-size: 24px;
+            color: #0ea5e9;
+        }
+        
+        .nav-item.dropdown .nav-link #usernameDisplay {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item.dropdown .nav-link:hover #usernameDisplay {
+            color: #0ea5e9;
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9;
+        }
+        
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+        
         /* Cart badge styling for cart page */
         .cart-badge {
             position: absolute;

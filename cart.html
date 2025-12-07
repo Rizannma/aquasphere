@@ -167,6 +167,8 @@
             border-radius: 50%;
             width: 20px;
             height: 20px;
+            min-width: 20px;
+            min-height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -174,6 +176,15 @@
             font-weight: 700;
             border: 2px solid white;
             box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+            /* Prevent layout shift - reserve space even when hidden */
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.1s ease, visibility 0.1s ease;
+        }
+        
+        .cart-badge:not([style*="display: none"]) {
+            visibility: visible;
+            opacity: 1;
         }
         
         .navbar-toggler {
@@ -1800,7 +1811,20 @@
                                 <h2>Shopping Cart</h2>
                                 <p class="page-subtitle" style="margin: 0.5rem 0 0 0; font-size: 0.95rem;">Review your items before checkout</p>
                             </div>
-                            <div class="item-count-badge" id="itemCount">0 items</div>
+                            <div class="item-count-badge" id="itemCount">
+                                <script>
+                                    // Pre-populate item count to prevent layout shift
+                                    (function() {
+                                        try {
+                                            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                                            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+                                            document.write(totalItems === 1 ? '1 item' : totalItems === 0 ? '0 items' : totalItems + ' items');
+                                        } catch(e) {
+                                            document.write('0 items');
+                                        }
+                                    })();
+                                </script>
+                            </div>
                         </div>
                         
                         <!-- Select All -->
@@ -2040,6 +2064,25 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        // Preload cart data immediately to prevent layout shifts
+        (function() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+                const cartCountElement = document.getElementById('cartCount');
+                if (cartCountElement) {
+                    cartCountElement.textContent = cartCount;
+                    if (cartCount === 0) {
+                        cartCountElement.style.display = 'none';
+                    } else {
+                        cartCountElement.style.display = 'flex';
+                    }
+                }
+            } catch(e) {
+                console.error('Error preloading cart:', e);
+            }
+        })();
+        
         // Product icons mapping
         const productIcons = {
             1: 'fa-fill-drip',
@@ -2059,6 +2102,9 @@
             const cartItemsList = document.getElementById('cartItemsList');
             const emptyCart = document.getElementById('emptyCart');
             const itemCount = document.getElementById('itemCount');
+            
+            // Update cart count immediately to prevent layout shift
+            updateCartCount();
             const checkoutBtn = document.getElementById('checkoutBtn');
             
             // Update cart count in navbar
@@ -2328,16 +2374,19 @@
         // Update cart count in navbar
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
             const cartCountElement = document.getElementById('cartCount');
             if (cartCountElement) {
-                cartCountElement.textContent = cartCount;
-                // Hide badge if count is 0
-                if (cartCount === 0) {
-                    cartCountElement.style.display = 'none';
-                } else {
-                    cartCountElement.style.display = 'flex';
-                }
+                // Use requestAnimationFrame to prevent layout shift
+                requestAnimationFrame(() => {
+                    cartCountElement.textContent = cartCount;
+                    // Hide badge if count is 0
+                    if (cartCount === 0) {
+                        cartCountElement.style.display = 'none';
+                    } else {
+                        cartCountElement.style.display = 'flex';
+                    }
+                });
             }
         }
         

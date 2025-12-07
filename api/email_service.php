@@ -196,5 +196,97 @@ function send_otp_email_brevo($email, $otp_code, $username) {
     $result = $brevo_service->send_email($email, $subject, $html_content, $text_content, $username);
     return $result['success'];
 }
+
+/**
+ * Send password reset OTP email using Brevo
+ */
+function send_password_reset_otp_email_brevo($email, $otp_code, $username) {
+    $brevo_service = get_brevo_service();
+    
+    if (!$brevo_service) {
+        // Development fallback - log the OTP so it can be retrieved from logs
+        error_log("Brevo email service not configured. Password Reset OTP for $username ($email): $otp_code");
+        // Return false to indicate email was not sent
+        // But we'll still allow password reset to proceed in development
+        return false;
+    }
+    
+    $subject = "AquaSphere - Password Reset Code";
+    
+    $html_content = "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <title>Password Reset</title>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { padding: 20px; background-color: #f9f9f9; border-radius: 0 0 8px 8px; }
+            .otp-box { background-color: white; padding: 30px; margin: 20px 0; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            .otp-code { font-size: 36px; font-weight: bold; color: #0ea5e9; letter-spacing: 8px; margin: 20px 0; }
+            .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h1>AquaSphere Password Reset</h1>
+            </div>
+            <div class='content'>
+                <h2>Hello $username,</h2>
+                <p>We received a request to reset your password. Please use the verification code below to proceed:</p>
+                
+                <div class='otp-box'>
+                    <h3>Your Reset Code</h3>
+                    <div class='otp-code'>$otp_code</div>
+                    <p>Enter this code in the password reset page to continue.</p>
+                </div>
+                
+                <div class='warning'>
+                    <strong>Important:</strong>
+                    <ul style='margin: 10px 0; padding-left: 20px;'>
+                        <li>This code will expire in 10 minutes</li>
+                        <li>Do not share this code with anyone</li>
+                        <li>If you didn't request this reset, please ignore this email</li>
+                    </ul>
+                </div>
+                
+                <p>If you have any questions, please contact our support team.</p>
+            </div>
+            <div class='footer'>
+                <p>This is an automated message from AquaSphere. Please do not reply to this email.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+    
+    $text_content = "
+    AquaSphere Password Reset
+    
+    Hello $username,
+    
+    We received a request to reset your password. Please use the verification code below to proceed:
+    
+    Your Reset Code: $otp_code
+    
+    Enter this code in the password reset page to continue.
+    
+    Important:
+    - This code will expire in 10 minutes
+    - Do not share this code with anyone
+    - If you didn't request this reset, please ignore this email
+    
+    If you have any questions, please contact our support team.
+    
+    This is an automated message from AquaSphere. Please do not reply to this email.
+    ";
+    
+    $result = $brevo_service->send_email($email, $subject, $html_content, $text_content, $username);
+    return $result['success'];
+}
 ?>
 

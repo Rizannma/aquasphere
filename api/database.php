@@ -198,6 +198,24 @@ function init_db() {
         error_log("Failed to create otp_verification table: " . ($GLOBALS['use_postgres'] ? pg_last_error($conn) : "SQLite error"));
     }
     
+    // Create password_reset table
+    $query = "
+    CREATE TABLE IF NOT EXISTS password_reset (
+        id " . get_id_type() . ",
+        email " . get_text_type() . " NOT NULL,
+        otp_code " . get_text_type() . " NOT NULL,
+        user_id " . get_integer_type() . " NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP NOT NULL,
+        is_verified " . get_integer_type() . " DEFAULT 0
+    )
+    ";
+    
+    $result = execute_sql($conn, $query);
+    if ($result === false) {
+        error_log("Failed to create password_reset table: " . ($GLOBALS['use_postgres'] ? pg_last_error($conn) : "SQLite error"));
+    }
+    
     // Create orders table for water delivery system
     // Note: FOREIGN KEY constraints are handled differently for PostgreSQL vs SQLite
     if ($GLOBALS['use_postgres']) {
@@ -722,6 +740,114 @@ function cleanup_expired_otp() {
     $conn = get_db_connection();
     
     $query = "DELETE FROM otp_verification WHERE expires_at < CURRENT_TIMESTAMP OR is_verified = 1";
+    execute_sql($conn, $query);
+    
+    close_connection($conn);
+}
+
+/**
+ * Store password reset OTP
+ */
+function store_password_reset_otp($email, $otp_code, $user_id, $expires_at) {
+    init_db();
+    $conn = get_db_connection();
+    
+    // Delete any existing reset OTP for this email
+    $deleteQuery = "DELETE FROM password_reset WHERE email = ?";
+    execute_sql($conn, $deleteQuery, [$email]);
+    
+    // Insert new reset OTP
+    $query = "
+        INSERT INTO password_reset 
+        (email, otp_code, user_id, expires_at, created_at)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ";
+    
+    $result = execute_sql($conn, $query, [$email, $otp_code, $user_id, $expires_at]);
+    
+    close_connection($conn);
+    return $result ? true : false;
+}
+
+/**
+ * Verify password reset OTP
+ */
+function verify_password_reset_otp($email, $otp_code) {
+    init_db();
+    $conn = get_db_connection();
+    
+    $query = "
+        SELECT * FROM password_reset 
+        WHERE email = ? AND otp_code = ? AND is_verified = 0 AND expires_at > CURRENT_TIMESTAMP
+        ORDER BY created_at DESC
+        LIMIT 1
+    ";
+    
+    $result = execute_sql($conn, $query, [$email, $otp_code]);
+    
+    if ($result === false) {
+        error_log("Failed to execute query in verify_password_reset_otp: " . ($GLOBALS['use_postgres'] ? pg_last_error($conn) : "SQLite error"));
+        close_connection($conn);
+        return null;
+    }
+    
+    if ($GLOBALS['use_postgres']) {
+        $reset_data = pg_fetch_assoc($result);
+    } else {
+        $reset_data = $result->fetchArray(SQLITE3_ASSOC);
+    }
+    
+    if ($reset_data) {
+        // Mark as verified
+        $updateQuery = "UPDATE password_reset SET is_verified = 1 WHERE id = ?";
+        execute_sql($conn, $updateQuery, [$reset_data['id']]);
+        
+        close_connection($conn);
+        return $reset_data;
+    }
+    
+    close_connection($conn);
+    return null;
+}
+
+/**
+ * Update password reset OTP (for resend)
+ */
+function update_password_reset_otp($email, $otp_code, $expires_at) {
+    init_db();
+    $conn = get_db_connection();
+    
+    $query = "
+        UPDATE password_reset 
+        SET otp_code = ?, expires_at = ?, created_at = CURRENT_TIMESTAMP
+        WHERE email = ? AND is_verified = 0
+    ";
+    
+    $result = execute_sql($conn, $query, [$otp_code, $expires_at, $email]);
+    
+    if ($result === false) {
+        error_log("Failed to execute query in update_password_reset_otp: " . ($GLOBALS['use_postgres'] ? pg_last_error($conn) : "SQLite error"));
+        close_connection($conn);
+        return false;
+    }
+    
+    if ($GLOBALS['use_postgres']) {
+        $affected = pg_affected_rows($result);
+    } else {
+        $affected = $conn->changes();
+    }
+    
+    close_connection($conn);
+    return $affected > 0;
+}
+
+/**
+ * Clean up expired password reset records
+ */
+function cleanup_expired_password_reset() {
+    $conn = get_db_connection();
+    
+    $query = "DELETE FROM password_reset WHERE expires_at < CURRENT_TIMESTAMP OR is_verified = 1";
     execute_sql($conn, $query);
     
     close_connection($conn);

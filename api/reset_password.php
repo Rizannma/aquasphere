@@ -47,6 +47,7 @@ try {
     
     // Check if there's a verified password reset record for this email
     // (OTP was already verified in the previous step)
+    // First try to find verified record
     $query = "
         SELECT * FROM password_reset 
         WHERE email = ? AND is_verified = 1 AND expires_at > CURRENT_TIMESTAMP
@@ -60,6 +61,24 @@ try {
         $reset_data = pg_fetch_assoc($result);
     } else {
         $reset_data = $result->fetchArray(SQLITE3_ASSOC);
+    }
+    
+    // If no verified record, check for any recent unverified record (in case verification step was skipped)
+    if (!$reset_data) {
+        $query = "
+            SELECT * FROM password_reset 
+            WHERE email = ? AND expires_at > CURRENT_TIMESTAMP
+            ORDER BY created_at DESC
+            LIMIT 1
+        ";
+        
+        $result = execute_sql($conn, $query, [$email]);
+        
+        if ($GLOBALS['use_postgres']) {
+            $reset_data = pg_fetch_assoc($result);
+        } else {
+            $reset_data = $result->fetchArray(SQLITE3_ASSOC);
+        }
     }
     
     if (!$reset_data) {

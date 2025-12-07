@@ -1826,27 +1826,6 @@
             </div>
         </div>
     </div>
-                            const errorMessage = data.error || data.message || 'Failed to reset password. Please try again.';
-                            // Removed console.error('Reset password error:', errorMessage, data);
-                            document.getElementById('newPassword-error').textContent = errorMessage;
-                            document.getElementById('newPassword-error').style.display = 'block';
-                        }
-                    } catch (error) {
-                        // Removed console.error('Reset password error:', error);
-                        let errorMessage = 'An error occurred. Please try again.';
-                        if (error.message) {
-                            errorMessage = error.message;
-                        }
-                        document.getElementById('newPassword-error').textContent = errorMessage;
-                        document.getElementById('newPassword-error').style.display = 'block';
-                    } finally {
-                        if (proceedButton) {
-                            proceedButton.disabled = false;
-                            if (spinner) spinner.style.display = 'none';
-                        }
-                    }
-                });
-            }
             
             // Real-time password validation
             const newPasswordEl = document.getElementById('newPassword');

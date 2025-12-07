@@ -2858,15 +2858,23 @@
             }
         });
         
-        // Ensure navbar maintains fixed size
-        document.addEventListener('DOMContentLoaded', function() {
+        // Ensure navbar maintains fixed size and prevent layout shift
+        function fixNavbarSize() {
             const navbar = document.querySelector('.navbar');
             if (navbar) {
                 navbar.style.height = '70px';
                 navbar.style.padding = '0';
                 navbar.style.lineHeight = '70px';
+                navbar.style.minHeight = '70px';
+                navbar.style.maxHeight = '70px';
             }
-        });
+        }
+        
+        // Fix navbar size immediately and on all events to prevent layout shift
+        fixNavbarSize();
+        document.addEventListener('DOMContentLoaded', fixNavbarSize);
+        window.addEventListener('load', fixNavbarSize);
+        window.addEventListener('pageshow', fixNavbarSize);
     </script>
     
     <!-- Footer -->

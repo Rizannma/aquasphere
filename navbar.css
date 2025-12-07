@@ -6,7 +6,7 @@ html {
 }
 
 body {
-    padding-top: 80px !important; /* Match index.html navbar spacing */
+    padding-top: 70px !important; /* Match navbar height */
 }
 
 /* Navbar Styles - Match index.html thickness */

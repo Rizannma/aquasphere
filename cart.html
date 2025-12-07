@@ -734,8 +734,14 @@
             background: white;
             padding: 1rem;
             border-radius: 8px;
-            margin-bottom: 1rem;
             border: 1px solid #e2e8f0;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        
+        .coordinates-info {
+            flex: 1;
         }
         
         .coordinates-label {
@@ -754,8 +760,8 @@
         
         .coordinates-display {
             display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 0.5rem;
         }
         
         .coordinate-item {
@@ -768,6 +774,7 @@
             font-weight: 600;
             color: #64748b;
             font-size: 0.9rem;
+            min-width: 70px;
         }
         
         .coordinate-value {
@@ -781,14 +788,14 @@
         }
         
         .address-map-container {
-            width: 100%;
-            height: 200px;
-            border-radius: 12px;
+            width: 200px;
+            height: 150px;
+            border-radius: 8px;
             overflow: hidden;
             border: 2px solid #e2e8f0;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 1rem;
             position: relative;
+            flex-shrink: 0;
         }
         
         .address-map-container.fullscreen {
@@ -805,21 +812,21 @@
         
         .address-map-fullscreen-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 5px;
+            right: 5px;
             background: white;
             border: 2px solid #e2e8f0;
             color: #475569;
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 4px 8px;
+            border-radius: 6px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             z-index: 1000;
         }
         
@@ -2221,27 +2228,28 @@
                                         <div class="address-tab-content" id="tabContentLocation" style="display: none;">
                                             <div class="address-location-section" id="addressLocationSection">
                                                 <div class="address-coordinates">
-                                                    <div class="coordinates-label">
-                                                        <i class="fas fa-map-marker-alt"></i>
-                                                        <span>Location Coordinates</span>
-                                                    </div>
-                                                    <div class="coordinates-display">
-                                                        <div class="coordinate-item">
-                                                            <span class="coordinate-label">Latitude:</span>
-                                                            <span class="coordinate-value" id="displayLatitude"></span>
+                                                    <div class="coordinates-info">
+                                                        <div class="coordinates-label">
+                                                            <i class="fas fa-map-marker-alt"></i>
+                                                            <span>Location Coordinates</span>
                                                         </div>
-                                                        <div class="coordinate-item">
-                                                            <span class="coordinate-label">Longitude:</span>
-                                                            <span class="coordinate-value" id="displayLongitude"></span>
+                                                        <div class="coordinates-display">
+                                                            <div class="coordinate-item">
+                                                                <span class="coordinate-label">Latitude:</span>
+                                                                <span class="coordinate-value" id="displayLatitude"></span>
+                                                            </div>
+                                                            <div class="coordinate-item">
+                                                                <span class="coordinate-label">Longitude:</span>
+                                                                <span class="coordinate-value" id="displayLongitude"></span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="address-map-container" id="addressMapContainer">
-                                                    <button class="address-map-fullscreen-btn" onclick="toggleAddressMapFullscreen()" title="Toggle fullscreen">
-                                                        <i class="fas fa-expand" id="addressMapFullscreenIcon"></i>
-                                                        Fullscreen
-                                                    </button>
-                                                    <div id="addressMap" class="address-map"></div>
+                                                    <div class="address-map-container" id="addressMapContainer">
+                                                        <button class="address-map-fullscreen-btn" onclick="toggleAddressMapFullscreen()" title="Toggle fullscreen">
+                                                            <i class="fas fa-expand" id="addressMapFullscreenIcon"></i>
+                                                        </button>
+                                                        <div id="addressMap" class="address-map"></div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

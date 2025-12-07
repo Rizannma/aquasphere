@@ -30,77 +30,37 @@
             overflow-x: hidden;
         }
         
-        /* Navbar Styles - Fixed Dimensions */
+        /* Navbar Styles */
         .navbar {
             background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            height: 70px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            line-height: 70px !important;
+            transition: all 0.3s ease;
         }
         
-        .navbar .container {
-            height: 70px !important;
-            display: flex;
-            align-items: center;
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
         }
         
         .navbar-brand {
             font-weight: 700;
-            font-size: 24px;
+            font-size: 1.5rem;
             color: #0ea5e9 !important;
-            display: flex !important;
-            align-items: center !important;
-            height: 70px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            line-height: 70px !important;
+            transition: all 0.3s ease;
         }
         
         .navbar-brand:hover {
             color: #0369a1 !important;
-        }
-        
-        .navbar-brand img {
-            height: 45px !important;
-            width: auto !important;
-            margin-right: 10px !important;
-            display: block !important;
-        }
-        
-        .navbar-collapse {
-            height: 70px !important;
-            display: flex !important;
-            align-items: center !important;
-        }
-        
-        .navbar-nav {
-            height: 70px !important;
-            display: flex !important;
-            align-items: center !important;
-            margin: 0 !important;
-        }
-        
-        .nav-item {
-            height: 70px !important;
-            display: flex !important;
-            align-items: center !important;
+            transform: scale(1.05);
         }
         
         .nav-link {
             font-weight: 500;
             color: #4a5568 !important;
-            padding: 0 16px !important;
-            height: 70px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            margin: 0 !important;
-            line-height: 70px !important;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
             position: relative;
-            transition: color 0.3s ease;
         }
         
         .nav-link::after {
@@ -123,13 +83,6 @@
         .nav-link:hover,
         .nav-link.active {
             color: #0369a1 !important;
-        }
-        
-        .navbar-toggler {
-            height: 40px !important;
-            width: 40px !important;
-            padding: 0 !important;
-            margin: 0 !important;
         }
         
         /* Hero Section */
@@ -795,23 +748,13 @@
             offset: 100
         });
         
-        // Navbar scroll effect (only shadow, no size changes)
+        // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
-                navbar.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.15)';
+                navbar.classList.add('scrolled');
             } else {
-                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-            }
-        });
-        
-        // Ensure navbar maintains fixed size
-        document.addEventListener('DOMContentLoaded', function() {
-            const navbar = document.querySelector('.navbar');
-            if (navbar) {
-                navbar.style.height = '70px';
-                navbar.style.padding = '0';
-                navbar.style.lineHeight = '70px';
+                navbar.classList.remove('scrolled');
             }
         });
         

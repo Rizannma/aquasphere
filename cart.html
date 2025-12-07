@@ -21,12 +21,19 @@
             box-sizing: border-box;
         }
         
+        /* Prevent layout shift - set navbar size immediately */
+        html {
+            scroll-padding-top: 70px;
+        }
+        
         body {
             font-family: 'Poppins', sans-serif !important;
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             min-height: 100vh;
-            padding-top: 70px; /* Fixed navbar height - match dashboard */
+            padding-top: 70px !important; /* Fixed navbar height - match dashboard */
             overflow-x: hidden;
+            /* Prevent any layout shifts */
+            overflow-y: auto;
         }
         
         /* Navbar */
@@ -36,9 +43,19 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             height: 70px !important;
+            min-height: 70px !important;
+            max-height: 70px !important;
             padding: 0 !important;
             margin: 0 !important;
             line-height: 70px !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 1000 !important;
+            /* Prevent any transitions that could cause shake */
+            transition: none !important;
         }
         
         .navbar .container {
@@ -2862,19 +2879,38 @@
         function fixNavbarSize() {
             const navbar = document.querySelector('.navbar');
             if (navbar) {
-                navbar.style.height = '70px';
-                navbar.style.padding = '0';
-                navbar.style.lineHeight = '70px';
-                navbar.style.minHeight = '70px';
-                navbar.style.maxHeight = '70px';
+                // Set all size properties immediately
+                navbar.style.setProperty('height', '70px', 'important');
+                navbar.style.setProperty('min-height', '70px', 'important');
+                navbar.style.setProperty('max-height', '70px', 'important');
+                navbar.style.setProperty('padding', '0', 'important');
+                navbar.style.setProperty('line-height', '70px', 'important');
+                navbar.style.setProperty('position', 'fixed', 'important');
+                navbar.style.setProperty('top', '0', 'important');
+                navbar.style.setProperty('transition', 'none', 'important');
             }
+            
+            // Also ensure body padding is set
+            document.body.style.setProperty('padding-top', '70px', 'important');
         }
         
-        // Fix navbar size immediately and on all events to prevent layout shift
-        fixNavbarSize();
-        document.addEventListener('DOMContentLoaded', fixNavbarSize);
+        // Fix navbar size immediately (before DOM is ready)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fixNavbarSize);
+        } else {
+            fixNavbarSize();
+        }
+        
+        // Also fix on all other events
         window.addEventListener('load', fixNavbarSize);
-        window.addEventListener('pageshow', fixNavbarSize);
+        window.addEventListener('pageshow', function(e) {
+            fixNavbarSize();
+            // Force reflow to prevent shake
+            void document.body.offsetHeight;
+        });
+        
+        // Fix immediately on script execution
+        fixNavbarSize();
     </script>
     
     <!-- Footer -->

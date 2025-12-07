@@ -3726,13 +3726,50 @@
             showNotification('Profile updated successfully!', 'success');
         }
         
+        // Show Logout Confirmation Modal
+        function showLogoutConfirmModal() {
+            const modal = document.getElementById('logoutConfirmModal');
+            const confirmBtn = document.getElementById('logoutConfirmBtn');
+            const cancelBtn = document.getElementById('logoutCancelBtn');
+            
+            if (!modal) return;
+            
+            modal.style.display = 'flex';
+            
+            // Remove existing event listeners
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            const newCancelBtn = cancelBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+            
+            // Add new event listeners
+            newConfirmBtn.addEventListener('click', function confirmHandler() {
+                modal.style.display = 'none';
+                performLogout();
+                newConfirmBtn.removeEventListener('click', confirmHandler);
+            });
+            
+            newCancelBtn.addEventListener('click', function cancelHandler() {
+                modal.style.display = 'none';
+                newCancelBtn.removeEventListener('click', cancelHandler);
+            });
+        }
+        
+        // Perform Logout
+        function performLogout() {
+            // Clear user session data
+            localStorage.removeItem('loggedInUser');
+            sessionStorage.removeItem('userData');
+            // Optionally clear cart and other user-specific data
+            // localStorage.removeItem('cart');
+            // localStorage.removeItem('deliveryAddress');
+            
+            window.location.href = 'index.html';
+        }
+        
         // Logout
         function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                // Clear user session data if needed
-                // localStorage.removeItem('userData');
-                window.location.href = 'index.html';
-            }
+            showLogoutConfirmModal();
         }
         
         // Initialize

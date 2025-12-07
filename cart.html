@@ -3487,10 +3487,150 @@
             });
         }
         
+        // Load user data
+        function loadUserData() {
+            const userData = JSON.parse(localStorage.getItem('userData')) || {};
+            const usernameDisplay = document.getElementById('usernameDisplay');
+            if (usernameDisplay) {
+                usernameDisplay.textContent = userData.username || 'User';
+            }
+        }
+        
+        // Open Profile Modal
+        function openProfileModal() {
+            const modal = document.getElementById('profileModal');
+            if (!modal) return;
+            
+            const userData = JSON.parse(localStorage.getItem('userData')) || {};
+            
+            // Populate form with existing user data
+            document.getElementById('profileUsername').value = userData.username || '';
+            document.getElementById('profileEmail').value = userData.email || '';
+            document.getElementById('profileFirstName').value = userData.firstName || '';
+            document.getElementById('profileLastName').value = userData.lastName || '';
+            document.getElementById('profileGender').value = userData.gender || '';
+            document.getElementById('profileBirthday').value = userData.birthday || '';
+            document.getElementById('profilePassword').value = '';
+            document.getElementById('profileConfirmPassword').value = '';
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Close Profile Modal
+        function closeProfileModal(event) {
+            if (event && event.target.id !== 'profileModal' && !event.target.closest('.address-modal')) return;
+            const modal = document.getElementById('profileModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Open Settings Modal
+        function openSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            if (!modal) return;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Close Settings Modal
+        function closeSettingsModal(event) {
+            if (event && event.target.id !== 'settingsModal' && !event.target.closest('.address-modal')) return;
+            const modal = document.getElementById('settingsModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Toggle Password Visibility
+        function togglePasswordVisibility(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // Save Profile
+        function saveProfile(event) {
+            event.preventDefault();
+            
+            const password = document.getElementById('profilePassword').value;
+            const confirmPassword = document.getElementById('profileConfirmPassword').value;
+            
+            // Validate password if provided
+            if (password && password.length < 8) {
+                showNotification('Password must be at least 8 characters', 'error');
+                return;
+            }
+            
+            if (password && password !== confirmPassword) {
+                showNotification('Passwords do not match', 'error');
+                return;
+            }
+            
+            // Get the form
+            const form = document.getElementById('profileForm');
+            const fields = form.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            
+            fields.forEach(field => {
+                validateField(field);
+                if (!field.checkValidity()) {
+                    isValid = false;
+                }
+            });
+            
+            if (!isValid) {
+                const firstError = document.querySelector('#profileModal .form-group.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+            
+            const userData = {
+                username: document.getElementById('profileUsername').value.trim(),
+                email: document.getElementById('profileEmail').value.trim(),
+                firstName: document.getElementById('profileFirstName').value.trim(),
+                lastName: document.getElementById('profileLastName').value.trim(),
+                gender: document.getElementById('profileGender').value,
+                birthday: document.getElementById('profileBirthday').value
+            };
+            
+            // Only update password if provided
+            if (password) {
+                userData.password = password;
+            }
+            
+            localStorage.setItem('userData', JSON.stringify(userData));
+            loadUserData();
+            closeProfileModal();
+            showNotification('Profile updated successfully!', 'success');
+        }
+        
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear user session data if needed
+                // localStorage.removeItem('userData');
+                window.location.href = 'index.html';
+            }
+        }
+        
         // Initialize
         loadCart();
         loadAddress();
         initializeLocationDropdowns();
+        loadUserData();
         
         // Navbar scroll effect (only shadow, no size changes)
         window.addEventListener('scroll', function() {

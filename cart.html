@@ -451,7 +451,7 @@
         .cart-summary-wrapper {
             position: fixed !important;
             top: 100px !important;
-            right: max(calc((100vw - 1200px) / 2 + 1rem), 1rem) !important;
+            right: 1rem !important;
             width: 380px !important;
             max-width: 380px !important;
             z-index: 100 !important;
@@ -460,29 +460,27 @@
             gap: 1.5rem !important;
             margin: 0 !important;
             padding: 0 !important;
-            transform: none !important;
-            will-change: auto !important;
+        }
+        
+        /* Ensure body and html don't interfere */
+        html, body {
+            overflow-x: hidden;
         }
         
         /* Ensure no parent creates containing block */
+        main,
         .main-content,
         .main-content .container,
-        .main-content .row,
-        .main-content .col-lg-4 {
+        .main-content .row {
             transform: none !important;
             perspective: none !important;
             filter: none !important;
             will-change: auto !important;
         }
         
-        /* Force fixed positioning even if parent has transforms */
-        .col-lg-4 .cart-summary-wrapper {
-            position: fixed !important;
-        }
-        
         @media (max-width: 1400px) {
             .cart-summary-wrapper {
-                right: 1rem;
+                right: 1rem !important;
             }
         }
         

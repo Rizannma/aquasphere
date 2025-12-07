@@ -2789,6 +2789,233 @@
             document.body.style.overflow = 'hidden'; // Prevent background scrolling
         }
         
+        // Map variables
+        let map = null;
+        let marker = null;
+        let mapInitialized = false;
+        
+        // Initialize map
+        function initMap() {
+            const mapPlaceholder = document.getElementById('mapPlaceholder');
+            const mapContainer = document.getElementById('mapContainer');
+            const mapDiv = document.getElementById('map');
+            
+            if (!mapDiv) {
+                console.error('Map div not found');
+                return;
+            }
+            
+            // Check if Leaflet is loaded
+            if (typeof L === 'undefined') {
+                alert('Map library is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
+            // Hide placeholder, show map container
+            if (mapPlaceholder) mapPlaceholder.style.display = 'none';
+            if (mapContainer) mapContainer.style.display = 'block';
+            
+            // Show loading
+            const mapLoading = document.getElementById('mapLoading');
+            if (mapLoading) mapLoading.style.display = 'flex';
+            
+            // Initialize map after a short delay to ensure container is visible
+            setTimeout(() => {
+                try {
+                    if (!mapInitialized) {
+                        // Default center: Laguna, Philippines
+                        const defaultCenter = [14.3294, 121.2781];
+                        
+                        // Check if we have saved coordinates
+                        const address = JSON.parse(localStorage.getItem('deliveryAddress'));
+                        let center = defaultCenter;
+                        let zoom = 13;
+                        
+                        if (address && address.latitude && address.longitude) {
+                            center = [parseFloat(address.latitude), parseFloat(address.longitude)];
+                            zoom = 16;
+                        }
+                        
+                        // Initialize Leaflet map
+                        map = L.map('map').setView(center, zoom);
+                        
+                        // Add OpenStreetMap tiles (free, no API key needed)
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap contributors',
+                            maxZoom: 19
+                        }).addTo(map);
+                        
+                        // Add marker if we have saved coordinates
+                        if (address && address.latitude && address.longitude) {
+                            const savedLat = parseFloat(address.latitude);
+                            const savedLng = parseFloat(address.longitude);
+                            marker = L.marker([savedLat, savedLng], {
+                                draggable: true
+                            }).addTo(map);
+                            
+                            marker.bindPopup('Your location').openPopup();
+                            
+                            // Update hidden inputs
+                            document.getElementById('latitude').value = savedLat;
+                            document.getElementById('longitude').value = savedLng;
+                        }
+                        
+                        // Add click handler to set marker
+                        map.on('click', function(e) {
+                            const lat = e.latlng.lat;
+                            const lng = e.latlng.lng;
+                            
+                            // Remove existing marker
+                            if (marker) {
+                                map.removeLayer(marker);
+                            }
+                            
+                            // Add new marker
+                            marker = L.marker([lat, lng], {
+                                draggable: true
+                            }).addTo(map);
+                            
+                            marker.bindPopup('Your location').openPopup();
+                            
+                            // Update hidden inputs
+                            document.getElementById('latitude').value = lat;
+                            document.getElementById('longitude').value = lng;
+                        });
+                        
+                        // Allow dragging marker
+                        if (marker) {
+                            marker.on('dragend', function(e) {
+                                const lat = e.target.getLatLng().lat;
+                                const lng = e.target.getLatLng().lng;
+                                document.getElementById('latitude').value = lat;
+                                document.getElementById('longitude').value = lng;
+                            });
+                        }
+                        
+                        mapInitialized = true;
+                    }
+                    
+                    // Invalidate size to ensure map renders correctly
+                    setTimeout(() => {
+                        if (map) {
+                            map.invalidateSize();
+                        }
+                        if (mapLoading) mapLoading.style.display = 'none';
+                    }, 100);
+                } catch(error) {
+                    console.error('Error initializing map:', error);
+                    if (mapLoading) mapLoading.style.display = 'none';
+                    alert('Error loading map. Please try again.');
+                }
+            }, 50);
+        }
+        
+        // Get current location using HTML5 Geolocation API
+        function getCurrentLocation() {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser');
+                return;
+            }
+            
+            const mapLoading = document.getElementById('mapLoading');
+            if (mapLoading) mapLoading.style.display = 'flex';
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    // Initialize map if not already initialized
+                    if (!mapInitialized) {
+                        initMap();
+                        setTimeout(() => {
+                            setMapLocation(lat, lng);
+                        }, 300);
+                    } else {
+                        setMapLocation(lat, lng);
+                    }
+                    
+                    if (mapLoading) mapLoading.style.display = 'none';
+                },
+                function(error) {
+                    if (mapLoading) mapLoading.style.display = 'none';
+                    let errorMsg = 'Unable to retrieve your location. ';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMsg += 'Please allow location access in your browser settings.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMsg += 'Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMsg += 'Location request timed out.';
+                            break;
+                        default:
+                            errorMsg += 'An unknown error occurred.';
+                            break;
+                    }
+                    alert(errorMsg);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+        
+        // Set map location
+        function setMapLocation(lat, lng) {
+            if (!map) {
+                console.error('Map not initialized');
+                return;
+            }
+            
+            try {
+                // Remove existing marker
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                
+                // Set map view
+                map.setView([lat, lng], 16);
+                
+                // Add new marker
+                marker = L.marker([lat, lng], {
+                    draggable: true
+                }).addTo(map);
+                
+                marker.bindPopup('Your location').openPopup();
+                
+                // Update hidden inputs
+                const latInput = document.getElementById('latitude');
+                const lngInput = document.getElementById('longitude');
+                if (latInput) latInput.value = lat;
+                if (lngInput) lngInput.value = lng;
+                
+                // Allow dragging marker
+                marker.on('dragend', function(e) {
+                    const newLat = e.target.getLatLng().lat;
+                    const newLng = e.target.getLatLng().lng;
+                    const latInput = document.getElementById('latitude');
+                    const lngInput = document.getElementById('longitude');
+                    if (latInput) latInput.value = newLat;
+                    if (lngInput) lngInput.value = newLng;
+                });
+            } catch(error) {
+                console.error('Error setting map location:', error);
+            }
+        }
+        
+        // Hide map
+        function hideMap() {
+            const mapPlaceholder = document.getElementById('mapPlaceholder');
+            const mapContainer = document.getElementById('mapContainer');
+            
+            if (mapPlaceholder) mapPlaceholder.style.display = 'flex';
+            if (mapContainer) mapContainer.style.display = 'none';
+        }
+        
         function closeAddressModal(event) {
             if (event && event.target.id !== 'addressModal' && !event.target.closest('.address-modal')) return;
             const modal = document.getElementById('addressModal');

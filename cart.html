@@ -2838,9 +2838,9 @@
                 return;
             }
             
-            // Check if Leaflet is loaded
-            if (typeof L === 'undefined') {
-                alert('Map library is still loading. Please wait a moment and try again.');
+            // Check if Google Maps API is loaded
+            if (!isGoogleMapsReady()) {
+                alert('Google Maps is still loading. Please wait a moment and try again.\n\nIf this persists, make sure you have added your Google Maps API key in the script tag.');
                 return;
             }
             
@@ -2857,7 +2857,7 @@
                 try {
                     if (!mapInitialized) {
                         // Default center: Laguna, Philippines
-                        const defaultCenter = [14.3294, 121.2781];
+                        const defaultCenter = { lat: 14.3294, lng: 121.2781 };
                         
                         // Check if we have saved coordinates
                         const address = JSON.parse(localStorage.getItem('deliveryAddress'));
@@ -2865,28 +2865,42 @@
                         let zoom = 13;
                         
                         if (address && address.latitude && address.longitude) {
-                            center = [parseFloat(address.latitude), parseFloat(address.longitude)];
+                            center = {
+                                lat: parseFloat(address.latitude),
+                                lng: parseFloat(address.longitude)
+                            };
                             zoom = 16;
                         }
                         
-                        // Initialize Leaflet map
-                        map = L.map('map').setView(center, zoom);
-                        
-                        // Add OpenStreetMap tiles (free, no API key needed)
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            attribution: '© OpenStreetMap contributors',
-                            maxZoom: 19
-                        }).addTo(map);
+                        // Initialize Google Map
+                        map = new google.maps.Map(mapDiv, {
+                            center: center,
+                            zoom: zoom,
+                            mapTypeId: 'roadmap',
+                            streetViewControl: true,
+                            fullscreenControl: true,
+                            mapTypeControl: true,
+                            zoomControl: true
+                        });
                         
                         // Add marker if we have saved coordinates
                         if (address && address.latitude && address.longitude) {
                             const savedLat = parseFloat(address.latitude);
                             const savedLng = parseFloat(address.longitude);
-                            marker = L.marker([savedLat, savedLng], {
-                                draggable: true
-                            }).addTo(map);
                             
-                            marker.bindPopup('Your location').openPopup();
+                            marker = new google.maps.Marker({
+                                position: { lat: savedLat, lng: savedLng },
+                                map: map,
+                                draggable: true,
+                                title: 'Your location',
+                                animation: google.maps.Animation.DROP
+                            });
+                            
+                            // Add info window
+                            const infoWindow = new google.maps.InfoWindow({
+                                content: '<div style="padding: 8px;"><strong>Your location</strong></div>'
+                            });
+                            infoWindow.open(map, marker);
                             
                             // Update hidden inputs
                             document.getElementById('latitude').value = savedLat;
@@ -2894,24 +2908,41 @@
                             
                             // Update visible display
                             updateLocationDisplay(savedLat, savedLng);
+                            
+                            // Handle marker drag
+                            marker.addListener('dragend', function(e) {
+                                const lat = marker.getPosition().lat();
+                                const lng = marker.getPosition().lng();
+                                document.getElementById('latitude').value = lat;
+                                document.getElementById('longitude').value = lng;
+                                updateLocationDisplay(lat, lng);
+                            });
                         }
                         
                         // Add click handler to set marker
-                        map.on('click', function(e) {
-                            const lat = e.latlng.lat;
-                            const lng = e.latlng.lng;
+                        map.addListener('click', function(e) {
+                            const lat = e.latLng.lat();
+                            const lng = e.latLng.lng();
                             
                             // Remove existing marker
                             if (marker) {
-                                map.removeLayer(marker);
+                                marker.setMap(null);
                             }
                             
                             // Add new marker
-                            marker = L.marker([lat, lng], {
-                                draggable: true
-                            }).addTo(map);
+                            marker = new google.maps.Marker({
+                                position: { lat: lat, lng: lng },
+                                map: map,
+                                draggable: true,
+                                title: 'Your location',
+                                animation: google.maps.Animation.DROP
+                            });
                             
-                            marker.bindPopup('Your location').openPopup();
+                            // Add info window
+                            const infoWindow = new google.maps.InfoWindow({
+                                content: '<div style="padding: 8px;"><strong>Your location</strong></div>'
+                            });
+                            infoWindow.open(map, marker);
                             
                             // Update hidden inputs
                             document.getElementById('latitude').value = lat;
@@ -2919,32 +2950,31 @@
                             
                             // Update visible display
                             updateLocationDisplay(lat, lng);
-                        });
-                        
-                        // Allow dragging marker
-                        if (marker) {
-                            marker.on('dragend', function(e) {
-                                const lat = e.target.getLatLng().lat;
-                                const lng = e.target.getLatLng().lng;
-                                document.getElementById('latitude').value = lat;
-                                document.getElementById('longitude').value = lng;
+                            
+                            // Handle marker drag
+                            marker.addListener('dragend', function(e) {
+                                const newLat = marker.getPosition().lat();
+                                const newLng = marker.getPosition().lng();
+                                document.getElementById('latitude').value = newLat;
+                                document.getElementById('longitude').value = newLng;
+                                updateLocationDisplay(newLat, newLng);
                             });
-                        }
+                        });
                         
                         mapInitialized = true;
                     }
                     
-                    // Invalidate size to ensure map renders correctly
+                    // Trigger resize to ensure map renders correctly
                     setTimeout(() => {
                         if (map) {
-                            map.invalidateSize();
+                            google.maps.event.trigger(map, 'resize');
                         }
                         if (mapLoading) mapLoading.style.display = 'none';
                     }, 100);
                 } catch(error) {
                     console.error('Error initializing map:', error);
                     if (mapLoading) mapLoading.style.display = 'none';
-                    alert('Error loading map. Please try again.');
+                    alert('Error loading map. Please check your Google Maps API key and try again.');
                 }
             }, 50);
         }

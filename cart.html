@@ -451,15 +451,25 @@
         .cart-summary-wrapper {
             position: fixed !important;
             top: 100px !important;
-            right: calc((100% - 1200px) / 2 + 1rem) !important;
+            right: calc((100vw - 1200px) / 2 + 1rem) !important;
             width: calc(33.333% - 1rem) !important;
             max-width: 400px !important;
             z-index: 100 !important;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            transform: translateZ(0);
-            will-change: auto;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Ensure no parent creates containing block */
+        .main-content,
+        .main-content .container,
+        .main-content .row,
+        .main-content .col-lg-4 {
+            transform: none !important;
+            perspective: none !important;
+            filter: none !important;
         }
         
         @media (max-width: 1400px) {

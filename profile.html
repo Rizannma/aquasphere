@@ -41,20 +41,63 @@
             min-height: calc(100vh - 70px - 200px);
         }
         
-        /* Containers Wrapper - Side by Side Layout */
-        .containers-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+        /* Main Tabs Navigation */
+        .main-tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
             max-width: 1400px;
-            margin: 0 auto;
+            margin-left: auto;
+            margin-right: auto;
         }
         
-        @media (max-width: 991px) {
-            .containers-wrapper {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
+        .main-tab {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            top: 2px;
+        }
+        
+        .main-tab:hover {
+            color: #0ea5e9;
+            background: rgba(14, 165, 233, 0.05);
+        }
+        
+        .main-tab.active {
+            color: #0ea5e9;
+            border-bottom-color: #0ea5e9;
+            background: rgba(14, 165, 233, 0.05);
+        }
+        
+        .main-tab i {
+            font-size: 1rem;
+        }
+        
+        /* Containers Wrapper - Single Container at a Time */
+        .containers-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .container-tab-content {
+            display: none;
+        }
+        
+        .container-tab-content.active {
+            display: block;
         }
         
         .profile-container {
@@ -1609,14 +1652,27 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
+            <!-- Main Tabs Navigation -->
+            <div class="main-tabs-nav">
+                <button class="main-tab active" onclick="switchMainTab('profile')" id="mainTabProfile">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </button>
+                <button class="main-tab" onclick="switchMainTab('address')" id="mainTabAddress">
+                    <i class="fas fa-map-marker-alt"></i>
+                    My Address
+                </button>
+            </div>
+            
             <div class="containers-wrapper">
-                <!-- Profile Container -->
-                <div class="profile-container">
-                    <div class="profile-header">
-                        <h2>Profile</h2>
-                    </div>
-                    <div class="profile-body">
-                        <form id="profileForm" onsubmit="saveProfile(event)" novalidate>
+                <!-- Profile Container Tab -->
+                <div class="container-tab-content active" id="profileTabContent">
+                    <div class="profile-container">
+                        <div class="profile-header">
+                            <h2>Profile</h2>
+                        </div>
+                        <div class="profile-body">
+                            <form id="profileForm" onsubmit="saveProfile(event)" novalidate>
                         <div class="profile-section">
                             <h5 style="color: #0369a1; font-weight: 600; margin-bottom: 1rem; font-size: 1.1rem;">Account Information</h5>
                             <div class="form-row">
@@ -1717,13 +1773,15 @@
                             <a href="dashboard.html" class="btn-cancel">Cancel</a>
                             <button type="submit" class="btn-submit" id="updateProfileBtn" disabled>Save Changes</button>
                         </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- My Address Section (Side by Side) -->
-                <div class="cart-summary">
-                    <div class="delivery-address-section" id="profileAddressSection">
+                <!-- My Address Container Tab -->
+                <div class="container-tab-content" id="addressTabContent">
+                    <div class="cart-summary">
+                        <div class="delivery-address-section" id="profileAddressSection">
                     <div class="address-header">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>My Address</span>
@@ -2936,6 +2994,26 @@
         // Logout
         function logout() {
             showLogoutConfirmModal();
+        }
+        
+        // Main Tab Switching Function
+        function switchMainTab(tabName) {
+            const profileTab = document.getElementById('mainTabProfile');
+            const addressTab = document.getElementById('mainTabAddress');
+            const profileContent = document.getElementById('profileTabContent');
+            const addressContent = document.getElementById('addressTabContent');
+            
+            if (tabName === 'profile') {
+                profileTab.classList.add('active');
+                addressTab.classList.remove('active');
+                profileContent.classList.add('active');
+                addressContent.classList.remove('active');
+            } else if (tabName === 'address') {
+                addressTab.classList.add('active');
+                profileTab.classList.remove('active');
+                addressContent.classList.add('active');
+                profileContent.classList.remove('active');
+            }
         }
         
         // Initialize on page load

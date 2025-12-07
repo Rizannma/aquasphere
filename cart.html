@@ -11,9 +11,6 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <!-- Google Fonts Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -2077,10 +2074,22 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Google Maps API -->
+    <!-- TODO: Replace YOUR_API_KEY with your actual Google Maps API key -->
+    <!-- Get your API key from: https://console.cloud.google.com/google/maps-apis -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initGoogleMaps" async defer></script>
     
     <script>
+        // Google Maps API callback - will be called when API loads
+        function initGoogleMaps() {
+            console.log('Google Maps API loaded');
+            window.googleMapsReady = true;
+        }
+        
+        // Check if Google Maps is ready
+        function isGoogleMapsReady() {
+            return typeof google !== 'undefined' && typeof google.maps !== 'undefined';
+        }
         // Preload cart data immediately to prevent layout shifts
         (function() {
             try {
@@ -3051,18 +3060,27 @@
             try {
                 // Remove existing marker
                 if (marker) {
-                    map.removeLayer(marker);
+                    marker.setMap(null);
                 }
                 
-                // Set map view
-                map.setView([lat, lng], 16);
+                // Set map center and zoom
+                map.setCenter({ lat: lat, lng: lng });
+                map.setZoom(16);
                 
                 // Add new marker
-                marker = L.marker([lat, lng], {
-                    draggable: true
-                }).addTo(map);
+                marker = new google.maps.Marker({
+                    position: { lat: lat, lng: lng },
+                    map: map,
+                    draggable: true,
+                    title: 'Your location',
+                    animation: google.maps.Animation.DROP
+                });
                 
-                marker.bindPopup('Your location').openPopup();
+                // Add info window
+                const infoWindow = new google.maps.InfoWindow({
+                    content: '<div style="padding: 8px;"><strong>Your location</strong></div>'
+                });
+                infoWindow.open(map, marker);
                 
                 // Update hidden inputs
                 const latInput = document.getElementById('latitude');
@@ -3074,9 +3092,9 @@
                 updateLocationDisplay(lat, lng);
                 
                 // Allow dragging marker
-                marker.on('dragend', function(e) {
-                    const newLat = e.target.getLatLng().lat;
-                    const newLng = e.target.getLatLng().lng;
+                marker.addListener('dragend', function(e) {
+                    const newLat = marker.getPosition().lat();
+                    const newLng = marker.getPosition().lng();
                     const latInput = document.getElementById('latitude');
                     const lngInput = document.getElementById('longitude');
                     if (latInput) latInput.value = newLat;
@@ -3084,10 +3102,10 @@
                     updateLocationDisplay(newLat, newLng);
                 });
                 
-                // Invalidate size to ensure map renders correctly
+                // Trigger resize to ensure map renders correctly
                 setTimeout(() => {
                     if (map) {
-                        map.invalidateSize();
+                        google.maps.event.trigger(map, 'resize');
                     }
                 }, 100);
             } catch(error) {
@@ -3115,7 +3133,7 @@
         function clearLocation() {
             // Remove marker
             if (marker && map) {
-                map.removeLayer(marker);
+                marker.setMap(null);
                 marker = null;
             }
             

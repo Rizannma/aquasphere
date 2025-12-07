@@ -132,7 +132,8 @@ function updateCartCount() {
     const cartCountEl = document.getElementById('cartCount');
     if (cartCountEl) {
         cartCountEl.textContent = totalItems;
-        cartCountEl.style.display = totalItems > 0 ? 'block' : 'none';
+        // Hide badge when count is 0, only show when there are items
+        cartCountEl.style.display = totalItems > 0 ? 'flex' : 'none';
     }
 }
 

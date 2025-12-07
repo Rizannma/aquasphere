@@ -4358,6 +4358,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // Check if password was changed
+                    const passwordChanged = newPassword && newPassword.length > 0;
+                    
                     // Update localStorage with new data
                     const updatedUserData = {
                         username: document.getElementById('profileUsername').value.trim(),
@@ -4381,8 +4384,23 @@
                     // Close modal
                     closeProfileModal();
                     
-                    // Show success message
-                    showNotification('Profile updated successfully!', 'success');
+                    if (passwordChanged) {
+                        // Show message about password change requiring re-login
+                        showNotification('Password changed successfully! For security reasons, please log in again with your new password.', 'success');
+                        
+                        // Wait a moment for the notification to be seen, then logout
+                        setTimeout(() => {
+                            // Clear user session data
+                            localStorage.removeItem('loggedInUser');
+                            sessionStorage.removeItem('userData');
+                            
+                            // Redirect to login page
+                            window.location.href = 'login.html';
+                        }, 2000);
+                    } else {
+                        // Show success message for regular profile update
+                        showNotification('Profile updated successfully!', 'success');
+                    }
                 } else {
                     // Show error messages
                     if (data.errors) {

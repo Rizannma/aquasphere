@@ -248,7 +248,33 @@ try {
     // Clean up the reset record
     cleanup_expired_password_reset();
     
+    // For PostgreSQL, ensure the transaction is committed by closing connection
+    // PostgreSQL auto-commits, but let's make sure by doing a final verification
+    if ($GLOBALS['use_postgres']) {
+        // Force a commit by doing a simple query
+        pg_query($conn, "SELECT 1");
+    }
+    
     close_connection($conn);
+    
+    // Final verification - fetch user again with a fresh connection to ensure update is visible
+    $verify_conn = get_db_connection();
+    $verify_query = "SELECT password_hash FROM users WHERE id = ?";
+    $verify_result = execute_sql($verify_conn, $verify_query, [$user_id]);
+    
+    if ($GLOBALS['use_postgres']) {
+        $final_user = pg_fetch_assoc($verify_result);
+    } else {
+        $final_user = $verify_result->fetchArray(SQLITE3_ASSOC);
+    }
+    
+    if ($final_user && password_verify($new_password, $final_user['password_hash'])) {
+        error_log("Password reset - FINAL VERIFICATION: Password is correctly saved and verifiable");
+    } else {
+        error_log("Password reset - FINAL VERIFICATION FAILED: Password update may not be committed");
+    }
+    
+    close_connection($verify_conn);
     
     ob_clean();
     echo json_encode(['success' => true, 'message' => 'Password has been reset successfully.']);

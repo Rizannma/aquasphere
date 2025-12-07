@@ -94,6 +94,16 @@ try {
         $user = $result->fetchArray(SQLITE3_ASSOC);
     }
     
+    // Log for debugging
+    if ($user) {
+        error_log("Login attempt - Username: " . $username . ", User ID: " . $user['id']);
+        error_log("Login attempt - Stored password hash length: " . strlen($user['password_hash']));
+        $verify_result = password_verify($password, $user['password_hash']);
+        error_log("Login attempt - Password verify result: " . ($verify_result ? 'TRUE' : 'FALSE'));
+    } else {
+        error_log("Login attempt - User not found for username: " . $username);
+    }
+    
     if ($user && password_verify($password, $user['password_hash'])) {
         // Update last login time
         $updateQuery = "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?";

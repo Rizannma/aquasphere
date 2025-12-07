@@ -185,8 +185,8 @@ body {
 
 .cart-badge {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: -5px;
+    right: -5px;
     background: linear-gradient(135deg, #f59e0b, #d97706);
     color: white;
     border-radius: 50%;
@@ -208,8 +208,8 @@ body {
 /* Ensure badge is positioned relative to the cart icon, not the nav-link hover area */
 #navCart .cart-badge {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: -5px;
+    right: -5px;
 }
 
 

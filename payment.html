@@ -560,7 +560,7 @@
                             </div>
                             
                             <!-- Maya (Coming Soon) -->
-                            <div class="payment-method-card disabled" id="paymentMethodMaya">
+                            <div class="payment-method-card disabled" id="paymentMethodMaya" onclick="selectPaymentMethod('maya')">
                                 <div class="payment-method-header">
                                     <div class="payment-method-icon">
                                         <i class="fas fa-wallet"></i>
@@ -701,7 +701,8 @@
         // Select payment method
         function selectPaymentMethod(method) {
             // Don't allow selection of disabled methods
-            if (method === 'maya') {
+            const methodCard = document.getElementById(`paymentMethod${method.charAt(0).toUpperCase() + method.slice(1)}`);
+            if (methodCard && methodCard.classList.contains('disabled')) {
                 return;
             }
             
@@ -713,9 +714,8 @@
             });
             
             // Add selected class to clicked card
-            const selectedCard = document.getElementById(`paymentMethod${method.charAt(0).toUpperCase() + method.slice(1)}`);
-            if (selectedCard) {
-                selectedCard.classList.add('selected');
+            if (methodCard) {
+                methodCard.classList.add('selected');
             }
         }
         

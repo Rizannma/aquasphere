@@ -34,45 +34,78 @@
             flex: 1;
         }
         
-        /* Navbar Styles (from landing page) */
+        /* Navbar Styles - Fixed Dimensions */
         .navbar {
             background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
+            height: 70px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            line-height: 70px !important;
         }
         
-        .navbar.scrolled {
-            padding: 0.5rem 0;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+        .navbar .container {
+            height: 70px !important;
+            display: flex;
+            align-items: center;
         }
         
         .navbar-brand {
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 24px;
             color: #0ea5e9 !important;
-            transition: all 0.3s ease;
+            display: flex !important;
+            align-items: center !important;
+            height: 70px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            line-height: 70px !important;
         }
         
         .navbar-brand:hover {
             color: #0369a1 !important;
-            transform: scale(1.05);
+        }
+        
+        .navbar-brand img {
+            height: 45px !important;
+            width: auto !important;
+            margin-right: 10px !important;
+            display: block !important;
+        }
+        
+        .navbar-collapse {
+            height: 70px !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        
+        .navbar-nav {
+            height: 70px !important;
+            display: flex !important;
+            align-items: center !important;
+            margin: 0 !important;
+        }
+        
+        .nav-item {
+            height: 70px !important;
+            display: flex !important;
+            align-items: center !important;
         }
         
         .nav-link {
             font-weight: 500;
             color: #4a5568 !important;
-            margin: 0 0.25rem;
-            transition: all 0.3s ease;
+            padding: 0 16px !important;
+            height: 70px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            line-height: 70px !important;
             position: relative;
-            padding: 0.75rem 1.25rem !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            transition: color 0.3s ease;
             border-radius: 10px;
-            min-width: 50px;
         }
         
         .nav-link::after {
@@ -80,17 +113,16 @@
             position: absolute;
             width: 0;
             height: 3px;
-            bottom: 8px;
+            bottom: 0;
             left: 50%;
             background: linear-gradient(90deg, #0ea5e9, #0369a1);
             transition: all 0.3s ease;
             transform: translateX(-50%);
-            border-radius: 2px;
         }
         
         .nav-link:hover::after,
         .nav-link.active::after {
-            width: 60%;
+            width: 80%;
         }
         
         .nav-link:hover {
@@ -104,26 +136,33 @@
         }
         
         .nav-link i {
-            font-size: 1.3rem;
+            font-size: 20.8px;
             display: block;
         }
         
         .cart-badge {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #ef4444;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 700;
             border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+        }
+        
+        .navbar-toggler {
+            height: 40px !important;
+            width: 40px !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
         
         .navbar-nav {
@@ -698,8 +737,8 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.html" style="display: flex; align-items: center;">
-                <img src="systemlogo.png" alt="AquaSphere Logo" style="height: 45px; margin-right: 10px;">
+            <a class="navbar-brand" href="dashboard.html">
+                <img src="systemlogo.png" alt="AquaSphere Logo">
                 AquaSphere
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -1111,12 +1150,23 @@
         loadStats();
         
         // Navbar scroll effect
+        // Navbar scroll effect (only shadow, no size changes)
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
+                navbar.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.15)';
             } else {
-                navbar.classList.remove('scrolled');
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            }
+        });
+        
+        // Ensure navbar maintains fixed size
+        document.addEventListener('DOMContentLoaded', function() {
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                navbar.style.height = '70px';
+                navbar.style.padding = '0';
+                navbar.style.lineHeight = '70px';
             }
         });
         

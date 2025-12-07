@@ -2960,10 +2960,21 @@
             });
         }
         
-        // Initialize
-        loadCart();
-        loadAddress();
-        initializeLocationDropdowns();
+        // Initialize (cart items already pre-rendered, just update summary and pagination)
+        document.addEventListener('DOMContentLoaded', function() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length > 0) {
+                // Only update summary and pagination, items already rendered
+                updateSummary();
+                renderPagination(cart.length);
+                updateCheckoutButton();
+            } else {
+                // Cart is empty, ensure empty state is shown
+                loadCart();
+            }
+            loadAddress();
+            initializeLocationDropdowns();
+        });
         
         // Navbar scroll effect (only shadow, no size changes)
         window.addEventListener('scroll', function() {

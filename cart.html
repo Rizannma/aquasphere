@@ -2872,6 +2872,10 @@
                 return;
             }
             
+            // Get map coordinates if available
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
+            
             const address = {
                 fullName: document.getElementById('fullName').value,
                 phoneNumber: document.getElementById('phoneNumber').value,
@@ -2883,7 +2887,9 @@
                 postalCode: document.getElementById('postalCode').value,
                 streetAddress: document.getElementById('streetAddress').value,
                 label: document.querySelector('.label-btn.active').dataset.label,
-                isDefault: true // First address is always default
+                isDefault: true, // First address is always default
+                latitude: latitude || null,
+                longitude: longitude || null
             };
             
             localStorage.setItem('deliveryAddress', JSON.stringify(address));

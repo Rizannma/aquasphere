@@ -460,11 +460,14 @@
             gap: 1.5rem !important;
             margin: 0 !important;
             padding: 0 !important;
+            left: auto !important;
+            bottom: auto !important;
         }
         
         /* Ensure body and html don't interfere */
         html, body {
             overflow-x: hidden;
+            position: relative;
         }
         
         /* Ensure no parent creates containing block */
@@ -476,6 +479,11 @@
             perspective: none !important;
             filter: none !important;
             will-change: auto !important;
+        }
+        
+        /* Prevent any JavaScript from changing position */
+        .cart-summary-wrapper[style*="position"] {
+            position: fixed !important;
         }
         
         @media (max-width: 1400px) {

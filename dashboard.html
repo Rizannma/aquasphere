@@ -1039,7 +1039,12 @@
         
         function updateCartCount() {
             cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cartCount').textContent = cartCount;
+            const cartCountEl = document.getElementById('cartCount');
+            if (cartCountEl) {
+                cartCountEl.textContent = cartCount;
+                // Hide badge when count is 0, only show when there are items
+                cartCountEl.style.display = cartCount > 0 ? 'flex' : 'none';
+            }
         }
         
         function addToCart(productId, productName, price) {

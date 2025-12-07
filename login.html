@@ -1273,7 +1273,17 @@
                             new Promise(resolve => setTimeout(resolve, 1500))
                         ]);
                         
-                        const data = await response.json();
+                        const responseText = await response.text();
+                        console.log('Reset password response text:', responseText);
+                        
+                        let data;
+                        try {
+                            data = JSON.parse(responseText);
+                        } catch (parseError) {
+                            console.error('Failed to parse JSON:', parseError);
+                            throw new Error('Invalid response from server. Please try again.');
+                        }
+                        
                         console.log('Reset password response:', data);
                         
                         if (data.success) {

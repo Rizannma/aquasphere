@@ -427,7 +427,7 @@
                         <h1 class="login-title">Welcome Back</h1>
                         <p class="login-subtitle">Sign in to continue ordering clean water</p>
                         
-                        <form method="post" action="api/login.php" id="loginForm" novalidate>
+                        <form method="post" id="loginForm" novalidate>
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
                                 <input type="text" class="form-control" id="username" name="username" 
@@ -644,22 +644,24 @@
                     body: formData
                 })
                 .then(response => {
-                    // Check if response is ok
-                    if (!response.ok) {
-                        return response.text().then(text => {
-                            try {
-                                return JSON.parse(text);
-                            } catch (e) {
+                    // Always try to parse as JSON first
+                    return response.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            // If not JSON, check response status
+                            if (!response.ok) {
                                 throw new Error('Server error: ' + text);
                             }
-                        });
-                    }
-                    return response.json();
+                            throw new Error('Invalid response format');
+                        }
+                    });
                 })
                 .then(data => {
                     if (data.success) {
                         // Redirect to dashboard or home
-                        window.location.href = data.redirect || 'dashboard.html';
+                        const redirectUrl = data.redirect || 'dashboard.html';
+                        window.location.href = redirectUrl;
                     } else {
                         // Show error messages
                         if (data.errors) {
@@ -691,7 +693,17 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred: ' + error.message);
+                    // Show error messages
+                    const authError = document.getElementById('auth-error');
+                    const usernameField = document.getElementById('username');
+                    const passwordField = document.getElementById('password');
+                    
+                    if (authError) {
+                        authError.textContent = 'An error occurred. Please try again.';
+                        authError.style.display = 'block';
+                    }
+                    if (usernameField) usernameField.classList.add('error');
+                    if (passwordField) passwordField.classList.add('error');
                 });
             });
             

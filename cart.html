@@ -449,27 +449,10 @@
         }
         
         .cart-summary-wrapper {
-            position: fixed !important;
-            top: 100px !important;
-            right: 1rem !important;
-            width: 380px !important;
-            max-width: 380px !important;
-            z-index: 100 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 1.5rem !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            left: auto !important;
-            bottom: auto !important;
-            transform: translateZ(0) !important;
-        }
-        
-        /* Prevent parent from creating containing block */
-        .col-lg-4:has(.cart-summary-wrapper) {
-            position: static !important;
-            transform: none !important;
-            will-change: auto !important;
+            position: static;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
         
         /* Ensure body and html don't interfere */
@@ -489,24 +472,9 @@
             will-change: auto !important;
         }
         
-        /* Prevent any JavaScript from changing position */
-        .cart-summary-wrapper[style*="position"] {
-            position: fixed !important;
-        }
-        
-        @media (max-width: 1400px) {
-            .cart-summary-wrapper {
-                right: 1rem !important;
-            }
-        }
-        
         @media (max-width: 991px) {
             .cart-summary-wrapper {
-                position: relative !important;
-                top: 0 !important;
-                right: 0 !important;
-                width: 100% !important;
-                max-width: 100% !important;
+                width: 100%;
             }
         }
         
@@ -1278,8 +1246,8 @@
         </div>
                 
                 <!-- Cart Summary -->
-                <div class="col-lg-4" style="position: static; transform: none; will-change: auto;">
-                    <div class="cart-summary-wrapper" style="position: fixed !important; top: 100px !important; right: 1rem !important;">
+                <div class="col-lg-4">
+                    <div class="cart-summary-wrapper">
                         <div class="cart-summary">
                             <h3 class="summary-title">Order Summary</h3>
                             

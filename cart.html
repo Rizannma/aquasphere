@@ -3312,8 +3312,18 @@
                     const lng = position.coords.longitude;
                     const accuracy = position.coords.accuracy; // Accuracy in meters
                     
-                    console.log('Location retrieved:', lat, lng);
+                    console.log('Location retrieved successfully!');
+                    console.log('Latitude:', lat);
+                    console.log('Longitude:', lng);
                     console.log('Location accuracy:', accuracy, 'meters');
+                    
+                    // Validate coordinates
+                    if (isNaN(lat) || isNaN(lng)) {
+                        console.error('Invalid coordinates received:', lat, lng);
+                        showNotification('Invalid location data received. Please try again.', 'error');
+                        if (mapLoading) mapLoading.style.display = 'none';
+                        return;
+                    }
                     
                     // Check if accuracy is reasonable (within 1000 meters / 1km)
                     if (accuracy > 1000) {
@@ -3322,12 +3332,20 @@
                         showNotification('Location accuracy is limited. The marker may not be exactly at your location. You can drag it to adjust.', 'warning');
                     }
                     
+                    // Ensure map container is visible
+                    const mapContainer = document.getElementById('mapContainer');
+                    const mapPlaceholder = document.getElementById('mapPlaceholder');
+                    if (mapPlaceholder) mapPlaceholder.style.display = 'none';
+                    if (mapContainer) mapContainer.style.display = 'block';
+                    
                     // Ensure map is initialized
                     if (!mapInitialized || !map) {
+                        console.log('Initializing map before setting location...');
                         initMap();
+                        // Wait longer for mobile devices to ensure map is ready
                         setTimeout(() => {
                             setMapLocation(lat, lng);
-                        }, 500);
+                        }, 1000);
                     } else {
                         setMapLocation(lat, lng);
                     }
@@ -3371,13 +3389,37 @@
         
         // Set map location
         function setMapLocation(lat, lng) {
+            console.log('setMapLocation called with:', lat, lng);
+            
+            // Update coordinates FIRST, even if map isn't ready
+            const latInput = document.getElementById('latitude');
+            const lngInput = document.getElementById('longitude');
+            if (latInput) {
+                latInput.value = lat;
+                console.log('Latitude input set to:', lat);
+            }
+            if (lngInput) {
+                lngInput.value = lng;
+                console.log('Longitude input set to:', lng);
+            }
+            
+            // Update visible display inputs
+            updateLocationDisplay(lat, lng);
+            
             // Ensure map is initialized
             if (!map || !mapInitialized) {
                 console.log('Map not ready, initializing...');
+                // Make sure map container is visible
+                const mapContainer = document.getElementById('mapContainer');
+                const mapPlaceholder = document.getElementById('mapPlaceholder');
+                if (mapPlaceholder) mapPlaceholder.style.display = 'none';
+                if (mapContainer) mapContainer.style.display = 'block';
+                
                 initMap();
+                // Wait longer for mobile devices
                 setTimeout(() => {
                     setMapLocation(lat, lng);
-                }, 500);
+                }, 1000);
                 return;
             }
             
@@ -3399,25 +3441,18 @@
                 
                 // Set map center and zoom
                 map.setView([lat, lng], 16);
+                console.log('Map view set to:', lat, lng);
                 
                 // Add new marker
                 marker = L.marker([lat, lng], {
                     icon: customIcon,
                     draggable: true
                 }).addTo(map);
+                console.log('Marker added to map');
                 
                 // Add popup
                 popup = L.popup().setContent('<div style="padding: 8px;"><strong>Your location</strong></div>');
                 marker.bindPopup(popup).openPopup();
-                
-                // Update hidden inputs
-                const latInput = document.getElementById('latitude');
-                const lngInput = document.getElementById('longitude');
-                if (latInput) latInput.value = lat;
-                if (lngInput) lngInput.value = lng;
-                
-                // Update visible display inputs
-                updateLocationDisplay(lat, lng);
                 
                 // Allow dragging marker
                 marker.on('dragend', function(e) {
@@ -3431,15 +3466,20 @@
                     updateLocationDisplay(newLat, newLng);
                 });
                 
-                // Trigger resize to ensure map renders correctly
+                // Trigger resize to ensure map renders correctly (important for mobile)
                 setTimeout(() => {
                     if (map) {
                         map.invalidateSize();
+                        console.log('Map size invalidated');
                     }
-                }, 100);
+                }, 200);
+                
+                // Show success notification
+                showNotification('Location set successfully!', 'success');
             } catch(error) {
                 console.error('Error setting map location:', error);
-                alert('Error setting location on map. Please try again.');
+                // Even if marker fails, coordinates are already set
+                showNotification('Location coordinates saved. You can manually adjust the marker on the map.', 'warning');
             }
         }
         

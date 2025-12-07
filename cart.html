@@ -2710,6 +2710,24 @@
             }
         }
         
+        // Add event listeners to clear errors on input
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('addressForm');
+            if (form) {
+                const fields = form.querySelectorAll('input, select');
+                fields.forEach(field => {
+                    field.addEventListener('input', function() {
+                        if (this.checkValidity()) {
+                            validateField(this);
+                        }
+                    });
+                    field.addEventListener('change', function() {
+                        validateField(this);
+                    });
+                });
+            }
+        });
+        
         // Validate all fields on form submit
         function validateForm() {
             const form = document.getElementById('addressForm');

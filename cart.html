@@ -3602,6 +3602,9 @@
             const modal = document.getElementById('profileModal');
             if (!modal) return;
             
+            // Set flag to prevent success states on initial load
+            isInitialProfileLoad = true;
+            
             // Reset button state
             const updateBtn = document.getElementById('updateProfileBtn');
             if (updateBtn) {
@@ -3696,24 +3699,13 @@
                         // Add event listeners for real-time validation
                         setupProfileValidation();
                         
-                        // Initial validation check (but clear success states immediately after)
+                        // Initial validation check (success states are prevented by isInitialProfileLoad flag)
                         checkProfileRequiredFields();
                         
-                        // Force clear all success states immediately after validation runs
-                        // Use requestAnimationFrame to ensure it runs after validation
-                        requestAnimationFrame(() => {
-                            const allFields = modal.querySelectorAll('input, select');
-                            allFields.forEach(field => {
-                                field.classList.remove('success');
-                            });
-                            // Also clear any timers that might add success back
-                            Object.keys(profileSuccessTimers).forEach(key => {
-                                if (profileSuccessTimers[key]) {
-                                    clearTimeout(profileSuccessTimers[key]);
-                                    delete profileSuccessTimers[key];
-                                }
-                            });
-                        });
+                        // Reset flag after a short delay to allow user interactions to show success states
+                        setTimeout(() => {
+                            isInitialProfileLoad = false;
+                        }, 500);
                         
                         // Hide loading state
                         if (form) {
@@ -3758,20 +3750,10 @@
                         setupProfileValidation();
                         checkProfileRequiredFields();
                         
-                        // Force clear all success states immediately after validation runs
-                        requestAnimationFrame(() => {
-                            const allFields = modal.querySelectorAll('input, select');
-                            allFields.forEach(field => {
-                                field.classList.remove('success');
-                            });
-                            // Also clear any timers that might add success back
-                            Object.keys(profileSuccessTimers).forEach(key => {
-                                if (profileSuccessTimers[key]) {
-                                    clearTimeout(profileSuccessTimers[key]);
-                                    delete profileSuccessTimers[key];
-                                }
-                            });
-                        });
+                        // Reset flag after a short delay to allow user interactions to show success states
+                        setTimeout(() => {
+                            isInitialProfileLoad = false;
+                        }, 500);
                         
                         if (form) {
                             form.style.opacity = '1';
@@ -3817,20 +3799,10 @@
                     setupProfileValidation();
                     checkProfileRequiredFields();
                     
-                    // Force clear all success states immediately after validation runs
-                    requestAnimationFrame(() => {
-                        const allFields = modal.querySelectorAll('input, select');
-                        allFields.forEach(field => {
-                            field.classList.remove('success');
-                        });
-                        // Also clear any timers that might add success back
-                        Object.keys(profileSuccessTimers).forEach(key => {
-                            if (profileSuccessTimers[key]) {
-                                clearTimeout(profileSuccessTimers[key]);
-                                delete profileSuccessTimers[key];
-                            }
-                        });
-                    });
+                    // Reset flag after a short delay to allow user interactions to show success states
+                    setTimeout(() => {
+                        isInitialProfileLoad = false;
+                    }, 500);
                     
                     if (form) {
                         form.style.opacity = '1';
@@ -3996,9 +3968,14 @@
         
         // Profile validation functions (similar to AnemoCheck)
         const profileSuccessTimers = {};
+        let isInitialProfileLoad = false; // Flag to prevent success states on initial load
         
         function markProfileSuccess(el, key) {
             if (!el) return;
+            // Don't add success state on initial load
+            if (isInitialProfileLoad) {
+                return;
+            }
             el.classList.remove('error');
             el.classList.add('success');
             if (profileSuccessTimers[key]) clearTimeout(profileSuccessTimers[key]);

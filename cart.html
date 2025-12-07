@@ -2917,57 +2917,104 @@
                 return;
             }
             
+            // Ensure map is initialized first
+            const mapContainer = document.getElementById('mapContainer');
+            const mapPlaceholder = document.getElementById('mapPlaceholder');
+            
+            // If map is not visible, initialize it first
+            if (!mapInitialized || !mapContainer || mapContainer.style.display === 'none') {
+                if (mapPlaceholder && mapPlaceholder.style.display !== 'none') {
+                    // Map hasn't been opened yet, initialize it first
+                    initMap();
+                    // Wait for map to initialize before requesting location
+                    setTimeout(() => {
+                        requestLocation();
+                    }, 500);
+                    return;
+                }
+            }
+            
+            // Map is already initialized, request location immediately
+            requestLocation();
+        }
+        
+        // Request location (separate function for better control)
+        function requestLocation() {
             const mapLoading = document.getElementById('mapLoading');
-            if (mapLoading) mapLoading.style.display = 'flex';
+            if (mapLoading) {
+                mapLoading.style.display = 'flex';
+                mapLoading.querySelector('span').textContent = 'Getting your location...';
+            }
+            
+            // Show visual feedback
+            const mapContainer = document.getElementById('mapContainer');
+            if (mapContainer) {
+                mapContainer.style.display = 'block';
+            }
             
             navigator.geolocation.getCurrentPosition(
                 function(position) {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     
-                    // Initialize map if not already initialized
-                    if (!mapInitialized) {
+                    console.log('Location retrieved:', lat, lng);
+                    
+                    // Ensure map is initialized
+                    if (!mapInitialized || !map) {
                         initMap();
                         setTimeout(() => {
                             setMapLocation(lat, lng);
-                        }, 300);
+                        }, 500);
                     } else {
                         setMapLocation(lat, lng);
                     }
                     
-                    if (mapLoading) mapLoading.style.display = 'none';
+                    if (mapLoading) {
+                        mapLoading.style.display = 'none';
+                    }
                 },
                 function(error) {
-                    if (mapLoading) mapLoading.style.display = 'none';
+                    console.error('Geolocation error:', error);
+                    if (mapLoading) {
+                        mapLoading.style.display = 'none';
+                    }
+                    
                     let errorMsg = 'Unable to retrieve your location. ';
                     switch(error.code) {
                         case error.PERMISSION_DENIED:
                             errorMsg += 'Please allow location access in your browser settings.';
                             break;
                         case error.POSITION_UNAVAILABLE:
-                            errorMsg += 'Location information is unavailable.';
+                            errorMsg += 'Location information is unavailable. Please check your GPS/Wi-Fi settings.';
                             break;
                         case error.TIMEOUT:
-                            errorMsg += 'Location request timed out.';
+                            errorMsg += 'Location request timed out. Please try again or check your internet connection.';
                             break;
                         default:
-                            errorMsg += 'An unknown error occurred.';
+                            errorMsg += 'An unknown error occurred. Error code: ' + error.code;
                             break;
                     }
-                    alert(errorMsg);
+                    
+                    // Show notification instead of alert for better UX
+                    showNotification(errorMsg, 'error');
                 },
                 {
                     enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
+                    timeout: 20000, // Increased to 20 seconds for mobile devices
+                    maximumAge: 60000 // Accept cached location if less than 1 minute old
                 }
             );
         }
         
         // Set map location
         function setMapLocation(lat, lng) {
-            if (!map) {
-                console.error('Map not initialized');
+            // Ensure map is initialized
+            if (!map || !mapInitialized) {
+                console.log('Map not ready, initializing...');
+                initMap();
+                setTimeout(() => {
+                    setMapLocation(lat, lng);
+                }, 500);
                 return;
             }
             
@@ -3002,8 +3049,16 @@
                     if (latInput) latInput.value = newLat;
                     if (lngInput) lngInput.value = newLng;
                 });
+                
+                // Invalidate size to ensure map renders correctly
+                setTimeout(() => {
+                    if (map) {
+                        map.invalidateSize();
+                    }
+                }, 100);
             } catch(error) {
                 console.error('Error setting map location:', error);
+                alert('Error setting location on map. Please try again.');
             }
         }
         

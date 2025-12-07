@@ -676,10 +676,65 @@
             margin-top: 0.75rem;
         }
         
+        .address-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .address-tab {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .address-tab:hover {
+            color: #0ea5e9;
+            background: rgba(14, 165, 233, 0.05);
+        }
+        
+        .address-tab.active {
+            color: #0ea5e9;
+            border-bottom-color: #0ea5e9;
+            background: rgba(14, 165, 233, 0.05);
+        }
+        
+        .address-tab i {
+            font-size: 0.9rem;
+        }
+        
+        .address-tab-content-container {
+            min-height: 400px;
+            position: relative;
+        }
+        
+        .address-tab-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .address-tab-content.active {
+            position: relative;
+        }
+        
         .address-location-section {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 2px solid #e2e8f0;
+            padding: 0;
         }
         
         .address-coordinates {
@@ -734,7 +789,7 @@
         
         .address-map-container {
             width: 100%;
-            height: 300px;
+            height: 350px;
             border-radius: 12px;
             overflow: hidden;
             border: 2px solid #e2e8f0;
@@ -2108,28 +2163,49 @@
                                             <span class="badge-default" id="defaultBadge" style="display: none;">Default</span>
                                         </div>
                                     </div>
-                                    <div class="address-text" id="addressText"></div>
                                     
-                                    <!-- Location Coordinates and Map Section -->
-                                    <div class="address-location-section" id="addressLocationSection" style="display: none;">
-                                        <div class="address-coordinates">
-                                            <div class="coordinates-label">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                <span>Location Coordinates</span>
-                                            </div>
-                                            <div class="coordinates-display">
-                                                <div class="coordinate-item">
-                                                    <span class="coordinate-label">Latitude:</span>
-                                                    <span class="coordinate-value" id="displayLatitude"></span>
-                                                </div>
-                                                <div class="coordinate-item">
-                                                    <span class="coordinate-label">Longitude:</span>
-                                                    <span class="coordinate-value" id="displayLongitude"></span>
-                                                </div>
-                                            </div>
+                                    <!-- Tabs Navigation -->
+                                    <div class="address-tabs" id="addressTabs" style="display: none;">
+                                        <button class="address-tab active" onclick="switchAddressTab('details')" id="tabDetails">
+                                            <i class="fas fa-info-circle"></i>
+                                            Address Details
+                                        </button>
+                                        <button class="address-tab" onclick="switchAddressTab('location')" id="tabLocation">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            Location Map
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Tab Content Container (Fixed Height) -->
+                                    <div class="address-tab-content-container">
+                                        <!-- Address Details Tab -->
+                                        <div class="address-tab-content active" id="tabContentDetails">
+                                            <div class="address-text" id="addressText"></div>
                                         </div>
-                                        <div class="address-map-container">
-                                            <div id="addressMap" class="address-map"></div>
+                                        
+                                        <!-- Location Map Tab -->
+                                        <div class="address-tab-content" id="tabContentLocation" style="display: none;">
+                                            <div class="address-location-section" id="addressLocationSection">
+                                                <div class="address-coordinates">
+                                                    <div class="coordinates-label">
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                        <span>Location Coordinates</span>
+                                                    </div>
+                                                    <div class="coordinates-display">
+                                                        <div class="coordinate-item">
+                                                            <span class="coordinate-label">Latitude:</span>
+                                                            <span class="coordinate-value" id="displayLatitude"></span>
+                                                        </div>
+                                                        <div class="coordinate-item">
+                                                            <span class="coordinate-label">Longitude:</span>
+                                                            <span class="coordinate-value" id="displayLongitude"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="address-map-container">
+                                                    <div id="addressMap" class="address-map"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -3052,7 +3128,7 @@
             const address = JSON.parse(localStorage.getItem('deliveryAddress'));
             const emptyAddress = document.getElementById('emptyAddress');
             const addressDisplay = document.getElementById('addressDisplay');
-            const addressLocationSection = document.getElementById('addressLocationSection');
+            const addressTabs = document.getElementById('addressTabs');
             const checkoutBtn = document.getElementById('checkoutBtn');
             
             if (address) {
@@ -3078,9 +3154,9 @@
                     const lat = parseFloat(address.latitude);
                     const lng = parseFloat(address.longitude);
                     
-                    // Show location section
-                    if (addressLocationSection) {
-                        addressLocationSection.style.display = 'block';
+                    // Show tabs
+                    if (addressTabs) {
+                        addressTabs.style.display = 'flex';
                     }
                     
                     // Display coordinates
@@ -3091,10 +3167,13 @@
                     setTimeout(() => {
                         initAddressMap(lat, lng);
                     }, 300);
+                    
+                    // Reset to details tab by default
+                    switchAddressTab('details');
                 } else {
-                    // Hide location section if no coordinates
-                    if (addressLocationSection) {
-                        addressLocationSection.style.display = 'none';
+                    // Hide tabs if no coordinates
+                    if (addressTabs) {
+                        addressTabs.style.display = 'none';
                     }
                 }
                 
@@ -3109,13 +3188,46 @@
             } else {
                 emptyAddress.style.display = 'block';
                 addressDisplay.style.display = 'none';
-                if (addressLocationSection) {
-                    addressLocationSection.style.display = 'none';
+                if (addressTabs) {
+                    addressTabs.style.display = 'none';
                 }
                 // Disable checkout button if no address
                 if (checkoutBtn) {
                     checkoutBtn.disabled = true;
                 }
+            }
+        }
+        
+        // Switch address tab
+        function switchAddressTab(tabName) {
+            const tabDetails = document.getElementById('tabDetails');
+            const tabLocation = document.getElementById('tabLocation');
+            const contentDetails = document.getElementById('tabContentDetails');
+            const contentLocation = document.getElementById('tabContentLocation');
+            
+            if (tabName === 'details') {
+                // Show details tab
+                tabDetails.classList.add('active');
+                tabLocation.classList.remove('active');
+                contentDetails.style.display = 'block';
+                contentDetails.classList.add('active');
+                contentLocation.style.display = 'none';
+                contentLocation.classList.remove('active');
+            } else if (tabName === 'location') {
+                // Show location tab
+                tabLocation.classList.add('active');
+                tabDetails.classList.remove('active');
+                contentLocation.style.display = 'block';
+                contentLocation.classList.add('active');
+                contentDetails.style.display = 'none';
+                contentDetails.classList.remove('active');
+                
+                // Resize map when switching to location tab
+                setTimeout(() => {
+                    if (addressMap) {
+                        addressMap.invalidateSize();
+                    }
+                }, 200);
             }
         }
         

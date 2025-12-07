@@ -3609,13 +3609,21 @@
                 updateBtn.textContent = 'Save Changes';
             }
             
-            // Clear all success and error states from form fields
+            // Clear all success and error states from form fields immediately
             const allFields = modal.querySelectorAll('input, select');
             allFields.forEach(field => {
                 field.classList.remove('success', 'error');
                 const formGroup = field.closest('.form-group');
                 if (formGroup) {
                     formGroup.classList.remove('error');
+                }
+            });
+            
+            // Clear any pending success timers
+            Object.keys(profileSuccessTimers).forEach(key => {
+                if (profileSuccessTimers[key]) {
+                    clearTimeout(profileSuccessTimers[key]);
+                    delete profileSuccessTimers[key];
                 }
             });
             
@@ -3688,16 +3696,24 @@
                         // Add event listeners for real-time validation
                         setupProfileValidation();
                         
-                        // Initial validation check (but don't show success states on initial load)
+                        // Initial validation check (but clear success states immediately after)
                         checkProfileRequiredFields();
                         
-                        // Clear all success states AFTER validation to prevent green borders on open
-                        setTimeout(() => {
+                        // Force clear all success states immediately after validation runs
+                        // Use requestAnimationFrame to ensure it runs after validation
+                        requestAnimationFrame(() => {
                             const allFields = modal.querySelectorAll('input, select');
                             allFields.forEach(field => {
                                 field.classList.remove('success');
                             });
-                        }, 0);
+                            // Also clear any timers that might add success back
+                            Object.keys(profileSuccessTimers).forEach(key => {
+                                if (profileSuccessTimers[key]) {
+                                    clearTimeout(profileSuccessTimers[key]);
+                                    delete profileSuccessTimers[key];
+                                }
+                            });
+                        });
                         
                         // Hide loading state
                         if (form) {
@@ -3742,13 +3758,20 @@
                         setupProfileValidation();
                         checkProfileRequiredFields();
                         
-                        // Clear all success states AFTER validation to prevent green borders on open
-                        setTimeout(() => {
+                        // Force clear all success states immediately after validation runs
+                        requestAnimationFrame(() => {
                             const allFields = modal.querySelectorAll('input, select');
                             allFields.forEach(field => {
                                 field.classList.remove('success');
                             });
-                        }, 0);
+                            // Also clear any timers that might add success back
+                            Object.keys(profileSuccessTimers).forEach(key => {
+                                if (profileSuccessTimers[key]) {
+                                    clearTimeout(profileSuccessTimers[key]);
+                                    delete profileSuccessTimers[key];
+                                }
+                            });
+                        });
                         
                         if (form) {
                             form.style.opacity = '1';
@@ -3794,13 +3817,20 @@
                     setupProfileValidation();
                     checkProfileRequiredFields();
                     
-                    // Clear all success states AFTER validation to prevent green borders on open
-                    setTimeout(() => {
+                    // Force clear all success states immediately after validation runs
+                    requestAnimationFrame(() => {
                         const allFields = modal.querySelectorAll('input, select');
                         allFields.forEach(field => {
                             field.classList.remove('success');
                         });
-                    }, 0);
+                        // Also clear any timers that might add success back
+                        Object.keys(profileSuccessTimers).forEach(key => {
+                            if (profileSuccessTimers[key]) {
+                                clearTimeout(profileSuccessTimers[key]);
+                                delete profileSuccessTimers[key];
+                            }
+                        });
+                    });
                     
                     if (form) {
                         form.style.opacity = '1';

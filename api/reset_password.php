@@ -180,7 +180,7 @@ try {
         error_log("Password reset - Rows affected: " . $rowsAffected);
         
         if ($rowsAffected === 0) {
-            error_log("Password reset - WARNING: No rows updated for user ID: " . $user['id']);
+            error_log("Password reset - WARNING: No rows updated for user ID: " . $user_id_int);
             close_connection($conn);
             ob_clean();
             http_response_code(500);
@@ -222,7 +222,7 @@ try {
         error_log("Password reset - Rows affected: " . $rowsAffected);
         
         if ($rowsAffected === 0) {
-            error_log("Password reset - WARNING: No rows updated for user ID: " . $user['id']);
+            error_log("Password reset - WARNING: No rows updated for user ID: " . $user_id);
             close_connection($conn);
             ob_clean();
             http_response_code(500);

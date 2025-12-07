@@ -869,63 +869,63 @@
             const forgotPasswordForm = document.getElementById('forgotPasswordForm');
             if (forgotPasswordForm) {
                 forgotPasswordForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('resetEmail').value.trim();
-            const errorDiv = document.getElementById('resetEmail-error');
-            
-            if (!email) {
-                errorDiv.textContent = 'Please enter your email address.';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            if (!isValidEmail(email)) {
-                errorDiv.textContent = 'Please enter a valid email.';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            errorDiv.style.display = 'none';
-            
-            const sendResetButton = document.getElementById('sendResetButton');
-            const spinner = sendResetButton.querySelector('.fa-spinner');
-            sendResetButton.disabled = true;
-            spinner.style.display = 'inline-block';
-            
-            try {
-                const response = await fetch('api/forgot_password.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email: email })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    resetEmail = email;
-                    bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal')).hide();
-                    const otpModal = new bootstrap.Modal(document.getElementById('otpVerificationModal'));
-                    otpModal.show();
-                    startOTPTimer();
-                } else {
-                    errorDiv.textContent = data.error || 'Failed to send reset code. Please try again.';
-                    errorDiv.style.display = 'block';
-                }
-                } catch (error) {
-                    console.error('Error:', error);
-                    if (errorDiv) {
-                        errorDiv.textContent = 'An error occurred. Please try again.';
+                    e.preventDefault();
+                    
+                    const email = document.getElementById('resetEmail').value.trim();
+                    const errorDiv = document.getElementById('resetEmail-error');
+                    
+                    if (!email) {
+                        errorDiv.textContent = 'Please enter your email address.';
                         errorDiv.style.display = 'block';
+                        return;
                     }
-                } finally {
-                    if (sendResetButton) {
-                        sendResetButton.disabled = false;
-                        if (spinner) spinner.style.display = 'none';
+                    
+                    if (!isValidEmail(email)) {
+                        errorDiv.textContent = 'Please enter a valid email.';
+                        errorDiv.style.display = 'block';
+                        return;
                     }
-                }
+                    
+                    errorDiv.style.display = 'none';
+                    
+                    const sendResetButton = document.getElementById('sendResetButton');
+                    const spinner = sendResetButton.querySelector('.fa-spinner');
+                    sendResetButton.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    
+                    try {
+                        const response = await fetch('api/forgot_password.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ email: email })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            resetEmail = email;
+                            bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal')).hide();
+                            const otpModal = new bootstrap.Modal(document.getElementById('otpVerificationModal'));
+                            otpModal.show();
+                            startOTPTimer();
+                        } else {
+                            errorDiv.textContent = data.error || 'Failed to send reset code. Please try again.';
+                            errorDiv.style.display = 'block';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        if (errorDiv) {
+                            errorDiv.textContent = 'An error occurred. Please try again.';
+                            errorDiv.style.display = 'block';
+                        }
+                    } finally {
+                        if (sendResetButton) {
+                            sendResetButton.disabled = false;
+                            if (spinner) spinner.style.display = 'none';
+                        }
+                    }
                 });
             }
             
@@ -952,82 +952,82 @@
             if (newPasswordForm) {
                 newPasswordForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-            
-            const password = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const otpCode = document.getElementById('otpCode').value;
-            
-            document.getElementById('newPassword-error').style.display = 'none';
-            document.getElementById('confirmPassword-error').style.display = 'none';
-            
-            if (!password || !confirmPassword) {
-                if (!password) {
-                    document.getElementById('newPassword-error').textContent = 'New password is required.';
-                    document.getElementById('newPassword-error').style.display = 'block';
-                }
-                if (!confirmPassword) {
-                    document.getElementById('confirmPassword-error').textContent = 'Confirm password is required.';
-                    document.getElementById('confirmPassword-error').style.display = 'block';
-                }
-                return;
-            }
-            
-            if (password.length < 8) {
-                document.getElementById('newPassword-error').textContent = 'Password must be at least 8 characters.';
-                document.getElementById('newPassword-error').style.display = 'block';
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                document.getElementById('confirmPassword-error').textContent = 'Passwords do not match.';
-                document.getElementById('confirmPassword-error').style.display = 'block';
-                return;
-            }
-            
-            const proceedButton = document.getElementById('proceedButton');
-            const spinner = proceedButton.querySelector('.fa-spinner');
-            proceedButton.disabled = true;
-            spinner.style.display = 'inline-block';
-            
-            try {
-                const [response] = await Promise.all([
-                    fetch('api/reset_password.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email: resetEmail,
-                            new_password: password,
-                            otp_code: otpCode
-                        })
-                    }),
-                    new Promise(resolve => setTimeout(resolve, 1500))
-                ]);
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('newPasswordModal')).hide();
-                    showPasswordResetSuccess();
-                    document.getElementById('forgotPasswordForm').reset();
-                    document.getElementById('newPasswordForm').reset();
-                    document.getElementById('otpVerificationForm').reset();
-                    resetEmail = '';
-                } else {
-                    document.getElementById('newPassword-error').textContent = data.error || 'Failed to reset password. Please try again.';
-                    document.getElementById('newPassword-error').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('newPassword-error').textContent = 'An error occurred. Please try again.';
-                document.getElementById('newPassword-error').style.display = 'block';
-                } finally {
-                    if (proceedButton) {
-                        proceedButton.disabled = false;
-                        if (spinner) spinner.style.display = 'none';
+                    
+                    const password = document.getElementById('newPassword').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    const otpCode = document.getElementById('otpCode').value;
+                    
+                    document.getElementById('newPassword-error').style.display = 'none';
+                    document.getElementById('confirmPassword-error').style.display = 'none';
+                    
+                    if (!password || !confirmPassword) {
+                        if (!password) {
+                            document.getElementById('newPassword-error').textContent = 'New password is required.';
+                            document.getElementById('newPassword-error').style.display = 'block';
+                        }
+                        if (!confirmPassword) {
+                            document.getElementById('confirmPassword-error').textContent = 'Confirm password is required.';
+                            document.getElementById('confirmPassword-error').style.display = 'block';
+                        }
+                        return;
                     }
-                }
+                    
+                    if (password.length < 8) {
+                        document.getElementById('newPassword-error').textContent = 'Password must be at least 8 characters.';
+                        document.getElementById('newPassword-error').style.display = 'block';
+                        return;
+                    }
+                    
+                    if (password !== confirmPassword) {
+                        document.getElementById('confirmPassword-error').textContent = 'Passwords do not match.';
+                        document.getElementById('confirmPassword-error').style.display = 'block';
+                        return;
+                    }
+                    
+                    const proceedButton = document.getElementById('proceedButton');
+                    const spinner = proceedButton.querySelector('.fa-spinner');
+                    proceedButton.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    
+                    try {
+                        const [response] = await Promise.all([
+                            fetch('api/reset_password.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    email: resetEmail,
+                                    new_password: password,
+                                    otp_code: otpCode
+                                })
+                            }),
+                            new Promise(resolve => setTimeout(resolve, 1500))
+                        ]);
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            bootstrap.Modal.getInstance(document.getElementById('newPasswordModal')).hide();
+                            showPasswordResetSuccess();
+                            document.getElementById('forgotPasswordForm').reset();
+                            document.getElementById('newPasswordForm').reset();
+                            document.getElementById('otpVerificationForm').reset();
+                            resetEmail = '';
+                        } else {
+                            document.getElementById('newPassword-error').textContent = data.error || 'Failed to reset password. Please try again.';
+                            document.getElementById('newPassword-error').style.display = 'block';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        document.getElementById('newPassword-error').textContent = 'An error occurred. Please try again.';
+                        document.getElementById('newPassword-error').style.display = 'block';
+                    } finally {
+                        if (proceedButton) {
+                            proceedButton.disabled = false;
+                            if (spinner) spinner.style.display = 'none';
+                        }
+                    }
                 });
             }
             
@@ -1035,58 +1035,59 @@
             const newPasswordEl = document.getElementById('newPassword');
             if (newPasswordEl) {
                 newPasswordEl.addEventListener('input', function() {
-            const password = this.value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const newPasswordError = document.getElementById('newPassword-error');
-            const confirmPasswordError = document.getElementById('confirmPassword-error');
-            
-            newPasswordError.style.display = 'none';
-            confirmPasswordError.style.display = 'none';
-            
-            if (password && password.length < 8) {
-                newPasswordError.textContent = 'Password must be at least 8 characters.';
-                newPasswordError.style.display = 'block';
-            }
-            
-            if (confirmPassword && confirmPassword.length < 8) {
-                confirmPasswordError.textContent = 'Password must be at least 8 characters.';
-                confirmPasswordError.style.display = 'block';
-            }
-            
-            if (password && password.length >= 8 && confirmPassword && confirmPassword.length >= 8 && password !== confirmPassword) {
-                confirmPasswordError.textContent = 'Passwords do not match.';
-                confirmPasswordError.style.display = 'block';
-            }
+                    const password = this.value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    const newPasswordError = document.getElementById('newPassword-error');
+                    const confirmPasswordError = document.getElementById('confirmPassword-error');
+                    
+                    newPasswordError.style.display = 'none';
+                    confirmPasswordError.style.display = 'none';
+                    
+                    if (password && password.length < 8) {
+                        newPasswordError.textContent = 'Password must be at least 8 characters.';
+                        newPasswordError.style.display = 'block';
+                    }
+                    
+                    if (confirmPassword && confirmPassword.length < 8) {
+                        confirmPasswordError.textContent = 'Password must be at least 8 characters.';
+                        confirmPasswordError.style.display = 'block';
+                    }
+                    
+                    if (password && password.length >= 8 && confirmPassword && confirmPassword.length >= 8 && password !== confirmPassword) {
+                        confirmPasswordError.textContent = 'Passwords do not match.';
+                        confirmPasswordError.style.display = 'block';
+                    }
                 });
             }
             
             const confirmPasswordEl = document.getElementById('confirmPassword');
             if (confirmPasswordEl) {
                 confirmPasswordEl.addEventListener('input', function() {
-            const password = document.getElementById('newPassword').value;
-            const confirmPassword = this.value;
-            const newPasswordError = document.getElementById('newPassword-error');
-            const confirmPasswordError = document.getElementById('confirmPassword-error');
-            
-            newPasswordError.style.display = 'none';
-            confirmPasswordError.style.display = 'none';
-            
-            if (password && password.length < 8) {
-                newPasswordError.textContent = 'Password must be at least 8 characters.';
-                newPasswordError.style.display = 'block';
+                    const password = document.getElementById('newPassword').value;
+                    const confirmPassword = this.value;
+                    const newPasswordError = document.getElementById('newPassword-error');
+                    const confirmPasswordError = document.getElementById('confirmPassword-error');
+                    
+                    newPasswordError.style.display = 'none';
+                    confirmPasswordError.style.display = 'none';
+                    
+                    if (password && password.length < 8) {
+                        newPasswordError.textContent = 'Password must be at least 8 characters.';
+                        newPasswordError.style.display = 'block';
+                    }
+                    
+                    if (confirmPassword && confirmPassword.length < 8) {
+                        confirmPasswordError.textContent = 'Password must be at least 8 characters.';
+                        confirmPasswordError.style.display = 'block';
+                    }
+                    
+                    if (password && password.length >= 8 && confirmPassword && confirmPassword.length >= 8 && password !== confirmPassword) {
+                        confirmPasswordError.textContent = 'Passwords do not match.';
+                        confirmPasswordError.style.display = 'block';
+                    }
+                });
             }
             
-            if (confirmPassword && confirmPassword.length < 8) {
-                confirmPasswordError.textContent = 'Password must be at least 8 characters.';
-                confirmPasswordError.style.display = 'block';
-            }
-            
-            if (password && password.length >= 8 && confirmPassword && confirmPassword.length >= 8 && password !== confirmPassword) {
-                confirmPasswordError.textContent = 'Passwords do not match.';
-                confirmPasswordError.style.display = 'block';
-            }
-        });
-        
             // OTP Input handling
             document.querySelectorAll('.otp-input').forEach((input, index) => {
             input.addEventListener('input', function(e) {
@@ -1139,60 +1140,60 @@
             const otpVerificationForm = document.getElementById('otpVerificationForm');
             if (otpVerificationForm) {
                 otpVerificationForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const otpCode = document.getElementById('otpCode').value;
-            
-            document.getElementById('otp-error').style.display = 'none';
-            
-            if (!otpCode || otpCode.length !== 6) {
-                document.getElementById('otp-error').style.display = 'block';
-                return;
-            }
-            
-            const verifyButton = document.getElementById('verifyButton');
-            const spinner = verifyButton.querySelector('.fa-spinner');
-            verifyButton.disabled = true;
-            spinner.style.display = 'inline-block';
-            
-            try {
-                const [response] = await Promise.all([
-                    fetch('api/verify_reset_otp.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email: resetEmail,
-                            otp_code: otpCode
-                        })
-                    }),
-                    new Promise(resolve => setTimeout(resolve, 1500))
-                ]);
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('otpVerificationModal')).hide();
-                    const newPasswordModal = new bootstrap.Modal(document.getElementById('newPasswordModal'));
-                    newPasswordModal.show();
-                } else {
-                    document.getElementById('otp-error').textContent = data.error || 'Invalid or expired verification code. Please try again.';
-                    document.getElementById('otp-error').style.display = 'block';
-                }
-                } catch (error) {
-                    console.error('Error:', error);
-                    const otpError = document.getElementById('otp-error');
-                    if (otpError) {
-                        otpError.textContent = 'An error occurred. Please try again.';
-                        otpError.style.display = 'block';
+                    e.preventDefault();
+                    
+                    const otpCode = document.getElementById('otpCode').value;
+                    
+                    document.getElementById('otp-error').style.display = 'none';
+                    
+                    if (!otpCode || otpCode.length !== 6) {
+                        document.getElementById('otp-error').style.display = 'block';
+                        return;
                     }
-                } finally {
-                    if (verifyButton) {
-                        verifyButton.disabled = false;
-                        if (spinner) spinner.style.display = 'none';
+                    
+                    const verifyButton = document.getElementById('verifyButton');
+                    const spinner = verifyButton.querySelector('.fa-spinner');
+                    verifyButton.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    
+                    try {
+                        const [response] = await Promise.all([
+                            fetch('api/verify_reset_otp.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    email: resetEmail,
+                                    otp_code: otpCode
+                                })
+                            }),
+                            new Promise(resolve => setTimeout(resolve, 1500))
+                        ]);
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            bootstrap.Modal.getInstance(document.getElementById('otpVerificationModal')).hide();
+                            const newPasswordModal = new bootstrap.Modal(document.getElementById('newPasswordModal'));
+                            newPasswordModal.show();
+                        } else {
+                            document.getElementById('otp-error').textContent = data.error || 'Invalid or expired verification code. Please try again.';
+                            document.getElementById('otp-error').style.display = 'block';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        const otpError = document.getElementById('otp-error');
+                        if (otpError) {
+                            otpError.textContent = 'An error occurred. Please try again.';
+                            otpError.style.display = 'block';
+                        }
+                    } finally {
+                        if (verifyButton) {
+                            verifyButton.disabled = false;
+                            if (spinner) spinner.style.display = 'none';
+                        }
                     }
-                }
                 });
             }
             

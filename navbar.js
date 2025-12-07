@@ -40,17 +40,12 @@ function loadNavbar() {
 
 // Initialize navbar functionality
 function initializeNavbar() {
-    // Fix navbar size
+    // Navbar styling is handled by navbar.css - no need to force fixed height
     const navbar = document.querySelector('.navbar');
     if (navbar) {
-        navbar.style.setProperty('height', '70px', 'important');
-        navbar.style.setProperty('min-height', '70px', 'important');
-        navbar.style.setProperty('max-height', '70px', 'important');
-        navbar.style.setProperty('padding', '0', 'important');
-        navbar.style.setProperty('line-height', '70px', 'important');
+        // Only ensure it's fixed positioned (handled by CSS)
         navbar.style.setProperty('position', 'fixed', 'important');
         navbar.style.setProperty('top', '0', 'important');
-        navbar.style.setProperty('transition', 'none', 'important');
     }
     
     // Set active nav item based on current page

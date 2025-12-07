@@ -1608,6 +1608,15 @@
                         document.getElementById('profileNewPassword').value = '';
                         document.getElementById('profileConfirmPassword').value = '';
                         
+                        // Store original values to detect changes
+                        originalProfileData = {
+                            email: userData.email || '',
+                            firstName: userData.firstName || userData.first_name || '',
+                            lastName: userData.lastName || userData.last_name || '',
+                            gender: userData.gender || '',
+                            birthday: birthday
+                        };
+                        
                         // Set max date to today
                         const today = new Date();
                         const yyyy = today.getFullYear();
@@ -1660,6 +1669,22 @@
                     document.getElementById('profileNewPassword').value = '';
                     document.getElementById('profileConfirmPassword').value = '';
                     
+                    // Store original values to detect changes
+                    let birthday = userData.birthday || userData.date_of_birth || '';
+                    if (birthday && birthday.includes('/')) {
+                        const parts = birthday.split('/');
+                        if (parts.length === 3) {
+                            birthday = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        }
+                    }
+                    originalProfileData = {
+                        email: userData.email || '',
+                        firstName: userData.firstName || userData.first_name || '',
+                        lastName: userData.lastName || userData.last_name || '',
+                        gender: userData.gender || '',
+                        birthday: birthday
+                    };
+                    
                     const today = new Date();
                     const yyyy = today.getFullYear();
                     const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -1696,6 +1721,7 @@
         // Profile validation functions
         const profileSuccessTimers = {};
         let isInitialProfileLoad = false;
+        let originalProfileData = {}; // Store original values to detect changes
         
         function markProfileSuccess(el, key) {
             if (!el) return;
@@ -1709,7 +1735,7 @@
         }
         
         function hideProfileErrors(idBase) {
-            const errors = ['error', 'format-error', 'required', 'min', 'same', 'mismatch'];
+            const errors = ['error', 'format-error', 'required', 'min', 'same', 'mismatch', 'incorrect'];
             errors.forEach(suffix => {
                 const errEl = document.getElementById(idBase + '-' + suffix);
                 if (errEl) errEl.style.display = 'none';
@@ -1840,6 +1866,11 @@
         function validateProfilePassword(el, idBase) {
             if (!el) return true;
             hideProfileErrors(idBase);
+            // Also hide incorrect password error when user types
+            if (idBase === 'profilePassword') {
+                const incorrectEl = document.getElementById('profilePassword-incorrect');
+                if (incorrectEl) incorrectEl.style.display = 'none';
+            }
             const v = (el.value || '').trim();
             const requireNow = anyPasswordFilled();
             
@@ -1945,6 +1976,31 @@
                 allValid = validateProfilePassword(newEl, 'profileNewPassword') && allValid;
                 allValid = validateProfilePassword(confirmEl, 'profileConfirmPassword') && allValid;
                 allValid = validatePasswordSameAsCurrent() && allValid;
+            }
+            
+            // Check if there are any changes from original values
+            if (allValid && typeof originalProfileData !== 'undefined' && Object.keys(originalProfileData).length > 0) {
+                const currentEmail = (document.getElementById('profileEmail').value || '').trim();
+                const currentFirstName = (document.getElementById('profileFirstName').value || '').trim();
+                const currentLastName = (document.getElementById('profileLastName').value || '').trim();
+                const currentGender = (document.getElementById('profileGender').value || '').trim();
+                const currentBirthday = (document.getElementById('profileBirthday').value || '').trim();
+                const currentPassword = (document.getElementById('profilePassword').value || '').trim();
+                const newPassword = (document.getElementById('profileNewPassword').value || '').trim();
+                
+                // Check if any field has changed
+                const hasChanges = 
+                    currentEmail !== originalProfileData.email ||
+                    currentFirstName !== originalProfileData.firstName ||
+                    currentLastName !== originalProfileData.lastName ||
+                    currentGender !== originalProfileData.gender ||
+                    currentBirthday !== originalProfileData.birthday ||
+                    (newPassword && newPassword.length > 0);
+                
+                // If no changes, disable button
+                if (!hasChanges) {
+                    allValid = false;
+                }
             }
             
             if (allValid) {
@@ -2215,7 +2271,26 @@
                 } else {
                     if (data.errors) {
                         Object.keys(data.errors).forEach(field => {
-                            showNotification(data.errors[field], 'error');
+                            const errorMsg = data.errors[field];
+                            
+                            // Handle password error specifically
+                            if (field === 'password' && errorMsg.includes('incorrect')) {
+                                const errorEl = document.getElementById('profilePassword-incorrect');
+                                if (errorEl) {
+                                    errorEl.style.display = 'block';
+                                    const passwordInput = document.getElementById('profilePassword');
+                                    if (passwordInput) {
+                                        markProfileError(passwordInput);
+                                        const formGroup = passwordInput.closest('.form-group');
+                                        if (formGroup) {
+                                            formGroup.classList.add('error');
+                                        }
+                                    }
+                                }
+                            } else {
+                                // For other errors, show notification
+                                showNotification(errorMsg, 'error');
+                            }
                         });
                     } else {
                         showNotification(data.message || 'Failed to update profile. Please try again.', 'error');
@@ -2389,6 +2464,7 @@
                                 </div>
                                 <div class="error-message" id="profilePassword-required" style="display: none;">Password is required.</div>
                                 <div class="error-message" id="profilePassword-min" style="display: none;">Password must be at least 8 characters.</div>
+                                <div class="error-message" id="profilePassword-incorrect" style="display: none;">Current password is incorrect.</div>
                             </div>
                             <div class="form-group">
                                 <label for="profileNewPassword">New Password</label>

@@ -884,7 +884,40 @@
             }
         }
         
+        /* Cart Summary Style for Address Container */
+        .cart-summary {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.25rem;
+            width: 100%;
+        }
+        
         /* Delivery Address Section */
+        .delivery-address-section {
+            padding: 0;
+        }
+        
+        .address-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+            margin-bottom: 1.5rem;
+        }
+        
+        .address-header i {
+            color: #ef4444;
+            font-size: 1.3rem;
+        }
+        
+        .address-header span {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ef4444;
+        }
+        
         .address-content {
             min-height: 80px;
         }
@@ -1644,94 +1677,99 @@
                             </div>
                         </div>
                         
-                        <!-- Delivery Address Section -->
-                        <div class="profile-section">
-                            <h5 style="color: #0369a1; font-weight: 600; margin-bottom: 1rem; font-size: 1.1rem;">Delivery Address</h5>
-                            <div id="profileAddressContent" class="address-content">
-                                <div class="empty-address" id="profileEmptyAddress">
-                                    <p>No delivery address set</p>
-                                    <button class="btn-add-address" onclick="openProfileAddressModal()">
-                                        <i class="fas fa-plus me-2"></i>
-                                        Add Delivery Address
-                                    </button>
-                                </div>
-                                <div class="address-display" id="profileAddressDisplay" style="display: none;">
-                                    <div class="address-header-row">
-                                        <div class="address-info">
-                                            <div class="address-name-phone">
-                                                <strong id="profileAddressName"></strong>
-                                                <span id="profileAddressPhone"></span>
-                                            </div>
-                                        </div>
-                                        <div class="address-actions">
-                                            <span class="badge-default" id="profileDefaultBadge" style="display: none;">Default</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tabs Navigation -->
-                                    <div class="address-tabs" id="profileAddressTabs" style="display: none;">
-                                        <button class="address-tab active" onclick="switchProfileAddressTab('details')" id="profileTabDetails">
-                                            <i class="fas fa-info-circle"></i>
-                                            Address Details
-                                        </button>
-                                        <button class="address-tab" onclick="switchProfileAddressTab('location')" id="profileTabLocation">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            Location Map
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Tab Content -->
-                                    <div class="address-tab-content-wrapper">
-                                        <!-- Address Details Tab -->
-                                        <div class="address-tab-content active" id="profileTabContentDetails">
-                                            <div class="address-text" id="profileAddressText"></div>
-                                        </div>
-                                        
-                                        <!-- Location Map Tab -->
-                                        <div class="address-tab-content" id="profileTabContentLocation" style="display: none;">
-                                            <div class="address-location-section" id="profileAddressLocationSection">
-                                                <div class="address-coordinates">
-                                                    <div class="coordinates-label">
-                                                        <i class="fas fa-map-marker-alt"></i>
-                                                        <span>Location Coordinates</span>
-                                                    </div>
-                                                    <div class="coordinates-display">
-                                                        <div class="coordinate-item">
-                                                            <span class="coordinate-label">Latitude:</span>
-                                                            <span class="coordinate-value" id="profileDisplayLatitude"></span>
-                                                        </div>
-                                                        <div class="coordinate-item">
-                                                            <span class="coordinate-label">Longitude:</span>
-                                                            <span class="coordinate-value" id="profileDisplayLongitude"></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="address-map-container" id="profileAddressMapContainer">
-                                                    <button class="address-map-fullscreen-btn" onclick="toggleProfileAddressMapFullscreen()" title="Toggle fullscreen">
-                                                        <i class="fas fa-expand" id="profileAddressMapFullscreenIcon"></i>
-                                                        Fullscreen
-                                                    </button>
-                                                    <div id="profileAddressMap" class="address-map"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="address-buttons" style="margin-top: 0.75rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
-                                        <button class="btn-change-address" onclick="openProfileAddressModal()">Change</button>
-                                        <button class="btn-delete-address" onclick="deleteProfileAddress()" title="Delete address">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="profile-footer">
                             <a href="dashboard.html" class="btn-cancel">Cancel</a>
                             <button type="submit" class="btn-submit" id="updateProfileBtn" disabled>Save Changes</button>
                         </div>
                     </form>
+                </div>
+            </div>
+            
+            <!-- My Address Section (Separate Container) -->
+            <div class="cart-summary" style="max-width: 800px; margin: 2rem auto 0;">
+                <div class="delivery-address-section" id="profileAddressSection">
+                    <div class="address-header">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>My Address</span>
+                    </div>
+                    <div id="profileAddressContent" class="address-content">
+                        <div class="empty-address" id="profileEmptyAddress">
+                            <p>No delivery address set</p>
+                            <button class="btn-add-address" onclick="openProfileAddressModal()">
+                                <i class="fas fa-plus me-2"></i>
+                                Add Delivery Address
+                            </button>
+                        </div>
+                        <div class="address-display" id="profileAddressDisplay" style="display: none;">
+                            <div class="address-header-row">
+                                <div class="address-info">
+                                    <div class="address-name-phone">
+                                        <strong id="profileAddressName"></strong>
+                                        <span id="profileAddressPhone"></span>
+                                    </div>
+                                </div>
+                                <div class="address-actions">
+                                    <span class="badge-default" id="profileDefaultBadge" style="display: none;">Default</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Tabs Navigation -->
+                            <div class="address-tabs" id="profileAddressTabs" style="display: none;">
+                                <button class="address-tab active" onclick="switchProfileAddressTab('details')" id="profileTabDetails">
+                                    <i class="fas fa-info-circle"></i>
+                                    Address Details
+                                </button>
+                                <button class="address-tab" onclick="switchProfileAddressTab('location')" id="profileTabLocation">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Location Map
+                                </button>
+                            </div>
+                            
+                            <!-- Tab Content -->
+                            <div class="address-tab-content-wrapper">
+                                <!-- Address Details Tab -->
+                                <div class="address-tab-content active" id="profileTabContentDetails">
+                                    <div class="address-text" id="profileAddressText"></div>
+                                </div>
+                                
+                                <!-- Location Map Tab -->
+                                <div class="address-tab-content" id="profileTabContentLocation" style="display: none;">
+                                    <div class="address-location-section" id="profileAddressLocationSection">
+                                        <div class="address-coordinates">
+                                            <div class="coordinates-label">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                <span>Location Coordinates</span>
+                                            </div>
+                                            <div class="coordinates-display">
+                                                <div class="coordinate-item">
+                                                    <span class="coordinate-label">Latitude:</span>
+                                                    <span class="coordinate-value" id="profileDisplayLatitude"></span>
+                                                </div>
+                                                <div class="coordinate-item">
+                                                    <span class="coordinate-label">Longitude:</span>
+                                                    <span class="coordinate-value" id="profileDisplayLongitude"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="address-map-container" id="profileAddressMapContainer">
+                                            <button class="address-map-fullscreen-btn" onclick="toggleProfileAddressMapFullscreen()" title="Toggle fullscreen">
+                                                <i class="fas fa-expand" id="profileAddressMapFullscreenIcon"></i>
+                                                Fullscreen
+                                            </button>
+                                            <div id="profileAddressMap" class="address-map"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="address-buttons" style="margin-top: 0.75rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+                                <button class="btn-change-address" onclick="openProfileAddressModal()">Change</button>
+                                <button class="btn-delete-address" onclick="deleteProfileAddress()" title="Delete address">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

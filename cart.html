@@ -3681,15 +3681,6 @@
                         document.getElementById('profileNewPassword').value = '';
                         document.getElementById('profileConfirmPassword').value = '';
                         
-                        // Store original values to detect changes
-                        originalProfileData = {
-                            email: userData.email || '',
-                            firstName: userData.firstName || userData.first_name || '',
-                            lastName: userData.lastName || userData.last_name || '',
-                            gender: userData.gender || '',
-                            birthday: birthday
-                        };
-                        
                         console.log('Form populated with:', {
                             username: document.getElementById('profileUsername').value,
                             email: document.getElementById('profileEmail').value,
@@ -3805,27 +3796,11 @@
                         }
                     }
                     document.getElementById('profileBirthday').value = birthday;
-                    document.getElementById('profilePassword').value = '';
-                    document.getElementById('profileNewPassword').value = '';
-                    document.getElementById('profileConfirmPassword').value = '';
-                    
-                    // Store original values to detect changes
-                    let birthday = userData.birthday || userData.date_of_birth || '';
-                    if (birthday && birthday.includes('/')) {
-                        const parts = birthday.split('/');
-                        if (parts.length === 3) {
-                            birthday = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                        }
-                    }
-                    originalProfileData = {
-                        email: userData.email || '',
-                        firstName: userData.firstName || userData.first_name || '',
-                        lastName: userData.lastName || userData.last_name || '',
-                        gender: userData.gender || '',
-                        birthday: birthday
-                    };
-                    
-                    const today = new Date();
+                        document.getElementById('profilePassword').value = '';
+                        document.getElementById('profileNewPassword').value = '';
+                        document.getElementById('profileConfirmPassword').value = '';
+                        
+                        const today = new Date();
                     const yyyy = today.getFullYear();
                     const mm = String(today.getMonth() + 1).padStart(2, '0');
                     const dd = String(today.getDate()).padStart(2, '0');
@@ -4004,7 +3979,6 @@
         // Profile validation functions (similar to AnemoCheck)
         const profileSuccessTimers = {};
         let isInitialProfileLoad = false; // Flag to prevent success states on initial load
-        let originalProfileData = {}; // Store original values to detect changes
         
         function markProfileSuccess(el, key) {
             if (!el) return;
@@ -4284,30 +4258,6 @@
                 allValid = validateProfilePassword(newEl, 'profileNewPassword') && allValid;
                 allValid = validateProfilePassword(confirmEl, 'profileConfirmPassword') && allValid;
                 allValid = validatePasswordSameAsCurrent() && allValid;
-            }
-            
-            // Check if there are any changes from original values
-            if (allValid && typeof originalProfileData !== 'undefined' && Object.keys(originalProfileData).length > 0) {
-                const currentEmail = (document.getElementById('profileEmail').value || '').trim();
-                const currentFirstName = (document.getElementById('profileFirstName').value || '').trim();
-                const currentLastName = (document.getElementById('profileLastName').value || '').trim();
-                const currentGender = (document.getElementById('profileGender').value || '').trim();
-                const currentBirthday = (document.getElementById('profileBirthday').value || '').trim();
-                const newPassword = (document.getElementById('profileNewPassword').value || '').trim();
-                
-                // Check if any field has changed
-                const hasChanges = 
-                    currentEmail !== originalProfileData.email ||
-                    currentFirstName !== originalProfileData.firstName ||
-                    currentLastName !== originalProfileData.lastName ||
-                    currentGender !== originalProfileData.gender ||
-                    currentBirthday !== originalProfileData.birthday ||
-                    (newPassword && newPassword.length > 0);
-                
-                // If no changes, disable button
-                if (!hasChanges) {
-                    allValid = false;
-                }
             }
             
             // Enable/disable button

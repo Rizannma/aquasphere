@@ -106,8 +106,8 @@
         
         .cart-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
+            top: 5px;
+            right: 5px;
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
             border-radius: 50%;
@@ -1577,15 +1577,6 @@
                         document.getElementById('profileNewPassword').value = '';
                         document.getElementById('profileConfirmPassword').value = '';
                         
-                        // Store original values to detect changes
-                        originalProfileData = {
-                            email: userData.email || '',
-                            firstName: userData.firstName || userData.first_name || '',
-                            lastName: userData.lastName || userData.last_name || '',
-                            gender: userData.gender || '',
-                            birthday: birthday
-                        };
-                        
                         // Set max date to today
                         const today = new Date();
                         const yyyy = today.getFullYear();
@@ -1638,22 +1629,6 @@
                     document.getElementById('profileNewPassword').value = '';
                     document.getElementById('profileConfirmPassword').value = '';
                     
-                    // Store original values to detect changes
-                    let birthday = userData.birthday || userData.date_of_birth || '';
-                    if (birthday && birthday.includes('/')) {
-                        const parts = birthday.split('/');
-                        if (parts.length === 3) {
-                            birthday = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                        }
-                    }
-                    originalProfileData = {
-                        email: userData.email || '',
-                        firstName: userData.firstName || userData.first_name || '',
-                        lastName: userData.lastName || userData.last_name || '',
-                        gender: userData.gender || '',
-                        birthday: birthday
-                    };
-                    
                     const today = new Date();
                     const yyyy = today.getFullYear();
                     const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -1690,7 +1665,6 @@
         // Profile validation functions
         const profileSuccessTimers = {};
         let isInitialProfileLoad = false;
-        let originalProfileData = {}; // Store original values to detect changes
         
         function markProfileSuccess(el, key) {
             if (!el) return;
@@ -1945,30 +1919,6 @@
                 allValid = validateProfilePassword(newEl, 'profileNewPassword') && allValid;
                 allValid = validateProfilePassword(confirmEl, 'profileConfirmPassword') && allValid;
                 allValid = validatePasswordSameAsCurrent() && allValid;
-            }
-            
-            // Check if there are any changes from original values
-            if (allValid && typeof originalProfileData !== 'undefined' && Object.keys(originalProfileData).length > 0) {
-                const currentEmail = (document.getElementById('profileEmail').value || '').trim();
-                const currentFirstName = (document.getElementById('profileFirstName').value || '').trim();
-                const currentLastName = (document.getElementById('profileLastName').value || '').trim();
-                const currentGender = (document.getElementById('profileGender').value || '').trim();
-                const currentBirthday = (document.getElementById('profileBirthday').value || '').trim();
-                const newPassword = (document.getElementById('profileNewPassword').value || '').trim();
-                
-                // Check if any field has changed
-                const hasChanges = 
-                    currentEmail !== originalProfileData.email ||
-                    currentFirstName !== originalProfileData.firstName ||
-                    currentLastName !== originalProfileData.lastName ||
-                    currentGender !== originalProfileData.gender ||
-                    currentBirthday !== originalProfileData.birthday ||
-                    (newPassword && newPassword.length > 0);
-                
-                // If no changes, disable button
-                if (!hasChanges) {
-                    allValid = false;
-                }
             }
             
             if (allValid) {

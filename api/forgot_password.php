@@ -53,9 +53,11 @@ try {
     }
     
     if (!$user) {
-        // Don't reveal if email exists or not (security best practice)
+        // Email is not registered
+        close_connection($conn);
         ob_clean();
-        echo json_encode(['success' => true, 'message' => 'If an account exists with this email, a reset code has been sent.']);
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Looks like this email isn\'t linked to an account yet.']);
         ob_end_flush();
         exit;
     }

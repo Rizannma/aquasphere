@@ -717,15 +717,47 @@
             
         });
         
-        // Forgot Password functionality (outside DOMContentLoaded for global access)
+        // Forgot Password functionality (global scope - available immediately)
         let resetEmail = '';
         let otpTimer = null;
         
-        // Forgot Password function (global scope)
+        // Forgot Password function (global scope - must be available immediately)
         function showForgotPassword() {
-            resetForgotPasswordModal();
-            const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
-            modal.show();
+            // Wait for DOM to be ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    openForgotPasswordModal();
+                });
+            } else {
+                openForgotPasswordModal();
+            }
+        }
+        
+        function openForgotPasswordModal() {
+            // Reset the modal first
+            const resetEmailEl = document.getElementById('resetEmail');
+            const errorDiv = document.getElementById('resetEmail-error');
+            const sendResetButton = document.getElementById('sendResetButton');
+            
+            if (resetEmailEl) resetEmailEl.value = '';
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+                errorDiv.textContent = 'Please enter your email address.';
+            }
+            if (sendResetButton) {
+                const spinner = sendResetButton.querySelector('.fa-spinner');
+                sendResetButton.disabled = false;
+                if (spinner) spinner.style.display = 'none';
+            }
+            
+            // Show the modal
+            const modalElement = document.getElementById('forgotPasswordModal');
+            if (modalElement && typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            } else {
+                console.error('Bootstrap or modal element not found');
+            }
         }
         
         function resetForgotPasswordModal() {
@@ -1252,8 +1284,7 @@
                 return emailRegex.test(email);
             }
             
-            // Make functions globally accessible
-            window.showForgotPassword = showForgotPassword;
+            // Make functions globally accessible (already defined globally, but ensure they're available)
             window.startOTPTimer = startOTPTimer;
             window.resendOTP = resendOTP;
             window.isValidEmail = isValidEmail;
@@ -1262,6 +1293,9 @@
             window.showPasswordResetSuccess = showPasswordResetSuccess;
             window.hidePasswordResetSuccess = hidePasswordResetSuccess;
         });
+        
+        // Ensure showForgotPassword is globally accessible
+        window.showForgotPassword = showForgotPassword;
         
         // Feedback container (global scope)
         function createFeedbackContainer(message) {

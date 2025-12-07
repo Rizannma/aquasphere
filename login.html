@@ -715,67 +715,100 @@
                 }
             });
             
-            // Forgot Password function
-            function showForgotPassword() {
-                resetForgotPasswordModal();
-                const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
-                modal.show();
-            }
         });
         
-        // Forgot Password functionality
+        // Forgot Password functionality (outside DOMContentLoaded for global access)
         let resetEmail = '';
         let otpTimer = null;
         
-        function resetForgotPasswordModal() {
-            document.getElementById('resetEmail').value = '';
-            const errorDiv = document.getElementById('resetEmail-error');
-            errorDiv.style.display = 'none';
-            errorDiv.textContent = 'Please enter your email address.';
-            const sendResetButton = document.getElementById('sendResetButton');
-            const spinner = sendResetButton.querySelector('.fa-spinner');
-            sendResetButton.disabled = false;
-            spinner.style.display = 'none';
+        // Forgot Password function (global scope)
+        function showForgotPassword() {
+            resetForgotPasswordModal();
+            const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+            modal.show();
         }
         
-        // Reset modals when hidden
-        document.getElementById('forgotPasswordModal').addEventListener('hidden.bs.modal', function() {
-            resetForgotPasswordModal();
-        });
+        function resetForgotPasswordModal() {
+            const resetEmailEl = document.getElementById('resetEmail');
+            const errorDiv = document.getElementById('resetEmail-error');
+            const sendResetButton = document.getElementById('sendResetButton');
+            
+            if (resetEmailEl) resetEmailEl.value = '';
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+                errorDiv.textContent = 'Please enter your email address.';
+            }
+            if (sendResetButton) {
+                const spinner = sendResetButton.querySelector('.fa-spinner');
+                sendResetButton.disabled = false;
+                if (spinner) spinner.style.display = 'none';
+            }
+        }
         
-        document.getElementById('otpVerificationModal').addEventListener('hidden.bs.modal', function() {
-            document.querySelectorAll('.otp-input').forEach(input => {
-                input.value = '';
-            });
-            document.getElementById('otpCode').value = '';
-            document.getElementById('otp-error').style.display = 'none';
-            const verifyButton = document.getElementById('verifyButton');
-            const spinner = verifyButton.querySelector('.fa-spinner');
-            verifyButton.disabled = false;
-            spinner.style.display = 'none';
-            const resendLink = document.getElementById('resendOTPLink');
-            const resendSpinner = resendLink.querySelector('.fa-spinner');
-            resendLink.style.pointerEvents = 'auto';
-            resendLink.style.opacity = '1';
-            resendSpinner.style.display = 'none';
-            const timerSpan = document.getElementById('otpTimer');
-            if (timerSpan) timerSpan.textContent = '';
-            if (otpTimer) clearInterval(otpTimer);
-        });
+        // Wait for DOM to be ready before attaching event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reset modals when hidden
+            const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+            if (forgotPasswordModal) {
+                forgotPasswordModal.addEventListener('hidden.bs.modal', function() {
+                    resetForgotPasswordModal();
+                });
+            }
         
-        document.getElementById('newPasswordModal').addEventListener('hidden.bs.modal', function() {
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-            document.getElementById('newPassword-error').style.display = 'none';
-            document.getElementById('confirmPassword-error').style.display = 'none';
-            const proceedButton = document.getElementById('proceedButton');
-            const spinner = proceedButton.querySelector('.fa-spinner');
-            proceedButton.disabled = false;
-            spinner.style.display = 'none';
-        });
-        
-        // Forgot Password Form Handler
-        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+            const otpVerificationModal = document.getElementById('otpVerificationModal');
+            if (otpVerificationModal) {
+                otpVerificationModal.addEventListener('hidden.bs.modal', function() {
+                    document.querySelectorAll('.otp-input').forEach(input => {
+                        input.value = '';
+                    });
+                    const otpCodeEl = document.getElementById('otpCode');
+                    if (otpCodeEl) otpCodeEl.value = '';
+                    const otpError = document.getElementById('otp-error');
+                    if (otpError) otpError.style.display = 'none';
+                    const verifyButton = document.getElementById('verifyButton');
+                    if (verifyButton) {
+                        const spinner = verifyButton.querySelector('.fa-spinner');
+                        verifyButton.disabled = false;
+                        if (spinner) spinner.style.display = 'none';
+                    }
+                    const resendLink = document.getElementById('resendOTPLink');
+                    if (resendLink) {
+                        const resendSpinner = resendLink.querySelector('.fa-spinner');
+                        resendLink.style.pointerEvents = 'auto';
+                        resendLink.style.opacity = '1';
+                        if (resendSpinner) resendSpinner.style.display = 'none';
+                    }
+                    const timerSpan = document.getElementById('otpTimer');
+                    if (timerSpan) timerSpan.textContent = '';
+                    if (otpTimer) clearInterval(otpTimer);
+                });
+            }
+            
+            const newPasswordModal = document.getElementById('newPasswordModal');
+            if (newPasswordModal) {
+                newPasswordModal.addEventListener('hidden.bs.modal', function() {
+                    const newPasswordEl = document.getElementById('newPassword');
+                    const confirmPasswordEl = document.getElementById('confirmPassword');
+                    const newPasswordError = document.getElementById('newPassword-error');
+                    const confirmPasswordError = document.getElementById('confirmPassword-error');
+                    const proceedButton = document.getElementById('proceedButton');
+                    
+                    if (newPasswordEl) newPasswordEl.value = '';
+                    if (confirmPasswordEl) confirmPasswordEl.value = '';
+                    if (newPasswordError) newPasswordError.style.display = 'none';
+                    if (confirmPasswordError) confirmPasswordError.style.display = 'none';
+                    if (proceedButton) {
+                        const spinner = proceedButton.querySelector('.fa-spinner');
+                        proceedButton.disabled = false;
+                        if (spinner) spinner.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Forgot Password Form Handler
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+            if (forgotPasswordForm) {
+                forgotPasswordForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('resetEmail').value.trim();
@@ -821,32 +854,44 @@
                     errorDiv.textContent = data.error || 'Failed to send reset code. Please try again.';
                     errorDiv.style.display = 'block';
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                errorDiv.textContent = 'An error occurred. Please try again.';
-                errorDiv.style.display = 'block';
-            } finally {
-                sendResetButton.disabled = false;
-                spinner.style.display = 'none';
+                } catch (error) {
+                    console.error('Error:', error);
+                    if (errorDiv) {
+                        errorDiv.textContent = 'An error occurred. Please try again.';
+                        errorDiv.style.display = 'block';
+                    }
+                } finally {
+                    if (sendResetButton) {
+                        sendResetButton.disabled = false;
+                        if (spinner) spinner.style.display = 'none';
+                    }
+                }
+                });
             }
-        });
-        
-        // Real-time email validation
-        document.getElementById('resetEmail').addEventListener('input', function() {
-            const email = this.value.trim();
-            const errorDiv = document.getElementById('resetEmail-error');
             
-            if (email && !isValidEmail(email)) {
-                errorDiv.textContent = 'Please enter a valid email.';
-                errorDiv.style.display = 'block';
-            } else {
-                errorDiv.style.display = 'none';
+            // Real-time email validation
+            const resetEmailEl = document.getElementById('resetEmail');
+            if (resetEmailEl) {
+                resetEmailEl.addEventListener('input', function() {
+                    const email = this.value.trim();
+                    const errorDiv = document.getElementById('resetEmail-error');
+                    
+                    if (email && !isValidEmail(email)) {
+                        if (errorDiv) {
+                            errorDiv.textContent = 'Please enter a valid email.';
+                            errorDiv.style.display = 'block';
+                        }
+                    } else {
+                        if (errorDiv) errorDiv.style.display = 'none';
+                    }
+                });
             }
-        });
-        
-        // New Password Form Handler
-        document.getElementById('newPasswordForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+            
+            // New Password Form Handler
+            const newPasswordForm = document.getElementById('newPasswordForm');
+            if (newPasswordForm) {
+                newPasswordForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
             
             const password = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
@@ -917,14 +962,19 @@
                 console.error('Error:', error);
                 document.getElementById('newPassword-error').textContent = 'An error occurred. Please try again.';
                 document.getElementById('newPassword-error').style.display = 'block';
-            } finally {
-                proceedButton.disabled = false;
-                spinner.style.display = 'none';
+                } finally {
+                    if (proceedButton) {
+                        proceedButton.disabled = false;
+                        if (spinner) spinner.style.display = 'none';
+                    }
+                }
+                });
             }
-        });
-        
-        // Real-time password validation
-        document.getElementById('newPassword').addEventListener('input', function() {
+            
+            // Real-time password validation
+            const newPasswordEl = document.getElementById('newPassword');
+            if (newPasswordEl) {
+                newPasswordEl.addEventListener('input', function() {
             const password = this.value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const newPasswordError = document.getElementById('newPassword-error');
@@ -947,9 +997,12 @@
                 confirmPasswordError.textContent = 'Passwords do not match.';
                 confirmPasswordError.style.display = 'block';
             }
-        });
-        
-        document.getElementById('confirmPassword').addEventListener('input', function() {
+                });
+            }
+            
+            const confirmPasswordEl = document.getElementById('confirmPassword');
+            if (confirmPasswordEl) {
+                confirmPasswordEl.addEventListener('input', function() {
             const password = document.getElementById('newPassword').value;
             const confirmPassword = this.value;
             const newPasswordError = document.getElementById('newPassword-error');
@@ -974,8 +1027,8 @@
             }
         });
         
-        // OTP Input handling
-        document.querySelectorAll('.otp-input').forEach((input, index) => {
+            // OTP Input handling
+            document.querySelectorAll('.otp-input').forEach((input, index) => {
             input.addEventListener('input', function(e) {
                 const value = e.target.value.replace(/\D/g, '');
                 e.target.value = value;
@@ -1015,14 +1068,17 @@
             });
         });
         
-        function updateOTPCode() {
-            const inputs = document.querySelectorAll('.otp-input');
-            const otpCode = Array.from(inputs).map(input => input.value).join('');
-            document.getElementById('otpCode').value = otpCode;
-        }
-        
-        // OTP Verification Form Handler
-        document.getElementById('otpVerificationForm').addEventListener('submit', async function(e) {
+            function updateOTPCode() {
+                const inputs = document.querySelectorAll('.otp-input');
+                const otpCode = Array.from(inputs).map(input => input.value).join('');
+                const otpCodeEl = document.getElementById('otpCode');
+                if (otpCodeEl) otpCodeEl.value = otpCode;
+            }
+            
+            // OTP Verification Form Handler
+            const otpVerificationForm = document.getElementById('otpVerificationForm');
+            if (otpVerificationForm) {
+                otpVerificationForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const otpCode = document.getElementById('otpCode').value;
@@ -1064,18 +1120,24 @@
                     document.getElementById('otp-error').textContent = data.error || 'Invalid or expired verification code. Please try again.';
                     document.getElementById('otp-error').style.display = 'block';
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('otp-error').textContent = 'An error occurred. Please try again.';
-                document.getElementById('otp-error').style.display = 'block';
-            } finally {
-                verifyButton.disabled = false;
-                spinner.style.display = 'none';
+                } catch (error) {
+                    console.error('Error:', error);
+                    const otpError = document.getElementById('otp-error');
+                    if (otpError) {
+                        otpError.textContent = 'An error occurred. Please try again.';
+                        otpError.style.display = 'block';
+                    }
+                } finally {
+                    if (verifyButton) {
+                        verifyButton.disabled = false;
+                        if (spinner) spinner.style.display = 'none';
+                    }
+                }
+                });
             }
-        });
-        
-        // Resend OTP
-        async function resendOTP() {
+            
+            // Resend OTP
+            async function resendOTP() {
             if (!resetEmail) return;
             
             const resendLink = document.getElementById('resendOTPLink');
@@ -1110,44 +1172,57 @@
             }
         }
         
-        document.getElementById('resendOTPLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            resendOTP();
-        });
-        
-        // Password visibility toggles
-        document.getElementById('toggleNewPassword').addEventListener('click', function() {
-            const passwordField = document.getElementById('newPassword');
-            const icon = document.getElementById('newPasswordIcon');
-            
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+            const resendOTPLink = document.getElementById('resendOTPLink');
+            if (resendOTPLink) {
+                resendOTPLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    resendOTP();
+                });
             }
-        });
-        
-        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
-            const passwordField = document.getElementById('confirmPassword');
-            const icon = document.getElementById('confirmPasswordIcon');
             
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+            // Password visibility toggles
+            const toggleNewPassword = document.getElementById('toggleNewPassword');
+            if (toggleNewPassword) {
+                toggleNewPassword.addEventListener('click', function() {
+                    const passwordField = document.getElementById('newPassword');
+                    const icon = document.getElementById('newPasswordIcon');
+                    
+                    if (passwordField && icon) {
+                        if (passwordField.type === 'password') {
+                            passwordField.type = 'text';
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        } else {
+                            passwordField.type = 'password';
+                            icon.classList.remove('fa-eye-slash');
+                            icon.classList.add('fa-eye');
+                        }
+                    }
+                });
             }
-        });
-        
-        // OTP Timer
-        function startOTPTimer() {
+            
+            const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+            if (toggleConfirmPassword) {
+                toggleConfirmPassword.addEventListener('click', function() {
+                    const passwordField = document.getElementById('confirmPassword');
+                    const icon = document.getElementById('confirmPasswordIcon');
+                    
+                    if (passwordField && icon) {
+                        if (passwordField.type === 'password') {
+                            passwordField.type = 'text';
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        } else {
+                            passwordField.type = 'password';
+                            icon.classList.remove('fa-eye-slash');
+                            icon.classList.add('fa-eye');
+                        }
+                    }
+                });
+            }
+            
+            // OTP Timer
+            function startOTPTimer() {
             let timeLeft = 60;
             const resendLink = document.getElementById('resendOTPLink');
             const timerSpan = document.getElementById('otpTimer');
@@ -1171,13 +1246,24 @@
             }, 1000);
         }
         
-        // Email validation
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
+            // Email validation
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+            
+            // Make functions globally accessible
+            window.showForgotPassword = showForgotPassword;
+            window.startOTPTimer = startOTPTimer;
+            window.resendOTP = resendOTP;
+            window.isValidEmail = isValidEmail;
+            window.createFeedbackContainer = createFeedbackContainer;
+            window.removeFeedbackContainer = removeFeedbackContainer;
+            window.showPasswordResetSuccess = showPasswordResetSuccess;
+            window.hidePasswordResetSuccess = hidePasswordResetSuccess;
+        });
         
-        // Feedback container
+        // Feedback container (global scope)
         function createFeedbackContainer(message) {
             const existingFeedback = document.getElementById('dynamic-feedback');
             if (existingFeedback) {
@@ -1227,7 +1313,7 @@
             }
         }
         
-        // Password Reset Success Toast
+        // Password Reset Success Toast (global scope)
         function showPasswordResetSuccess() {
             const toast = document.getElementById('passwordResetSuccessToast');
             if (toast) {

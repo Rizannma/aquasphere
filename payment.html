@@ -1162,6 +1162,10 @@
                     localStorage.setItem('pendingOrderId', orderResult.order_id);
                     localStorage.setItem('pendingCheckoutItems', JSON.stringify(checkoutItems));
                     localStorage.setItem('paymentRedirectTime', Date.now().toString());
+                    localStorage.setItem('paymongoCheckoutUrl', paymentResult.checkout_url);
+                    
+                    // Store the payment page URL for redirect back
+                    localStorage.setItem('paymentPageUrl', window.location.href);
                     
                     // Redirect to PayMongo checkout
                     window.location.href = paymentResult.checkout_url;
@@ -1291,34 +1295,108 @@
             const paymentRedirectTime = localStorage.getItem('paymentRedirectTime');
             
             if (orderId && paymentRedirectTime) {
+                const timeSinceRedirect = Date.now() - parseInt(paymentRedirectTime);
+                
+                // If more than 5 seconds have passed and user is on payment page without success status
+                // This handles cases where PayMongo doesn't redirect
+                if (timeSinceRedirect > 5000) {
+                    const currentStatus = new URLSearchParams(window.location.search).get('status');
+                    const currentHash = window.location.hash;
+                    const referrer = document.referrer;
+                    
+                    // Check if we're on payment page and no success status
+                    if (window.location.pathname.includes('payment.html') && 
+                        !currentStatus && 
+                        !currentHash.includes('success')) {
+                        
+                        // If coming from PayMongo domain or if enough time has passed
+                        if (referrer.includes('paymongo.com') || 
+                            referrer.includes('secure-authentication') || 
+                            timeSinceRedirect > 15000) {
+                            
+                            // Show error modal
+                            showPaymentErrorModal();
+                            localStorage.removeItem('pendingOrderId');
+                            localStorage.removeItem('pendingCheckoutItems');
+                            localStorage.removeItem('paymentRedirectTime');
+                            localStorage.removeItem('paymongoCheckoutUrl');
+                            localStorage.removeItem('paymentPageUrl');
+                            return;
+                        }
+                    }
+                }
+                
                 // Check periodically if user is back on payment page without success
                 const checkInterval = setInterval(() => {
                     const currentStatus = new URLSearchParams(window.location.search).get('status');
                     const currentHash = window.location.hash;
+                    const elapsed = Date.now() - parseInt(paymentRedirectTime);
                     
                     // If no success status and we're on payment page
                     if (!currentStatus && !currentHash.includes('success') && window.location.pathname.includes('payment.html')) {
-                        const timeSinceRedirect = Date.now() - parseInt(paymentRedirectTime);
+                        const referrer = document.referrer;
                         
-                        // After 3 seconds, if still no redirect happened, show error
-                        if (timeSinceRedirect > 3000) {
-                            const referrer = document.referrer;
-                            // If coming from PayMongo or if user manually navigated
-                            if (referrer.includes('paymongo.com') || referrer.includes('secure-authentication') || timeSinceRedirect > 10000) {
+                        // After 5 seconds, if coming from PayMongo or manually navigated
+                        if (elapsed > 5000) {
+                            if (referrer.includes('paymongo.com') || 
+                                referrer.includes('secure-authentication') || 
+                                elapsed > 15000) {
                                 clearInterval(checkInterval);
                                 showPaymentErrorModal();
                                 localStorage.removeItem('pendingOrderId');
                                 localStorage.removeItem('pendingCheckoutItems');
                                 localStorage.removeItem('paymentRedirectTime');
+                                localStorage.removeItem('paymongoCheckoutUrl');
+                                localStorage.removeItem('paymentPageUrl');
                             }
                         }
                     } else if (currentStatus === 'success') {
                         clearInterval(checkInterval);
+                        localStorage.removeItem('paymentRedirectTime');
+                        localStorage.removeItem('paymongoCheckoutUrl');
+                        localStorage.removeItem('paymentPageUrl');
                     }
-                }, 1000);
+                }, 2000);
                 
-                // Stop checking after 30 seconds
-                setTimeout(() => clearInterval(checkInterval), 30000);
+                // Stop checking after 60 seconds
+                setTimeout(() => clearInterval(checkInterval), 60000);
+            }
+        }
+        
+        // Check if user manually navigated to payment page with pending order
+        function checkPendingPaymentOnLoad() {
+            const orderId = localStorage.getItem('pendingOrderId');
+            const paymentRedirectTime = localStorage.getItem('paymentRedirectTime');
+            const paymongoUrl = localStorage.getItem('paymongoCheckoutUrl');
+            
+            if (orderId && paymentRedirectTime && paymongoUrl) {
+                const timeSinceRedirect = Date.now() - parseInt(paymentRedirectTime);
+                const currentStatus = new URLSearchParams(window.location.search).get('status');
+                
+                // If user is on payment page, has pending order, no success status, and enough time passed
+                if (window.location.pathname.includes('payment.html') && 
+                    !currentStatus && 
+                    timeSinceRedirect > 10000) { // 10 seconds
+                    
+                    // Check if they might have come from PayMongo (or manually navigated)
+                    const referrer = document.referrer;
+                    if (!referrer || 
+                        referrer.includes('paymongo.com') || 
+                        referrer.includes('secure-authentication') ||
+                        referrer === '' || // Direct navigation
+                        timeSinceRedirect > 30000) { // 30 seconds - definitely expired
+                        
+                        // Show error modal
+                        setTimeout(() => {
+                            showPaymentErrorModal();
+                            localStorage.removeItem('pendingOrderId');
+                            localStorage.removeItem('pendingCheckoutItems');
+                            localStorage.removeItem('paymentRedirectTime');
+                            localStorage.removeItem('paymongoCheckoutUrl');
+                            localStorage.removeItem('paymentPageUrl');
+                        }, 1000);
+                    }
+                }
             }
         }
         
@@ -1559,12 +1637,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadOrderSummary();
             
+            // Check for pending payment on load (handles manual navigation back)
+            checkPendingPaymentOnLoad();
+            
             // Check for payment redirect immediately
             handlePaymentRedirect();
             
             // Also check after a short delay to catch any late redirects
             setTimeout(() => {
                 handlePaymentRedirect();
+                checkPendingPaymentOnLoad();
             }, 500);
             
             // Start monitoring for manual return from PayMongo
@@ -1577,6 +1659,24 @@
             setTimeout(() => {
                 initializeDropdown();
             }, 1000);
+        });
+        
+        // Also check when page becomes visible (user switches back to tab)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                setTimeout(() => {
+                    checkPendingPaymentOnLoad();
+                    handlePaymentRedirect();
+                }, 300);
+            }
+        });
+        
+        // Check on focus (user clicks back to window)
+        window.addEventListener('focus', function() {
+            setTimeout(() => {
+                checkPendingPaymentOnLoad();
+                handlePaymentRedirect();
+            }, 300);
         });
         
         // Also check for payment failure on hash change

@@ -165,6 +165,16 @@ function init_db() {
         error_log("Failed to create users table: " . ($GLOBALS['use_postgres'] ? pg_last_error($conn) : "SQLite error"));
     }
     
+    // Ensure persistence columns exist for carts and addresses
+    if ($GLOBALS['use_postgres']) {
+        execute_sql($conn, "ALTER TABLE users ADD COLUMN IF NOT EXISTS saved_cart JSONB");
+        execute_sql($conn, "ALTER TABLE users ADD COLUMN IF NOT EXISTS delivery_address JSONB");
+    } else {
+        // SQLite: add columns if missing (ignore errors if they exist)
+        @execute_sql($conn, "ALTER TABLE users ADD COLUMN saved_cart TEXT");
+        @execute_sql($conn, "ALTER TABLE users ADD COLUMN delivery_address TEXT");
+    }
+    
     // Create system_settings table
     $query = "
     CREATE TABLE IF NOT EXISTS system_settings (

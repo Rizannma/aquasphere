@@ -2651,7 +2651,31 @@
         // Track selected items across all pages
         let selectedItems = new Set(JSON.parse(localStorage.getItem('selectedCartItems') || '[]'));
         
-        // Load cart from localStorage
+        // Debounced server persistence
+        let persistTimer = null;
+        function queuePersistState() {
+            if (persistTimer) clearTimeout(persistTimer);
+            persistTimer = setTimeout(persistStateToServer, 700);
+        }
+
+        async function persistStateToServer() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const address = JSON.parse(localStorage.getItem('deliveryAddress') || 'null');
+                await fetch('api/user_state_save.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cart,
+                        delivery_address: address
+                    })
+                });
+            } catch (e) {
+                console.warn('Persist state failed (will retry later on next change)', e);
+            }
+        }
+
+        // Load cart from localStorage (after server sync)
         function loadCart() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const cartItemsList = document.getElementById('cartItemsList');
@@ -2691,6 +2715,7 @@
             
             // Update select all state after rendering
             updateSelectAllState();
+            queuePersistState();
         }
         
         // Clear selection when cart is empty
@@ -2824,6 +2849,7 @@
             }
             
             localStorage.setItem('cart', JSON.stringify(cart));
+            queuePersistState();
             updateCartCount(); // Update navbar count immediately
             loadCart();
         }
@@ -4232,6 +4258,7 @@
             };
             
             localStorage.setItem('deliveryAddress', JSON.stringify(address));
+            queuePersistState();
             loadAddress();
             updateCheckoutButton(); // Enable checkout when address is saved
             closeAddressModal();
@@ -4241,6 +4268,7 @@
         function deleteAddress() {
             showDeleteConfirmModal(() => {
                 localStorage.removeItem('deliveryAddress');
+                queuePersistState();
                 loadAddress();
                 updateCheckoutButton(); // Disable checkout when address is deleted
                 showNotification('Delivery address deleted successfully!', 'success');
@@ -5283,10 +5311,31 @@
             showLogoutConfirmModal();
         }
         
+        async function hydrateStateFromServer() {
+            try {
+                const resp = await fetch('api/user_state_get.php');
+                if (!resp.ok) return;
+                const data = await resp.json();
+                if (data && data.success) {
+                    if (Array.isArray(data.cart)) {
+                        localStorage.setItem('cart', JSON.stringify(data.cart));
+                    }
+                    if (data.delivery_address !== undefined) {
+                        localStorage.setItem('deliveryAddress', JSON.stringify(data.delivery_address));
+                    }
+                }
+            } catch (e) {
+                console.warn('Unable to hydrate state from server, using local storage', e);
+            }
+        }
+
         // Initialize
-        loadCart();
-        loadAddress();
-        initializeLocationDropdowns();
+        (async () => {
+            await hydrateStateFromServer();
+            loadCart();
+            loadAddress();
+            initializeLocationDropdowns();
+        })();
         
         // Navbar scroll effect (only shadow, no size changes)
         window.addEventListener('scroll', function() {

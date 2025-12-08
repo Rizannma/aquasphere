@@ -1545,9 +1545,10 @@
         // Go to specific page
         function goToPage(page) {
             const totalPages = Math.ceil(allOrders.length / ordersPerPage);
-            if (page < 1 || page > totalPages) return;
+            const targetPage = Math.max(1, Math.min(totalPages, parseInt(page, 10)));
+            if (targetPage === currentPage) return;
             
-            currentPage = page;
+            currentPage = targetPage;
             renderOrders();
             
             // Scroll to top of orders list

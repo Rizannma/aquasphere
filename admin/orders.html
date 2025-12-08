@@ -336,6 +336,7 @@
             font-family: inherit;
             color: #0f172a;
             line-height: 1.5;
+            font-weight: 600;
         }
 
         /* Update status modal styling */
@@ -834,17 +835,17 @@
                 const region = address.region || '';
                 const postal = address.postalCode || '';
                 
-                if (fullName) parts.push(fullName);
+                if (fullName) parts.push(`Name: ${fullName}`);
                 if (phone) parts.push(`Phone: ${phone}`);
                 
                 const line1 = [street, barangay].filter(Boolean).join(', ');
-                if (line1) parts.push(line1);
+                if (line1) parts.push(`Street/Brgy: ${line1}`);
                 
                 const line2 = [city, province].filter(Boolean).join(', ');
-                if (line2) parts.push(line2);
+                if (line2) parts.push(`City/Province: ${line2}`);
                 
                 const line3 = [region, postal].filter(Boolean).join(' ');
-                if (line3.trim()) parts.push(line3.trim());
+                if (line3.trim()) parts.push(`Region/Postal: ${line3.trim()}`);
                 
                 if (address.label) parts.push(`Label: ${address.label}`);
                 return parts.filter(Boolean).join('\n');

@@ -103,7 +103,10 @@ body {
 
 .nav-link i {
     font-size: 20.8px;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 /* Cart icon specific styling for badge positioning */
@@ -118,6 +121,7 @@ body {
     justify-content: center;
     width: 24px;
     height: 24px;
+    line-height: 1;
 }
 
 /* User dropdown styling */

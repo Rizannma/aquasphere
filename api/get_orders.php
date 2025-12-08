@@ -29,8 +29,20 @@ $user_id = $_SESSION['user_id'];
 init_db();
 $conn = get_db_connection();
 
-// Get orders with items
+// Pagination inputs
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 10;
+$offset = ($page - 1) * $limit;
+
+// Get total count first
 if ($GLOBALS['use_postgres']) {
+    $count_query = "SELECT COUNT(*) AS total FROM orders o WHERE o.user_id = $1";
+    $count_result = execute_sql($conn, $count_query, [$user_id]);
+    $total = 0;
+    if ($count_result && ($row = pg_fetch_assoc($count_result))) {
+        $total = intval($row['total']);
+    }
+
     $query = "
         SELECT 
             o.id,
@@ -60,8 +72,9 @@ if ($GLOBALS['use_postgres']) {
         WHERE o.user_id = $1
         GROUP BY o.id
         ORDER BY o.order_date DESC
+        LIMIT $2 OFFSET $3
     ";
-    $result = execute_sql($conn, $query, [$user_id]);
+    $result = execute_sql($conn, $query, [$user_id, $limit, $offset]);
     
     $orders = [];
     if ($result !== false) {
@@ -73,6 +86,13 @@ if ($GLOBALS['use_postgres']) {
     }
 } else {
     // SQLite version
+    $count_query = "SELECT COUNT(*) AS total FROM orders o WHERE o.user_id = ?";
+    $count_result = execute_sql($conn, $count_query, [$user_id]);
+    $total = 0;
+    if ($count_result && ($row = $count_result->fetchArray(SQLITE3_ASSOC))) {
+        $total = intval($row['total']);
+    }
+
     $query = "
         SELECT 
             o.id,
@@ -88,8 +108,9 @@ if ($GLOBALS['use_postgres']) {
         FROM orders o
         WHERE o.user_id = ?
         ORDER BY o.order_date DESC
+        LIMIT ? OFFSET ?
     ";
-    $result = execute_sql($conn, $query, [$user_id]);
+    $result = execute_sql($conn, $query, [$user_id, $limit, $offset]);
     
     $orders = [];
     if ($result !== false) {
@@ -114,9 +135,17 @@ if ($GLOBALS['use_postgres']) {
 
 close_connection($conn);
 
+$totalPages = max(1, ceil($total / $limit));
+
 echo json_encode([
     'success' => true,
-    'orders' => $orders
+    'orders' => $orders,
+    'pagination' => [
+        'page' => $page,
+        'limit' => $limit,
+        'total' => $total,
+        'total_pages' => $totalPages
+    ]
 ]);
 ?>
 

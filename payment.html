@@ -1439,20 +1439,20 @@
             console.log('Time since redirect:', timeSinceRedirect, 'ms');
             
             // Handle success case FIRST - before checking referrer
-            if (status === 'success') {
+                if (status === 'success') {
                 // Clear PayMongo redirect flag
                 sessionStorage.removeItem('paymongo_redirect');
                 sessionStorage.removeItem('paymongo_redirect_time');
                 
                 await UserState.loadState();
                 const pendingCheckoutItems = UserState.getPendingCheckoutItems() || [];
-                
-                // Remove ordered items from cart
-                if (pendingCheckoutItems.length > 0) {
-                    removeOrderedItemsFromCart(pendingCheckoutItems);
-                }
-                
-                // Clear checkout items and pending data
+                    
+                    // Remove ordered items from cart
+                    if (pendingCheckoutItems.length > 0) {
+                        removeOrderedItemsFromCart(pendingCheckoutItems);
+                    }
+                    
+                    // Clear checkout items and pending data
                 UserState.setCheckoutItems([]);
                 UserState.setPendingOrderId(null);
                 UserState.setPendingCheckoutItems(null);
@@ -1467,12 +1467,12 @@
                         updateOrderCount();
                     }, 1000);
                 }
-                
-                showNotification('Payment successful! Your order has been placed.', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'orders.html';
-                }, 2000);
+                    
+                    showNotification('Payment successful! Your order has been placed.', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'orders.html';
+                    }, 2000);
                 return;
             }
             
@@ -1482,8 +1482,8 @@
                 sessionStorage.removeItem('paymongo_redirect');
                 sessionStorage.removeItem('paymongo_redirect_time');
                 showPaymentErrorModal();
-                // Clean URL
-                window.history.replaceState({}, document.title, window.location.pathname);
+                    // Clean URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
                 return;
             }
             
@@ -1494,10 +1494,7 @@
             const referrer = document.referrer;
             
             // Check if coming from PayMongo (user clicked fail/back)
-            // Multiple conditions to detect failed payment:
-            // 1. SessionStorage flag indicates PayMongo redirect (most reliable)
-            // 2. Referrer indicates PayMongo
-            // 3. OR there's a pending order but no success status (payment was initiated but failed)
+            // Only show modal if there's clear evidence of PayMongo redirect
             const isFromPayMongo = paymongoRedirect || (referrer && (
                 referrer.includes('paymongo.com') || 
                 referrer.includes('secure-authentication') ||
@@ -1508,14 +1505,12 @@
             console.log('pendingOrderId:', pendingOrderId);
             console.log('timeSinceRedirect:', timeSinceRedirect, 'ms');
             
-            // Show error modal if:
-            // - SessionStorage flag exists (most reliable - user went to PayMongo)
-            // - OR coming from PayMongo (via referrer) AND no success status
-            // - OR there's a pending order but no success status
-            // Don't check time limit for sessionStorage flag - it's reliable
-            const shouldShowModal = paymongoRedirect || 
-                                   (isFromPayMongo && !status) || 
-                                   (pendingOrderId && !status);
+            // Show error modal ONLY if:
+            // 1. SessionStorage flag exists (user went to PayMongo) AND no success status
+            // 2. OR referrer indicates PayMongo AND no success status
+            // Do NOT show just because there's a pendingOrderId - it might be stale
+            const shouldShowModal = (paymongoRedirect && !status) || 
+                                   (isFromPayMongo && !status);
             
             console.log('shouldShowModal:', shouldShowModal);
             
@@ -1530,6 +1525,15 @@
                 return;
             } else {
                 console.log('Conditions not met for showing modal');
+                
+                // Clear stale pending order state if user is just on payment page normally
+                // (not returning from PayMongo)
+                if (pendingOrderId && !isFromPayMongo && !paymongoRedirect) {
+                    console.log('Clearing stale pending order state');
+                    UserState.setPendingOrderId(null);
+                    UserState.setPendingCheckoutItems(null);
+                    UserState.setPaymentRedirectTime(null);
+                }
             }
         }
         
@@ -1892,7 +1896,7 @@
         }
         
         // Initialize on page load - SIMPLIFIED: Just check once
-        document.addEventListener('DOMContentLoaded', function() {
+                            document.addEventListener('DOMContentLoaded', function() {
             // Reset modal flag on fresh page load
             paymentErrorModalShown = false;
             
@@ -1900,7 +1904,7 @@
             
             // Check for payment redirect once on page load (with delay to ensure state is loaded)
             setTimeout(() => {
-                handlePaymentRedirect();
+                    handlePaymentRedirect();
             }, 500);
             
             // Initialize dropdown after navbar loads

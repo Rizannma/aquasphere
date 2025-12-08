@@ -2656,6 +2656,7 @@
                     itemCountBadge.textContent = '0 items';
                 }
                 checkoutBtn.disabled = true;
+                clearSelection();
                 updateSummary();
                 return;
             }
@@ -2672,6 +2673,15 @@
             
             // Render current page items
             renderCartItems(cart);
+            
+            // Update select all state after rendering
+            updateSelectAllState();
+        }
+        
+        // Clear selection when cart is empty
+        function clearSelection() {
+            selectedItems.clear();
+            localStorage.removeItem('selectedCartItems');
         }
         
         function renderCartItems(cart) {
@@ -2861,49 +2871,114 @@
             updateCheckoutButton();
         }
         
-        // Toggle select all
-        function toggleSelectAll() {
+        // Toggle individual item selection
+        function toggleItemSelection(itemId, isChecked) {
+            if (isChecked) {
+                selectedItems.add(itemId);
+            } else {
+                selectedItems.delete(itemId);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('selectedCartItems', JSON.stringify(Array.from(selectedItems)));
+            
+            updateSummary();
+            updateSelectAllState();
+        }
+        
+        // Update select all checkbox state
+        function updateSelectAllState() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('.item-checkbox-input');
             const deleteAllBtn = document.getElementById('deleteAllBtn');
             
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = selectAll.checked;
-            });
+            if (cart.length === 0) {
+                selectAll.checked = false;
+                deleteAllBtn.style.display = 'none';
+                return;
+            }
             
-            // Show/hide delete all button
-            if (selectAll.checked && checkboxes.length > 0) {
+            // Check if all items are selected
+            const allSelected = cart.every(item => selectedItems.has(item.id));
+            selectAll.checked = allSelected;
+            
+            // Show/hide delete all button based on if any items are selected
+            if (selectedItems.size > 0) {
                 deleteAllBtn.style.display = 'flex';
             } else {
                 deleteAllBtn.style.display = 'none';
             }
             
-            updateSummary();
+            // Update visible checkboxes to match selection state
+            document.querySelectorAll('.item-checkbox-input').forEach(checkbox => {
+                const cartItem = checkbox.closest('.cart-item');
+                const itemId = parseInt(cartItem.getAttribute('data-item-id'));
+                checkbox.checked = selectedItems.has(itemId);
+            });
         }
         
-        // Delete all selected items
-        function deleteAllSelected() {
-            showDeleteConfirmModal(() => {
-                const cart = JSON.parse(localStorage.getItem('cart')) || [];
-                const selectedItems = [];
-                
-                document.querySelectorAll('.item-checkbox-input:checked').forEach(checkbox => {
-                    const cartItem = checkbox.closest('.cart-item');
-                    const itemId = parseInt(cartItem.getAttribute('data-item-id'));
-                    selectedItems.push(itemId);
+        // Toggle select all (works across all pages)
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (selectAll.checked) {
+                // Select all items across all pages
+                cart.forEach(item => {
+                    selectedItems.add(item.id);
                 });
-                
-                // Remove selected items from cart
-                const updatedCart = cart.filter(item => !selectedItems.includes(item.id));
+            } else {
+                // Deselect all items
+                selectedItems.clear();
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('selectedCartItems', JSON.stringify(Array.from(selectedItems)));
+            
+            // Update visible checkboxes
+            document.querySelectorAll('.item-checkbox-input').forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateSummary();
+            updateSelectAllState();
+        }
+        
+        // Delete all selected items (works across all pages)
+        function deleteAllSelected() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const selectedCount = selectedItems.size;
+            
+            if (selectedCount === 0) {
+                showNotification('No items selected', 'warning');
+                return;
+            }
+            
+            showDeleteConfirmModal(() => {
+                // Remove all selected items from cart
+                const updatedCart = cart.filter(item => !selectedItems.has(item.id));
                 localStorage.setItem('cart', JSON.stringify(updatedCart));
+                
+                // Clear selection
+                selectedItems.clear();
+                localStorage.removeItem('selectedCartItems');
                 
                 // Uncheck select all
                 document.getElementById('selectAll').checked = false;
                 document.getElementById('deleteAllBtn').style.display = 'none';
                 
+                // Reset to page 1 if current page is empty
+                const totalPages = Math.ceil(updatedCart.length / itemsPerPage);
+                if (currentPage > totalPages && totalPages > 0) {
+                    currentPage = totalPages;
+                } else if (totalPages === 0) {
+                    currentPage = 1;
+                }
+                
                 loadCart();
-                showNotification('Selected items deleted successfully!', 'success');
-            }, 'Are you sure you want to delete all selected items?');
+                updateCartCount();
+                showNotification(`${selectedCount} item${selectedCount !== 1 ? 's' : ''} deleted successfully!`, 'success');
+            }, `Are you sure you want to delete ${selectedCount} selected item${selectedCount !== 1 ? 's' : ''}?`);
         }
         
         // Update cart count in navbar
@@ -2925,24 +3000,23 @@
         // Proceed to checkout
         function proceedToCheckout() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const selectedItems = [];
+            const checkoutItems = [];
             
-            document.querySelectorAll('.item-checkbox-input:checked').forEach(checkbox => {
-                const cartItem = checkbox.closest('.cart-item');
-                const itemId = parseInt(cartItem.getAttribute('data-item-id'));
+            // Get all selected items (across all pages)
+            selectedItems.forEach(itemId => {
                 const item = cart.find(i => i.id === itemId);
                 if (item) {
-                    selectedItems.push(item);
+                    checkoutItems.push(item);
                 }
             });
             
-            if (selectedItems.length === 0) {
+            if (checkoutItems.length === 0) {
                 showNotification('Please select at least one item', 'error');
                 return;
             }
             
             // Store selected items for checkout
-            localStorage.setItem('checkoutItems', JSON.stringify(selectedItems));
+            localStorage.setItem('checkoutItems', JSON.stringify(checkoutItems));
             
             // Show checkout loading modal
             showCheckoutLoading();

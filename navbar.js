@@ -73,6 +73,9 @@ function initializeNavbar() {
     
     // Update cart count
     updateCartCount();
+    
+    // Update order count
+    updateOrderCount();
 }
 
 // Load user data for navbar
@@ -134,6 +137,60 @@ function updateCartCount() {
 
 // Make updateCartCount available globally so pages can call it
 window.updateCartCount = updateCartCount;
+
+// Update order count in navbar
+function updateOrderCount() {
+    // Check if user is logged in
+    const userData = JSON.parse(localStorage.getItem('loggedInUser')) || 
+                     JSON.parse(localStorage.getItem('userData')) || 
+                     JSON.parse(sessionStorage.getItem('userData')) || null;
+    
+    if (!userData || !userData.user_id) {
+        // Hide badge if not logged in
+        const ordersCountEl = document.getElementById('ordersCount');
+        if (ordersCountEl) {
+            ordersCountEl.style.display = 'none';
+        }
+        return;
+    }
+    
+    // Fetch orders from API
+    fetch('api/get_orders.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch orders');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.orders) {
+                const orderCount = data.orders.length;
+                const ordersCountEl = document.getElementById('ordersCount');
+                if (ordersCountEl) {
+                    ordersCountEl.textContent = orderCount;
+                    // Hide badge when count is 0, only show when there are orders
+                    ordersCountEl.style.display = orderCount > 0 ? 'flex' : 'none';
+                }
+            } else {
+                // Hide badge on error
+                const ordersCountEl = document.getElementById('ordersCount');
+                if (ordersCountEl) {
+                    ordersCountEl.style.display = 'none';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching order count:', error);
+            // Hide badge on error
+            const ordersCountEl = document.getElementById('ordersCount');
+            if (ordersCountEl) {
+                ordersCountEl.style.display = 'none';
+            }
+        });
+}
+
+// Make updateOrderCount available globally so pages can call it
+window.updateOrderCount = updateOrderCount;
 
 // Load navbar immediately (before DOMContentLoaded to prevent lag)
 // This ensures navbar appears instantly without delay

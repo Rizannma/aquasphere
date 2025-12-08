@@ -190,4 +190,42 @@ body {
     right: -5px;
 }
 
+/* Orders icon specific styling for badge positioning */
+#navOrders {
+    position: relative;
+}
+
+#navOrders i {
+    position: relative;
+}
+
+.orders-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+    min-width: 20px;
+    min-height: 20px;
+    box-sizing: border-box;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+/* Ensure badge is positioned relative to the orders icon */
+#navOrders .orders-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+}
+
 

@@ -488,6 +488,54 @@
             color: white;
         }
         
+        /* Pagination Styles */
+        .pagination {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .pagination .page-item {
+            display: inline-block;
+        }
+        
+        .pagination .page-link {
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: #0369a1;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            min-width: 44px;
+            text-align: center;
+        }
+        
+        .pagination .page-link:hover {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            border-color: #0ea5e9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            border-color: #0ea5e9;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+        
+        .pagination .page-item.disabled .page-link {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
         /* Footer Styles */
         .footer {
             background: #0369a1;
@@ -599,6 +647,15 @@
                         </a>
                     </div>
                 </div>
+                
+                <!-- Pagination -->
+                <div id="ordersPagination" style="display: none; margin-top: 2rem; text-align: center;">
+                    <nav aria-label="Orders pagination">
+                        <ul class="pagination justify-content-center" id="paginationList" style="gap: 0.5rem;">
+                            <!-- Pagination buttons will be inserted here -->
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
@@ -663,6 +720,11 @@
     <script src="navbar.js"></script>
     
     <script>
+        // Pagination variables
+        let allOrders = [];
+        let currentPage = 1;
+        const ordersPerPage = 3;
+        
         // Load orders
         async function loadOrders() {
             try {
@@ -674,27 +736,153 @@
                     return;
                 }
                 
-                const orders = result.orders || [];
+                allOrders = result.orders || [];
                 const ordersList = document.getElementById('ordersList');
                 const emptyOrders = document.getElementById('emptyOrders');
                 
-                if (orders.length === 0) {
+                if (allOrders.length === 0) {
                     emptyOrders.style.display = 'block';
                     ordersList.innerHTML = '';
                     ordersList.appendChild(emptyOrders);
+                    document.getElementById('ordersPagination').style.display = 'none';
                     return;
                 }
                 
                 emptyOrders.style.display = 'none';
-                ordersList.innerHTML = '';
-                
-                orders.forEach(order => {
-                    const orderCard = createOrderCard(order);
-                    ordersList.appendChild(orderCard);
-                });
+                currentPage = 1; // Reset to first page
+                renderOrders();
             } catch (error) {
                 console.error('Error loading orders:', error);
                 showNotification('Failed to load orders. Please try again.', 'error');
+            }
+        }
+        
+        // Render orders with pagination
+        function renderOrders() {
+            const ordersList = document.getElementById('ordersList');
+            const emptyOrders = document.getElementById('emptyOrders');
+            const pagination = document.getElementById('ordersPagination');
+            
+            if (allOrders.length === 0) {
+                emptyOrders.style.display = 'block';
+                ordersList.innerHTML = '';
+                ordersList.appendChild(emptyOrders);
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            emptyOrders.style.display = 'none';
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(allOrders.length / ordersPerPage);
+            const startIndex = (currentPage - 1) * ordersPerPage;
+            const endIndex = startIndex + ordersPerPage;
+            const currentOrders = allOrders.slice(startIndex, endIndex);
+            
+            // Clear and render current page orders
+            ordersList.innerHTML = '';
+            currentOrders.forEach(order => {
+                const orderCard = createOrderCard(order);
+                ordersList.appendChild(orderCard);
+            });
+            
+            // Render pagination
+            renderPagination(totalPages);
+        }
+        
+        // Render pagination controls
+        function renderPagination(totalPages) {
+            const pagination = document.getElementById('ordersPagination');
+            const paginationList = document.getElementById('paginationList');
+            
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            pagination.style.display = 'block';
+            paginationList.innerHTML = '';
+            
+            // Previous button
+            const prevItem = document.createElement('li');
+            prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevItem.innerHTML = `
+                <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            `;
+            paginationList.appendChild(prevItem);
+            
+            // Page numbers
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            // First page
+            if (startPage > 1) {
+                const firstItem = document.createElement('li');
+                firstItem.className = 'page-item';
+                firstItem.innerHTML = `<a class="page-link" href="#" onclick="goToPage(1); return false;">1</a>`;
+                paginationList.appendChild(firstItem);
+                
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('li');
+                    ellipsis.className = 'page-item disabled';
+                    ellipsis.innerHTML = `<span class="page-link">...</span>`;
+                    paginationList.appendChild(ellipsis);
+                }
+            }
+            
+            // Page range
+            for (let i = startPage; i <= endPage; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>`;
+                paginationList.appendChild(pageItem);
+            }
+            
+            // Last page
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('li');
+                    ellipsis.className = 'page-item disabled';
+                    ellipsis.innerHTML = `<span class="page-link">...</span>`;
+                    paginationList.appendChild(ellipsis);
+                }
+                
+                const lastItem = document.createElement('li');
+                lastItem.className = 'page-item';
+                lastItem.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;">${totalPages}</a>`;
+                paginationList.appendChild(lastItem);
+            }
+            
+            // Next button
+            const nextItem = document.createElement('li');
+            nextItem.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextItem.innerHTML = `
+                <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            `;
+            paginationList.appendChild(nextItem);
+        }
+        
+        // Go to specific page
+        function goToPage(page) {
+            const totalPages = Math.ceil(allOrders.length / ordersPerPage);
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            renderOrders();
+            
+            // Scroll to top of orders list
+            const ordersList = document.getElementById('ordersList');
+            if (ordersList) {
+                ordersList.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
         
@@ -858,7 +1046,7 @@
                 
                 if (result.success) {
                     showNotification('Order cancelled successfully', 'success');
-                    // Reload orders
+                    // Reload orders (will maintain current page if possible)
                     setTimeout(() => {
                         loadOrders();
                     }, 1000);

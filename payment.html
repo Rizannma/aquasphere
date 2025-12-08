@@ -1399,30 +1399,6 @@
             const urlHash = window.location.hash;
             const status = urlParams.get('status') || (urlHash.includes('failed') ? 'failed' : null);
             
-            // Handle success case FIRST - don't show error modal for successful payments
-            if (status === 'success') {
-                await UserState.loadState();
-                const pendingCheckoutItems = UserState.getPendingCheckoutItems() || [];
-                
-                // Remove ordered items from cart
-                if (pendingCheckoutItems.length > 0) {
-                    removeOrderedItemsFromCart(pendingCheckoutItems);
-                }
-                
-                // Clear checkout items and pending data
-                UserState.setCheckoutItems([]);
-                UserState.setPendingOrderId(null);
-                UserState.setPendingCheckoutItems(null);
-                UserState.setPaymentRedirectTime(null);
-                
-                showNotification('Payment successful! Your order has been placed.', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'orders.html';
-                }, 2000);
-                return; // Exit early - don't check for errors
-            }
-            
             // Check for failed payment in URL params (PayMongo redirects with ?status=failed)
             if (status === 'failed' || urlHash.includes('failed')) {
                 showPaymentErrorModal();
@@ -1431,24 +1407,17 @@
                 return;
             }
             
-            // Load state to check for pending payment
-            await UserState.loadState();
-            const orderId = UserState.getPendingOrderId();
-            const paymentRedirectTime = UserState.getPaymentRedirectTime();
-            
-            // Only show error modal if:
-            // 1. User came from PayMongo (referrer check)
-            // 2. There's NO success status (already handled above)
-            // 3. There's a pending payment (orderId exists)
-            // 4. User is on payment page
+            // Check if coming from PayMongo (user clicked fail/back)
             const referrer = document.referrer;
-            if (orderId && paymentRedirectTime && 
-                window.location.pathname.includes('payment.html') &&
-                referrer && (referrer.includes('paymongo.com') || referrer.includes('secure-authentication')) &&
-                !status) { // No success status = payment failed/cancelled
+            if (referrer && (referrer.includes('paymongo.com') || referrer.includes('secure-authentication'))) {
+                // User came from PayMongo but no success status = payment failed/cancelled
                 showPaymentErrorModal();
                 return;
             }
+            
+            // Handle success case
+            if (status === 'success') {
+                await UserState.loadState();
                 const pendingCheckoutItems = UserState.getPendingCheckoutItems() || [];
                 
                 // Remove ordered items from cart
@@ -1483,6 +1452,12 @@
             UserState.setPaymentRedirectTime(null);
             UserState.setPaymongoCheckoutUrl(null);
             UserState.setPaymentPageUrl(null);
+            
+            // Stop any monitoring intervals
+            if (paymentMonitoringInterval) {
+                clearInterval(paymentMonitoringInterval);
+                paymentMonitoringInterval = null;
+            }
             
             // Set flag to prevent multiple modals
             paymentErrorModalShown = true;
@@ -1882,5 +1857,4 @@
     </div>
 </body>
 </html>
-
 

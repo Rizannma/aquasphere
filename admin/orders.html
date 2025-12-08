@@ -323,6 +323,16 @@
             font-weight: 700;
             color: #0f172a;
             line-height: 1.4;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+        .detail-value small {
+            display: block;
+            margin-top: 4px;
+            color: #6b7280;
+            font-weight: 600;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
         .section-title {
             font-size: 0.95rem;
@@ -337,6 +347,15 @@
             color: #0f172a;
             line-height: 1.5;
             font-weight: 600;
+        }
+        .order-details-modal .modal-dialog {
+            max-width: 980px;
+        }
+        .order-details-modal .modal-body {
+            background: #f9fbff;
+        }
+        .detail-card.spacious {
+            padding: 14px 16px;
         }
 
         /* Update status modal styling */
@@ -485,7 +504,7 @@
     </div>
 
     <!-- Order Details Modal -->
-    <div class="modal fade" id="orderDetailsModal" tabindex="-1">
+    <div class="modal fade order-details-modal" id="orderDetailsModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -685,9 +704,12 @@
             document.getElementById('modalOrderId').textContent = order.id;
             document.getElementById('orderDetailsContent').innerHTML = `
                 <div class="detail-grid">
-                    <div class="detail-card">
+                    <div class="detail-card spacious">
                         <div class="detail-label">Customer</div>
-                        <div class="detail-value">${escapeHtml(order.username || 'N/A')}<br><small class="text-muted">${escapeHtml(order.email || 'N/A')}</small></div>
+                        <div class="detail-value">
+                            ${escapeHtml(order.username || 'N/A')}
+                            <small>${escapeHtml(order.email || 'N/A')}</small>
+                        </div>
                     </div>
                     <div class="detail-card">
                         <div class="detail-label">Order Date</div>
@@ -712,7 +734,7 @@
                 </div>
                 
                 <h6 class="section-title"><i class="fas fa-map-marker-alt me-2"></i>Delivery Address</h6>
-                <div class="detail-card">
+                <div class="detail-card spacious">
                     <p class="address-block">${escapeHtml(addressText)}</p>
                 </div>
                 

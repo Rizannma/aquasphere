@@ -505,7 +505,7 @@
                             <div class="col-md-6">
                                 <label for="editGender" class="form-label">Gender</label>
                                 <select class="form-select" id="editGender" required autocomplete="off">
-                                    <option value="">Select Gender</option>
+                                    <option value="" disabled selected hidden></option>
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
                                 </select>
@@ -730,12 +730,12 @@
             }
             
             if (!firstName) {
-                showFieldError('editFirstName', 'First name is required.');
+                showFieldError('editFirstName', 'First Name is required.');
                 hasError = true;
             }
             
             if (!lastName) {
-                showFieldError('editLastName', 'Last name is required.');
+                showFieldError('editLastName', 'Last Name is required.');
                 hasError = true;
             }
             
@@ -745,17 +745,17 @@
             }
             
             if (!dateOfBirth) {
-                showFieldError('editDate', 'Birthday is required.');
+                showFieldError('editDateOfBirth', 'Birthday is required.');
                 hasError = true;
             }
             
             if (newPassword || confirmPassword) {
                 if (newPassword.length < 8) {
-                    showFieldError('editNewPassword', 'New password must be at least 8 characters.');
+                    showFieldError('editNewPassword', 'Password must be at least 8 characters.');
                     hasError = true;
                 }
                 if (newPassword !== confirmPassword) {
-                    showFieldError('editConfirmPassword', 'New password and confirmation do not match.');
+                    showFieldError('editConfirmPassword', 'Passwords do not match.');
                     hasError = true;
                 }
             }
@@ -926,7 +926,7 @@
         }
         
         function clearFieldErrors() {
-            const fields = ['editEmail','editFirstName','editLastName','editGender','editDate','editNewPassword','editConfirmPassword'];
+            const fields = ['editEmail','editFirstName','editLastName','editGender','editDateOfBirth','editNewPassword','editConfirmPassword'];
             fields.forEach(id => {
                 const input = document.getElementById(id);
                 const errorEl = document.getElementById(`${id}Error`);

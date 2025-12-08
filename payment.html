@@ -884,8 +884,20 @@
         // Handle PayMongo redirect
         function handlePaymentRedirect() {
             const urlParams = new URLSearchParams(window.location.search);
-            const status = urlParams.get('status');
+            const urlHash = window.location.hash;
+            const status = urlParams.get('status') || (urlHash.includes('failed') ? 'failed' : null);
             const orderId = localStorage.getItem('pendingOrderId');
+            
+            // Check for failed payment in URL hash or query params
+            if (urlHash.includes('failed') || urlParams.get('status') === 'failed') {
+                showPaymentErrorModal();
+                localStorage.removeItem('pendingOrderId');
+                localStorage.removeItem('pendingCheckoutItems');
+                
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+            }
             
             if (status && orderId) {
                 if (status === 'success') {
@@ -908,12 +920,65 @@
                         window.location.href = 'orders.html';
                     }, 2000);
                 } else if (status === 'failed') {
-                    showNotification('Payment failed. Please try again.', 'error');
+                    showPaymentErrorModal();
                     localStorage.removeItem('pendingOrderId');
+                    localStorage.removeItem('pendingCheckoutItems');
                     
                     // Clean URL
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }
+            }
+        }
+        
+        // Show payment error modal
+        function showPaymentErrorModal() {
+            // Create modal if it doesn't exist
+            let errorModal = document.getElementById('paymentErrorModal');
+            if (!errorModal) {
+                errorModal = document.createElement('div');
+                errorModal.id = 'paymentErrorModal';
+                errorModal.className = 'payment-error-modal';
+                errorModal.innerHTML = `
+                    <div class="payment-error-overlay"></div>
+                    <div class="payment-error-container">
+                        <button class="payment-error-close" onclick="closePaymentErrorModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="payment-error-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>Payment Unsuccessful</h3>
+                        <p>Please try again or choose another payment method.</p>
+                        <button class="payment-error-btn" onclick="closePaymentErrorModal()">
+                            <i class="fas fa-check me-2"></i>OK, I Understand
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(errorModal);
+            }
+            
+            // Show modal with animation
+            errorModal.style.display = 'flex';
+            setTimeout(() => {
+                errorModal.classList.add('show');
+            }, 10);
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                if (errorModal.classList.contains('show')) {
+                    closePaymentErrorModal();
+                }
+            }, 5000);
+        }
+        
+        // Close payment error modal
+        function closePaymentErrorModal() {
+            const errorModal = document.getElementById('paymentErrorModal');
+            if (errorModal) {
+                errorModal.classList.remove('show');
+                setTimeout(() => {
+                    errorModal.style.display = 'none';
+                }, 300);
             }
         }
         

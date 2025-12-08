@@ -1073,55 +1073,79 @@
         
         // Show payment error modal
         function showPaymentErrorModal() {
-            // Create modal if it doesn't exist
-            let errorModal = document.getElementById('paymentErrorModal');
-            if (!errorModal) {
-                errorModal = document.createElement('div');
-                errorModal.id = 'paymentErrorModal';
-                errorModal.className = 'payment-error-modal';
-                errorModal.innerHTML = `
-                    <div class="payment-error-overlay"></div>
-                    <div class="payment-error-container">
-                        <button class="payment-error-close" onclick="closePaymentErrorModal()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <div class="payment-error-icon">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <h3>Payment Unsuccessful</h3>
-                        <p>Please try again or choose another payment method.</p>
-                        <button class="payment-error-btn" onclick="closePaymentErrorModal()">
-                            <i class="fas fa-check me-2"></i>OK, I Understand
-                        </button>
-                    </div>
-                `;
-                document.body.appendChild(errorModal);
+            // Remove any existing modal first
+            const existingModal = document.getElementById('paymentErrorModal');
+            if (existingModal) {
+                existingModal.remove();
             }
             
-            // Show modal with animation
-            errorModal.style.display = 'flex';
-            setTimeout(() => {
-                errorModal.classList.add('show');
-            }, 10);
+            // Create modal
+            const errorModal = document.createElement('div');
+            errorModal.id = 'paymentErrorModal';
+            errorModal.className = 'payment-error-modal';
+            errorModal.innerHTML = `
+                <div class="payment-error-overlay"></div>
+                <div class="payment-error-container">
+                    <button class="payment-error-close" onclick="closePaymentErrorModal()" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="payment-error-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <h3>Payment Unsuccessful</h3>
+                    <p>Please try again or choose another payment method.</p>
+                    <button class="payment-error-btn" onclick="closePaymentErrorModal()">
+                        <i class="fas fa-check me-2"></i>OK, I Understand
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(errorModal);
             
-            // Auto-close after 5 seconds
+            // Show modal with animation
             setTimeout(() => {
-                if (errorModal.classList.contains('show')) {
+                errorModal.style.display = 'flex';
+                setTimeout(() => {
+                    errorModal.classList.add('show');
+                }, 10);
+            }, 100);
+            
+            // Auto-close after 6 seconds (give user time to read)
+            const autoCloseTimer = setTimeout(() => {
+                if (errorModal && errorModal.classList.contains('show')) {
                     closePaymentErrorModal();
                 }
-            }, 5000);
+            }, 6000);
+            
+            // Store timer reference for cleanup
+            errorModal._autoCloseTimer = autoCloseTimer;
+            
+            // Close on overlay click
+            const overlay = errorModal.querySelector('.payment-error-overlay');
+            if (overlay) {
+                overlay.addEventListener('click', closePaymentErrorModal);
+            }
         }
         
         // Close payment error modal
         function closePaymentErrorModal() {
             const errorModal = document.getElementById('paymentErrorModal');
             if (errorModal) {
+                // Clear auto-close timer if it exists
+                if (errorModal._autoCloseTimer) {
+                    clearTimeout(errorModal._autoCloseTimer);
+                }
+                
                 errorModal.classList.remove('show');
                 setTimeout(() => {
-                    errorModal.style.display = 'none';
+                    if (errorModal.parentNode) {
+                        errorModal.remove();
+                    }
                 }, 300);
             }
         }
+        
+        // Make function globally available
+        window.closePaymentErrorModal = closePaymentErrorModal;
         
         // Calculate subtotal
         function calculateSubtotal(items) {
@@ -1221,7 +1245,14 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadOrderSummary();
-            handlePaymentRedirect(); // Check if returning from PayMongo
+            
+            // Check for payment redirect immediately
+            handlePaymentRedirect();
+            
+            // Also check after a short delay to catch any late redirects
+            setTimeout(() => {
+                handlePaymentRedirect();
+            }, 500);
             
             // Initialize dropdown after navbar loads
             initializeDropdown();
@@ -1234,17 +1265,26 @@
         
         // Also check for payment failure on hash change
         window.addEventListener('hashchange', function() {
-            if (window.location.hash.includes('failed')) {
+            if (window.location.hash.includes('failed') || window.location.search.includes('status=failed')) {
                 handlePaymentRedirect();
             }
         });
         
-        // Check on page load if hash contains failed
-        if (window.location.hash.includes('failed')) {
+        // Check on page load if URL contains failed status
+        if (window.location.hash.includes('failed') || window.location.search.includes('status=failed')) {
             setTimeout(() => {
                 handlePaymentRedirect();
             }, 500);
         }
+        
+        // Also check when page becomes visible (in case of redirect)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                setTimeout(() => {
+                    handlePaymentRedirect();
+                }, 300);
+            }
+        });
         
         // Listen for navbar load event if available
         window.addEventListener('navbarLoaded', function() {

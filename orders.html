@@ -1420,6 +1420,7 @@
             // Check if elements exist before accessing
             if (!ordersList || !emptyOrders || !pagination) {
                 console.warn('Order elements not found, waiting for DOM...');
+                setTimeout(renderOrders, 120);
                 return;
             }
             
@@ -1522,8 +1523,13 @@
         function createOrderCard(order) {
             const card = document.createElement('div');
             card.className = 'order-card';
-            
-            const status = order.status.toLowerCase();
+
+            // Normalize data to avoid runtime errors on missing fields
+            const safeStatus = typeof order.status === 'string' && order.status.trim() ? order.status : 'pending';
+            const status = safeStatus.toLowerCase();
+            const items = Array.isArray(order.items) ? order.items : [];
+            const totalAmount = parseFloat(order.total_amount || 0);
+
             let statusLabel = status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
             // Special handling for cancellation_requested
             if (status === 'cancellation_requested') {
@@ -1531,8 +1537,11 @@
             }
             
             // Calculate subtotal from items
-            const subtotal = order.items.reduce((sum, item) => sum + parseFloat(item.subtotal), 0);
-            const deliveryFee = parseFloat(order.total_amount) - subtotal;
+            const subtotal = items.reduce((sum, item) => {
+                const itemSubtotal = parseFloat(item?.subtotal || 0);
+                return sum + (isFinite(itemSubtotal) ? itemSubtotal : 0);
+            }, 0);
+            const deliveryFee = Math.max(0, totalAmount - subtotal);
             
             // Determine tracking steps
             const trackingSteps = getTrackingSteps(status);
@@ -1572,7 +1581,7 @@
                             <i class="fas fa-box"></i>
                             Order Items
                         </div>
-                        ${order.items.map(item => `
+                        ${items.map(item => `
                             <div class="order-item">
                                 <div class="item-info">
                                     <div class="item-name">${escapeHtml(item.product_name)}</div>
@@ -1596,7 +1605,7 @@
                         </div>
                         <div class="summary-row total">
                             <span class="summary-label">Total</span>
-                            <span class="summary-value">₱${parseFloat(order.total_amount).toFixed(2)}</span>
+                            <span class="summary-value">₱${totalAmount.toFixed(2)}</span>
                         </div>
                         <div class="summary-row" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #cbd5e1;">
                             <span class="summary-label"><i class="fas fa-credit-card me-1"></i>Payment Method</span>

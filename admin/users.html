@@ -219,15 +219,20 @@
             margin-bottom: 8px;
         }
         
-        .form-control {
+        .form-control, .form-select {
             border-radius: 8px;
             border: 2px solid #e2e8f0;
             padding: 10px 15px;
         }
         
-        .form-control:focus {
+        .form-control:focus, .form-select:focus {
             border-color: #0ea5e9;
             box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.25);
+        }
+        
+        .form-control[readonly] {
+            background: #f8fafc;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -327,7 +332,7 @@
 
     <!-- Edit User Modal -->
     <div class="modal fade" id="editUserModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="fas fa-user-edit me-2"></i>Edit User</h5>
@@ -336,37 +341,42 @@
                 <div class="modal-body">
                     <form id="editUserForm">
                         <input type="hidden" id="editUserId">
-                        <div class="mb-3">
-                            <label for="editFirstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="editFirstName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editLastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="editLastName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="editEmail" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editGender" class="form-label">Gender</label>
-                            <select class="form-control" id="editGender">
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editDateOfBirth" class="form-label">Date of Birth</label>
-                            <input type="date" class="form-control" id="editDateOfBirth">
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="editIsAdmin">
-                                <label class="form-check-label" for="editIsAdmin">
-                                    Admin User
-                                </label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="editUsername" class="form-label">Username (read-only)</label>
+                                <input type="text" class="form-control" id="editUsername" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="editFirstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="editLastName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editGender" class="form-label">Gender</label>
+                                <select class="form-select" id="editGender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editDateOfBirth" class="form-label">Birthday</label>
+                                <input type="date" class="form-control" id="editDateOfBirth">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="editIsAdmin">
+                                    <label class="form-check-label" for="editIsAdmin">
+                                        Admin User
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -427,7 +437,7 @@
                     <td><strong>${escapeHtml(user.username)}</strong></td>
                     <td>${escapeHtml(user.email || 'N/A')}</td>
                     <td>${escapeHtml((user.first_name || '') + ' ' + (user.last_name || '')) || 'N/A'}</td>
-                    <td>${escapeHtml(user.gender || 'N/A')}</td>
+                    <td>${formatGender(user.gender)}</td>
                     <td>
                         ${user.is_admin == 1 
                             ? '<span class="badge bg-danger">Admin</span>' 
@@ -514,10 +524,11 @@
             
             // Populate form
             document.getElementById('editUserId').value = user.id;
+            document.getElementById('editUsername').value = user.username || '';
             document.getElementById('editFirstName').value = user.first_name || '';
             document.getElementById('editLastName').value = user.last_name || '';
             document.getElementById('editEmail').value = user.email || '';
-            document.getElementById('editGender').value = user.gender || '';
+            document.getElementById('editGender').value = (user.gender || '').toLowerCase();
             document.getElementById('editDateOfBirth').value = user.date_of_birth || '';
             document.getElementById('editIsAdmin').checked = user.is_admin == 1;
             
@@ -534,7 +545,7 @@
                 first_name: document.getElementById('editFirstName').value,
                 last_name: document.getElementById('editLastName').value,
                 email: document.getElementById('editEmail').value,
-                gender: document.getElementById('editGender').value,
+                gender: (document.getElementById('editGender').value || '').toLowerCase(),
                 date_of_birth: document.getElementById('editDateOfBirth').value,
                 is_admin: document.getElementById('editIsAdmin').checked ? 1 : 0
             };
@@ -610,6 +621,14 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+        
+        function formatGender(gender) {
+            if (!gender) return 'N/A';
+            const value = gender.toString().toLowerCase();
+            if (value === 'male') return 'Male';
+            if (value === 'female') return 'Female';
+            return gender;
         }
         
         // Show notification

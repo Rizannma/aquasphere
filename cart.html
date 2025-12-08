@@ -4615,23 +4615,52 @@
             }
         }
         
-        // Prevent body scroll while keeping scrollbar visible
+        // Get scrollbar width
+        function getScrollbarWidth() {
+            const outer = document.createElement('div');
+            outer.style.visibility = 'hidden';
+            outer.style.overflow = 'scroll';
+            outer.style.msOverflowStyle = 'scrollbar';
+            outer.style.width = '100px';
+            outer.style.position = 'absolute';
+            outer.style.top = '-9999px';
+            document.body.appendChild(outer);
+            const inner = document.createElement('div');
+            inner.style.width = '100%';
+            outer.appendChild(inner);
+            const scrollbarWidth = outer.offsetWidth - inner.offsetWidth;
+            outer.parentNode.removeChild(outer);
+            return scrollbarWidth;
+        }
+        
+        // Prevent body scroll while keeping scrollbar space (no layout shift)
         function lockBodyScroll() {
+            // Calculate scrollbar width and add padding BEFORE hiding overflow
+            const scrollbarWidth = getScrollbarWidth();
             const scrollY = window.scrollY;
-            document.body.style.position = 'fixed';
-            document.body.style.top = `-${scrollY}px`;
-            document.body.style.width = '100%';
-            // Store scroll position for restoration
+            
+            // Add padding to preserve scrollbar space
+            document.body.style.paddingRight = scrollbarWidth + 'px';
+            // Hide overflow (scrollbar disappears but space remains)
+            document.body.style.overflow = 'hidden';
+            
+            // Store values for restoration
             document.body.dataset.scrollY = scrollY;
+            document.body.dataset.scrollbarWidth = scrollbarWidth;
         }
         
         // Restore body scroll
         function unlockBodyScroll() {
             const scrollY = document.body.dataset.scrollY || 0;
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.width = '';
+            
+            // Remove padding and restore overflow
+            document.body.style.paddingRight = '';
+            document.body.style.overflow = '';
+            
+            // Clean up stored values
             delete document.body.dataset.scrollY;
+            delete document.body.dataset.scrollbarWidth;
+            
             // Restore scroll position
             window.scrollTo(0, parseInt(scrollY) || 0);
         }

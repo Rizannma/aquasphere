@@ -811,7 +811,19 @@
                     const paymentResult = await paymentResponse.json();
                     
                     if (!paymentResult.success) {
-                        throw new Error(paymentResult.message || 'Failed to create payment');
+                        // Show detailed error message
+                        let errorMsg = paymentResult.message || 'Failed to create payment';
+                        
+                        // If debug info is available, log it
+                        if (paymentResult.debug) {
+                            console.error('PayMongo Error Details:', paymentResult.debug);
+                            // In sandbox mode, show more details
+                            if (paymentResult.debug.response) {
+                                errorMsg += ' (Check console for details)';
+                            }
+                        }
+                        
+                        throw new Error(errorMsg);
                     }
                     
                     // Store order ID for later reference

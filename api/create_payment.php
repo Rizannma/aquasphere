@@ -115,7 +115,13 @@ $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $curl_error = curl_error($ch);
 curl_close($ch);
 
+// Log request details for debugging
+error_log("PayMongo API Request - URL: " . $paymongo_api_url . '/sources');
+error_log("PayMongo API Request - Amount: " . ($amount * 100));
+error_log("PayMongo API Request - HTTP Code: " . $http_code);
+
 if ($curl_error) {
+    error_log("PayMongo cURL Error: " . $curl_error);
     echo json_encode([
         'success' => false,
         'message' => 'Payment gateway error: ' . $curl_error
@@ -123,13 +129,22 @@ if ($curl_error) {
     exit;
 }
 
+// Check if response is empty
+if (empty($response)) {
+    error_log("PayMongo API returned empty response");
+    echo json_encode([
+        'success' => false,
+        'message' => 'Payment gateway error: Empty response from PayMongo API. HTTP Code: ' . $http_code
+    ]);
+    exit;
+}
+
 $response_data = json_decode($response, true);
 
-// Log for debugging (only in sandbox mode)
-if ($is_sandbox) {
-    error_log("PayMongo API Response - HTTP Code: " . $http_code);
-    error_log("PayMongo API Response - Body: " . $response);
-}
+// Log full response for debugging
+error_log("PayMongo API Response - HTTP Code: " . $http_code);
+error_log("PayMongo API Response - Body: " . $response);
+error_log("PayMongo API Response - Parsed: " . json_encode($response_data));
 
 if ($http_code === 201 && isset($response_data['data']['attributes']['redirect']['checkout_url'])) {
     // Success - return checkout URL
@@ -179,32 +194,61 @@ if ($http_code === 201 && isset($response_data['data']['attributes']['redirect']
 } else {
     // Error from PayMongo - provide detailed error message
     $error_message = 'Unknown error from payment gateway';
+    $error_details = [];
     
+    // Try to extract error message from response
     if (isset($response_data['errors']) && is_array($response_data['errors']) && count($response_data['errors']) > 0) {
         $error = $response_data['errors'][0];
         $error_message = $error['detail'] ?? $error['message'] ?? $error['code'] ?? 'Unknown error';
+        $error_details = $error;
     } elseif (isset($response_data['message'])) {
         $error_message = $response_data['message'];
+    } elseif (isset($response_data['error'])) {
+        $error_message = is_string($response_data['error']) ? $response_data['error'] : json_encode($response_data['error']);
     } elseif ($http_code === 401) {
-        $error_message = 'Invalid API key. Please check your PayMongo secret key.';
+        $error_message = 'Invalid API key. Please check your PayMongo secret key in Railway environment variables.';
     } elseif ($http_code === 400) {
         $error_message = 'Invalid request. Please check the payment details.';
+    } elseif ($http_code === 404) {
+        $error_message = 'PayMongo API endpoint not found.';
     } elseif ($http_code >= 500) {
         $error_message = 'PayMongo server error. Please try again later.';
+    } elseif ($http_code === 0) {
+        $error_message = 'Failed to connect to PayMongo API. Please check your internet connection.';
+    }
+    
+    // If we still don't have a good error message, use the raw response
+    if ($error_message === 'Unknown error from payment gateway' && !empty($response)) {
+        $error_message = 'PayMongo API Error (HTTP ' . $http_code . '): ' . substr($response, 0, 200);
     }
     
     // Log full error for debugging
-    error_log("PayMongo Error - HTTP: $http_code, Response: " . json_encode($response_data));
+    error_log("PayMongo Error - HTTP: $http_code");
+    error_log("PayMongo Error - Message: " . $error_message);
+    error_log("PayMongo Error - Full Response: " . json_encode($response_data));
     
-    echo json_encode([
+    // Return error with debug info in sandbox mode
+    $error_response = [
         'success' => false,
         'message' => 'Payment gateway error: ' . $error_message,
-        'http_code' => $http_code,
-        'debug' => $is_sandbox ? [
+        'http_code' => $http_code
+    ];
+    
+    // Add debug info in sandbox mode
+    if ($is_sandbox) {
+        $error_response['debug'] = [
             'response' => $response_data,
-            'raw_response' => substr($response, 0, 500) // First 500 chars for debugging
-        ] : null
-    ]);
+            'raw_response' => substr($response, 0, 1000),
+            'error_details' => $error_details,
+            'request_data' => [
+                'amount' => $amount * 100,
+                'currency' => 'PHP',
+                'type' => 'gcash'
+            ]
+        ];
+    }
+    
+    echo json_encode($error_response);
 }
 ?>
 

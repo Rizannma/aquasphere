@@ -218,8 +218,14 @@ if ($http_code === 201 && isset($response_data['data']['attributes']['redirect']
     }
     
     // If we still don't have a good error message, use the raw response
-    if ($error_message === 'Unknown error from payment gateway' && !empty($response)) {
-        $error_message = 'PayMongo API Error (HTTP ' . $http_code . '): ' . substr($response, 0, 200);
+    if ($error_message === 'Unknown error from payment gateway') {
+        if (!empty($response)) {
+            $error_message = 'PayMongo API Error (HTTP ' . $http_code . '): ' . substr($response, 0, 200);
+        } elseif ($response_data === null) {
+            $error_message = 'PayMongo API returned invalid JSON (HTTP ' . $http_code . ')';
+        } else {
+            $error_message = 'PayMongo API Error (HTTP ' . $http_code . '): ' . json_encode($response_data);
+        }
     }
     
     // Log full error for debugging

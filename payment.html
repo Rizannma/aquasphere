@@ -1294,77 +1294,63 @@
             }
         }
         
-        // Monitor for manual navigation back from PayMongo
+        // Monitor for manual navigation back from PayMongo - runs continuously
         function monitorPaymentReturn() {
             const orderId = localStorage.getItem('pendingOrderId');
             const paymentRedirectTime = localStorage.getItem('paymentRedirectTime');
             
             if (orderId && paymentRedirectTime) {
-                const timeSinceRedirect = Date.now() - parseInt(paymentRedirectTime);
-                
-                // If more than 5 seconds have passed and user is on payment page without success status
-                // This handles cases where PayMongo doesn't redirect
-                if (timeSinceRedirect > 5000) {
+                // Check every 1 second for faster detection
+                const checkInterval = setInterval(() => {
                     const currentStatus = new URLSearchParams(window.location.search).get('status');
                     const currentHash = window.location.hash;
-                    const referrer = document.referrer;
+                    const elapsed = Date.now() - parseInt(paymentRedirectTime);
                     
-                    // Check if we're on payment page and no success status
-                    if (window.location.pathname.includes('payment.html') && 
-                        !currentStatus && 
-                        !currentHash.includes('success')) {
+                    // Only check if we're on payment page
+                    if (!window.location.pathname.includes('payment.html')) {
+                        return; // Don't clear interval, keep checking
+                    }
+                    
+                    // If success, clear everything
+                    if (currentStatus === 'success' || currentHash.includes('success')) {
+                        clearInterval(checkInterval);
+                        localStorage.removeItem('paymentRedirectTime');
+                        localStorage.removeItem('paymongoCheckoutUrl');
+                        localStorage.removeItem('paymentPageUrl');
+                        return;
+                    }
+                    
+                    // If no success status and enough time has passed (3+ seconds)
+                    if (!currentStatus && !currentHash.includes('success') && elapsed > 3000) {
+                        const referrer = document.referrer;
                         
-                        // If coming from PayMongo domain or if enough time has passed
+                        // Show error if:
+                        // 1. Coming from PayMongo
+                        // 2. No referrer (direct navigation/typed URL)
+                        // 3. Enough time passed (10+ seconds = definitely expired)
                         if (referrer.includes('paymongo.com') || 
-                            referrer.includes('secure-authentication') || 
-                            timeSinceRedirect > 15000) {
+                            referrer.includes('secure-authentication') ||
+                            !referrer || 
+                            referrer === '' ||
+                            elapsed > 10000) {
                             
-                            // Show error modal
+                            clearInterval(checkInterval);
                             showPaymentErrorModal();
                             localStorage.removeItem('pendingOrderId');
                             localStorage.removeItem('pendingCheckoutItems');
                             localStorage.removeItem('paymentRedirectTime');
                             localStorage.removeItem('paymongoCheckoutUrl');
                             localStorage.removeItem('paymentPageUrl');
-                            return;
+                            
+                            // Hide helper message
+                            const helperMsg = document.getElementById('paymentHelperMessage');
+                            if (helperMsg) helperMsg.style.display = 'none';
                         }
                     }
-                }
+                }, 1000); // Check every second
                 
-                // Check periodically if user is back on payment page without success
-                const checkInterval = setInterval(() => {
-                    const currentStatus = new URLSearchParams(window.location.search).get('status');
-                    const currentHash = window.location.hash;
-                    const elapsed = Date.now() - parseInt(paymentRedirectTime);
-                    
-                    // If no success status and we're on payment page
-                    if (!currentStatus && !currentHash.includes('success') && window.location.pathname.includes('payment.html')) {
-                        const referrer = document.referrer;
-                        
-                        // After 5 seconds, if coming from PayMongo or manually navigated
-                        if (elapsed > 5000) {
-                            if (referrer.includes('paymongo.com') || 
-                                referrer.includes('secure-authentication') || 
-                                elapsed > 15000) {
-                                clearInterval(checkInterval);
-                                showPaymentErrorModal();
-                                localStorage.removeItem('pendingOrderId');
-                                localStorage.removeItem('pendingCheckoutItems');
-                                localStorage.removeItem('paymentRedirectTime');
-                                localStorage.removeItem('paymongoCheckoutUrl');
-                                localStorage.removeItem('paymentPageUrl');
-                            }
-                        }
-                    } else if (currentStatus === 'success') {
-                        clearInterval(checkInterval);
-                        localStorage.removeItem('paymentRedirectTime');
-                        localStorage.removeItem('paymongoCheckoutUrl');
-                        localStorage.removeItem('paymentPageUrl');
-                    }
-                }, 2000);
-                
-                // Stop checking after 60 seconds
-                setTimeout(() => clearInterval(checkInterval), 60000);
+                // Stop checking after 2 minutes
+                setTimeout(() => clearInterval(checkInterval), 120000);
             }
         }
         

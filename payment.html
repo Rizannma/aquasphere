@@ -1453,12 +1453,6 @@
             UserState.setPaymongoCheckoutUrl(null);
             UserState.setPaymentPageUrl(null);
             
-            // Stop any monitoring intervals
-            if (paymentMonitoringInterval) {
-                clearInterval(paymentMonitoringInterval);
-                paymentMonitoringInterval = null;
-            }
-            
             // Set flag to prevent multiple modals
             paymentErrorModalShown = true;
             

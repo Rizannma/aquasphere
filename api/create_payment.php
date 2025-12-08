@@ -64,18 +64,36 @@ if ($is_sandbox) {
 }
 
 // Create payment source (GCash)
+// Note: Amount must be in centavos (smallest currency unit)
+// PHP 345.00 = 34500 centavos
 $source_data = [
     'data' => [
         'attributes' => [
             'amount' => intval($amount * 100), // Convert to centavos
             'currency' => 'PHP',
-            'type' => 'gcash',
-            'redirect' => [
-                'success' => $redirect_url . '?status=success',
-                'failed' => $redirect_url . '?status=failed'
-            ]
+            'type' => 'gcash'
+            // Redirect URLs will be set after ensuring they're absolute
         ]
     ]
+];
+
+// Ensure redirect URLs are absolute
+$success_url = $redirect_url;
+$failed_url = $redirect_url;
+
+// If redirect_url is relative, make it absolute
+if (strpos($redirect_url, 'http') !== 0) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $base_url = $protocol . '://' . $host;
+    $success_url = $base_url . (strpos($redirect_url, '/') === 0 ? '' : '/') . $redirect_url;
+    $failed_url = $success_url;
+}
+
+// Update redirect URLs in source data
+$source_data['data']['attributes']['redirect'] = [
+    'success' => $success_url . (strpos($success_url, '?') !== false ? '&' : '?') . 'status=success',
+    'failed' => $failed_url . (strpos($failed_url, '?') !== false ? '&' : '?') . 'status=failed'
 ];
 
 // Make API call to PayMongo
@@ -87,6 +105,10 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Authorization: Basic ' . base64_encode($paymongo_secret_key . ':')
 ]);
+
+// Add SSL verification (important for production)
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 
 $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);

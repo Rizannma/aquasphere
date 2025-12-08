@@ -107,6 +107,8 @@ body {
     align-items: center;
     justify-content: center;
     line-height: 1;
+    width: 24px;
+    height: 24px;
 }
 
 /* Cart icon specific styling for badge positioning */

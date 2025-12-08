@@ -737,11 +737,18 @@
                 return;
             }
             
-            // Get current user ID from session/localStorage
-            const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
-            const userId = currentUser.id || currentUser.user_id;
-            
-            if (!userId) {
+            // Get current user ID from API
+            let userId = null;
+            try {
+                const userResponse = await fetch('api/get_current_user.php');
+                const userResult = await userResponse.json();
+                
+                if (userResult.success && userResult.user) {
+                    userId = userResult.user.id;
+                } else {
+                    throw new Error('Not logged in');
+                }
+            } catch (error) {
                 showNotification('Please login to place an order', 'error');
                 setTimeout(() => {
                     window.location.href = 'login.html';

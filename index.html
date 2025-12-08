@@ -2268,18 +2268,25 @@
             });
         }
         
-        // Get scrollbar width to prevent layout shift
-        function getScrollbarWidth() {
-            const outer = document.createElement('div');
-            outer.style.visibility = 'hidden';
-            outer.style.overflow = 'scroll';
-            outer.style.msOverflowStyle = 'scrollbar';
-            document.body.appendChild(outer);
-            const inner = document.createElement('div');
-            outer.appendChild(inner);
-            const scrollbarWidth = outer.offsetWidth - inner.offsetWidth;
-            outer.parentNode.removeChild(outer);
-            return scrollbarWidth;
+        // Prevent body scroll while keeping scrollbar visible
+        function lockBodyScroll() {
+            const scrollY = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
+            // Store scroll position for restoration
+            document.body.dataset.scrollY = scrollY;
+        }
+        
+        // Restore body scroll
+        function unlockBodyScroll() {
+            const scrollY = document.body.dataset.scrollY || 0;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            delete document.body.dataset.scrollY;
+            // Restore scroll position
+            window.scrollTo(0, parseInt(scrollY) || 0);
         }
         
         // Open Settings Modal
@@ -2287,10 +2294,8 @@
             const modal = document.getElementById('settingsModal');
             if (!modal) return;
             
-            // Calculate scrollbar width and add padding to prevent layout shift
-            const scrollbarWidth = getScrollbarWidth();
-            document.body.style.paddingRight = scrollbarWidth + 'px';
-            document.body.style.overflow = 'hidden';
+            // Lock body scroll but keep scrollbar visible
+            lockBodyScroll();
             
             modal.style.display = 'flex';
         }
@@ -2301,8 +2306,8 @@
             const modal = document.getElementById('settingsModal');
             if (modal) {
                 modal.style.display = 'none';
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
+                // Unlock body scroll
+                unlockBodyScroll();
             }
         }
         

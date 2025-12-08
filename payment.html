@@ -1919,44 +1919,64 @@
         
         // Run immediate check as soon as script loads (before DOM ready)
         (async function immediateCheck() {
+            // Don't check if modal already shown (from previous load)
+            if (paymentErrorModalShown) {
+                return;
+            }
+            
             await UserState.loadState();
             const orderId = UserState.getPendingOrderId();
             const paymentRedirectTime = UserState.getPaymentRedirectTime();
             
-            if (orderId && paymentRedirectTime) {
-                const timeSinceRedirect = Date.now() - parseInt(paymentRedirectTime);
-                const currentStatus = new URLSearchParams(window.location.search).get('status');
+            // If no pending payment state, clear flag and exit
+            if (!orderId || !paymentRedirectTime) {
+                paymentErrorModalShown = false;
+                return;
+            }
+            
+            const timeSinceRedirect = Date.now() - parseInt(paymentRedirectTime);
+            const currentStatus = new URLSearchParams(window.location.search).get('status');
+            
+            // If on payment page, no success status, and enough time passed
+            if (window.location.pathname.includes('payment.html') && 
+                !currentStatus && 
+                timeSinceRedirect > 3000) {
                 
-                // If on payment page, no success status, and enough time passed
-                if (window.location.pathname.includes('payment.html') && 
-                    !currentStatus && 
-                    timeSinceRedirect > 3000) {
+                const referrer = document.referrer;
+                console.log('Payment check:', {
+                    orderId,
+                    timeSinceRedirect,
+                    referrer,
+                    currentStatus,
+                    url: window.location.href
+                });
+                
+                // If conditions are met, show error immediately
+                // But only if referrer is from PayMongo OR if it's been a very long time (> 5 minutes)
+                // Don't show if user just navigated directly to payment page
+                if (referrer.includes('paymongo.com') || 
+                    referrer.includes('secure-authentication') ||
+                    timeSinceRedirect > 300000) { // 5 minutes - very old payment attempt
                     
-                    const referrer = document.referrer;
-                    console.log('Payment check:', {
-                        orderId,
-                        timeSinceRedirect,
-                        referrer,
-                        currentStatus,
-                        url: window.location.href
-                    });
-                    
-                    // If conditions are met, show error immediately
-                    if (referrer.includes('paymongo.com') || 
-                        referrer.includes('secure-authentication') ||
-                        !referrer || 
-                        referrer === '' ||
-                        timeSinceRedirect > 10000) {
-                        
-                        // Wait for DOM to be ready, then show modal
-                        if (document.readyState === 'loading') {
-                            document.addEventListener('DOMContentLoaded', function() {
+                    // Wait for DOM to be ready, then show modal
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            if (!paymentErrorModalShown) {
                                 showPaymentErrorModal();
-                            });
-                        } else {
+                            }
+                        });
+                    } else {
+                        if (!paymentErrorModalShown) {
                             showPaymentErrorModal();
                         }
                     }
+                } else {
+                    // If conditions not met, clear the old state (stale payment attempt)
+                    UserState.setPendingOrderId(null);
+                    UserState.setPendingCheckoutItems(null);
+                    UserState.setPaymentRedirectTime(null);
+                    UserState.setPaymongoCheckoutUrl(null);
+                    UserState.setPaymentPageUrl(null);
                 }
             }
         })();

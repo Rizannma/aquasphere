@@ -1406,7 +1406,9 @@
                         const dateB = new Date(b.order_date || b.created_at || 0).getTime();
                         return dateB - dateA;
                     });
-                currentPage = 1; // Reset to first page
+                // Keep current page if possible; clamp within available pages
+                const totalPages = Math.max(1, Math.ceil(allOrders.length / ordersPerPage));
+                currentPage = Math.min(currentPage, totalPages);
                 renderOrders();
             } catch (error) {
                 console.error('Error loading orders:', error);
@@ -1512,6 +1514,8 @@
                 ordersList.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
+        // Make pagination callable from inline handlers
+        window.goToPage = goToPage;
         
         // Create order card
         function createOrderCard(order) {

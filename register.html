@@ -34,9 +34,19 @@
             display: flex;
             flex-direction: column;
         }
+
+        .page-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
         
         .main-content {
             flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0;
         }
         
         /* Navbar Styles */
@@ -309,12 +319,13 @@
         </div>
     </nav>
 
-    <!-- Registration Form -->
-    <div class="main-content">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8 col-md-10">
-                    <div class="register-card mx-auto" style="margin-top: 40px;">
+    <div class="page-content">
+        <!-- Registration Form -->
+        <div class="main-content">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10">
+                        <div class="register-card mx-auto" style="margin-top: 40px;">
                     <h1 class="register-title">Create Account</h1>
                     <p class="register-subtitle">Join AquaSphere and start ordering clean water</p>
                     

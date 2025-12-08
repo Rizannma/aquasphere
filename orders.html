@@ -1338,7 +1338,7 @@
         // Pagination variables
         let allOrders = [];
         let currentPage = 1;
-        const ordersPerPage = 4; // standard pagination (4 per page)
+        const ordersPerPage = 1; // carousel style: 1 order per view
         
         // Load orders
         async function loadOrders() {
@@ -1451,7 +1451,7 @@
             renderPagination(totalPages);
         }
         
-        // Render pagination controls
+        // Render pagination controls (carousel style: prev / label / next)
         function renderPagination(totalPages) {
             const pagination = document.getElementById('ordersPagination');
             const paginationList = document.getElementById('paginationList');
@@ -1481,15 +1481,13 @@
             `;
             paginationList.appendChild(prevItem);
             
-            // Page number buttons
-            for (let page = 1; page <= totalPages; page++) {
-                const pageItem = document.createElement('li');
-                pageItem.className = `page-item ${page === currentPage ? 'active' : ''}`;
-                pageItem.innerHTML = `
-                    <button class="page-link" type="button" data-page="${page}" ${page === currentPage ? 'disabled' : ''}>${page}</button>
-                `;
-                paginationList.appendChild(pageItem);
-            }
+            // Label "Order X of Y"
+            const labelItem = document.createElement('li');
+            labelItem.className = 'page-item disabled';
+            labelItem.innerHTML = `
+                <span class="page-link" style="pointer-events: none;">Order ${currentPage} of ${totalPages}</span>
+            `;
+            paginationList.appendChild(labelItem);
             
             // Next button
             const nextItem = document.createElement('li');

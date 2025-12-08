@@ -580,7 +580,7 @@
                         <a class="nav-link" href="login.html">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="register.html">Register</a>
+                        <a class="nav-link" href="registration.html">Register</a>
                     </li>
                 </ul>
             </div>
@@ -641,7 +641,7 @@
             </div>
             
             <div class="back-link">
-                <a href="register.html">
+                <a href="registration.html">
                     <i class="fas fa-arrow-left me-2"></i>
                     Back to Registration
                 </a>
@@ -681,12 +681,12 @@
                     document.getElementById('email-display').textContent = data.email;
                 } else {
                     // Fallback: redirect to register if no pending email
-                    window.location.href = 'register.html';
+            window.location.href = 'registration.html';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                window.location.href = 'register.html';
+        window.location.href = 'registration.html';
             });
         
         const otpInputs = document.querySelectorAll('.otp-input');

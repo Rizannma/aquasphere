@@ -28,13 +28,20 @@ Add your PayMongo secret key to your environment variables:
 3. The `.env` file is already in `.gitignore` so it won't be committed to git
 4. The system will automatically load this file when API endpoints are called
 
-**For Railway/Production:**
-1. Go to your Railway project settings
-2. Navigate to **Variables** tab
-3. Click **New Variable**
-4. Name: `PAYMONGO_SECRET_KEY`
-5. Value: Your PayMongo secret key from the dashboard
-6. Click **Add**
+**For Railway/Production (Hosted System):**
+1. Go to [Railway Dashboard](https://railway.app)
+2. Open your AquaSphere project
+3. Click on your **main application service** (the one running PHP, not the database)
+4. Go to the **"Variables"** tab
+5. Click **"+ New Variable"** or **"Raw Editor"**
+6. Add the following:
+   - **Name:** `PAYMONGO_SECRET_KEY`
+   - **Value:** Your PayMongo secret key (e.g., `sk_test_...` for sandbox)
+7. Click **Add** or **Save**
+8. Railway will automatically redeploy your application with the new environment variable
+9. Wait for deployment to complete (usually 1-2 minutes)
+
+**Important:** After adding the variable, Railway will redeploy. Once deployment is complete, the PayMongo integration will be ready to use!
 
 **Important Security Notes:**
 - Never commit your `.env` file to git (it's already in `.gitignore`)

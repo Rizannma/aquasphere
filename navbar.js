@@ -154,47 +154,44 @@ function updateOrderCount() {
         return;
     }
     
-    // Check if user is logged in
-    const userData = JSON.parse(localStorage.getItem('loggedInUser')) || 
-                     JSON.parse(localStorage.getItem('userData')) || 
-                     JSON.parse(sessionStorage.getItem('userData')) || null;
-    
-    if (!userData || !userData.user_id) {
-        // Hide badge if not logged in
-        ordersCountEl.style.display = 'none';
-        return;
-    }
-    
-    // Fetch orders from API
+    // Fetch orders from API (API uses session, so no need to check localStorage)
     fetch('api/get_orders.php')
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to fetch orders');
+                // If 401, user is not logged in - hide badge
+                if (response.status === 401) {
+                    ordersCountEl.style.display = 'none';
+                    return null;
+                }
+                throw new Error('Failed to fetch orders: ' + response.status);
             }
             return response.json();
         })
         .then(data => {
-            if (data.success && data.orders) {
+            if (!data) return; // Handled 401 case above
+            
+            if (data.success && Array.isArray(data.orders)) {
                 const orderCount = data.orders.length;
                 const badgeEl = document.getElementById('ordersCount');
                 if (badgeEl) {
                     badgeEl.textContent = orderCount;
                     // Show badge when count > 0, hide when 0
                     badgeEl.style.display = orderCount > 0 ? 'flex' : 'none';
-                    console.log('Order count updated:', orderCount);
+                    console.log('Order count badge updated:', orderCount, 'orders');
                 }
             } else {
-                // Hide badge if no orders or error in response
+                // No orders or invalid response
                 const badgeEl = document.getElementById('ordersCount');
                 if (badgeEl) {
                     badgeEl.style.display = 'none';
                 }
+                console.log('No orders found or invalid response:', data);
             }
         })
         .catch(error => {
             console.error('Error fetching order count:', error);
-            // Don't hide badge on error - might be temporary network issue
-            // Just log the error
+            // Don't hide badge on network error - might be temporary
+            // The badge will update on next page load or manual refresh
         });
 }
 

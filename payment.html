@@ -1381,11 +1381,11 @@
                     // Clear orders cache to force fresh fetch
                     window.__ordersCache = null;
                     
-                    // Update order count badge (with delay to ensure order is saved)
+                    // Update order count badge (with delay to ensure order is saved in database)
                     if (typeof updateOrderCount === 'function') {
                         setTimeout(() => {
                             updateOrderCount();
-                        }, 300);
+                        }, 1000);
                     }
                     
                     // Show success notification
@@ -1434,11 +1434,11 @@
                 // Clear orders cache to force fresh fetch
                 window.__ordersCache = null;
                 
-                // Update order count badge (with delay to ensure order is saved)
+                // Update order count badge (with delay to ensure order is saved in database)
                 if (typeof updateOrderCount === 'function') {
                     setTimeout(() => {
                         updateOrderCount();
-                    }, 300);
+                    }, 1000);
                 }
                 
                 showNotification('Payment successful! Your order has been placed.', 'success');

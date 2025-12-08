@@ -145,7 +145,8 @@ function updateOrderCount() {
     }
 
     // Fetch orders from API (API uses session, so no need to check localStorage)
-    fetch('api/get_orders.php')
+    // Fetch without pagination limit to get total count, or use pagination.total
+    fetch('api/get_orders.php?limit=1')
         .then(response => {
             if (!response.ok) {
                 // If 401, user is not logged in - hide badge
@@ -160,8 +161,12 @@ function updateOrderCount() {
         .then(data => {
             if (!data) return; // Handled 401 case above
             
-            if (data.success && Array.isArray(data.orders)) {
-                const orderCount = data.orders.length;
+            if (data.success) {
+                // Use pagination.total if available (total count), otherwise use orders array length
+                const orderCount = (data.pagination && data.pagination.total !== undefined) 
+                    ? data.pagination.total 
+                    : (Array.isArray(data.orders) ? data.orders.length : 0);
+                
                 const badgeEl = document.getElementById('ordersCount');
                 if (badgeEl) {
                     badgeEl.textContent = orderCount;

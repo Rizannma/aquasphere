@@ -1451,15 +1451,6 @@
             renderPagination(totalPages);
         }
         
-        // Delegate pagination clicks to avoid missing listeners after rerenders
-        function handlePaginationClick(event) {
-            const btn = event.target.closest('button[data-page]');
-            if (!btn || btn.disabled) return;
-            const page = parseInt(btn.dataset.page, 10);
-            if (!isFinite(page)) return;
-            goToPage(page);
-        }
-        
         // Render pagination controls
         function renderPagination(totalPages) {
             const pagination = document.getElementById('ordersPagination');
@@ -1511,11 +1502,18 @@
             `;
             paginationList.appendChild(nextItem);
             
-            // Ensure delegation listener is attached once
-            if (!paginationList.dataset.bound) {
-                paginationList.addEventListener('click', handlePaginationClick);
-                paginationList.dataset.bound = 'true';
-            }
+            // Bind click handlers to each button (including newly created ones)
+            paginationList.querySelectorAll('button[data-page]').forEach(btn => {
+                if (btn.dataset.bound) return;
+                btn.dataset.bound = 'true';
+                btn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    if (btn.disabled) return;
+                    const page = parseInt(btn.dataset.page, 10);
+                    if (!isFinite(page)) return;
+                    goToPage(page);
+                });
+            });
         }
         
         // Go to specific page

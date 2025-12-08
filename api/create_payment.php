@@ -40,15 +40,21 @@ if (!$redirect_url) {
 
 // PayMongo API Configuration
 // Load from environment variable (set in .env file or server environment)
-$paymongo_secret_key = $_ENV['PAYMONGO_SECRET_KEY'] ?? getenv('PAYMONGO_SECRET_KEY');
+// Check multiple sources for the key
+$paymongo_secret_key = $_ENV['PAYMONGO_SECRET_KEY'] ?? getenv('PAYMONGO_SECRET_KEY') ?? $_SERVER['PAYMONGO_SECRET_KEY'] ?? null;
 
+// Log for debugging (without exposing the key)
 if (!$paymongo_secret_key) {
+    error_log("PayMongo secret key not found. Checked: _ENV, getenv(), _SERVER");
     echo json_encode([
         'success' => false,
-        'message' => 'PayMongo secret key not configured. Please set PAYMONGO_SECRET_KEY in environment variables or .env file.'
+        'message' => 'PayMongo secret key not configured. Please set PAYMONGO_SECRET_KEY in Railway environment variables.'
     ]);
     exit;
 }
+
+// Log that key was found (without exposing it)
+error_log("PayMongo secret key found. Key starts with: " . substr($paymongo_secret_key, 0, 8) . "...");
 $paymongo_api_url = 'https://api.paymongo.com/v1';
 
 // Determine if using sandbox or live
@@ -97,6 +103,12 @@ if ($curl_error) {
 
 $response_data = json_decode($response, true);
 
+// Log for debugging (only in sandbox mode)
+if ($is_sandbox) {
+    error_log("PayMongo API Response - HTTP Code: " . $http_code);
+    error_log("PayMongo API Response - Body: " . $response);
+}
+
 if ($http_code === 201 && isset($response_data['data']['attributes']['redirect']['checkout_url'])) {
     // Success - return checkout URL
     $checkout_url = $response_data['data']['attributes']['redirect']['checkout_url'];
@@ -143,12 +155,33 @@ if ($http_code === 201 && isset($response_data['data']['attributes']['redirect']
         'source_id' => $source_id
     ]);
 } else {
-    // Error from PayMongo
-    $error_message = $response_data['errors'][0]['detail'] ?? 'Unknown error from payment gateway';
+    // Error from PayMongo - provide detailed error message
+    $error_message = 'Unknown error from payment gateway';
+    
+    if (isset($response_data['errors']) && is_array($response_data['errors']) && count($response_data['errors']) > 0) {
+        $error = $response_data['errors'][0];
+        $error_message = $error['detail'] ?? $error['message'] ?? $error['code'] ?? 'Unknown error';
+    } elseif (isset($response_data['message'])) {
+        $error_message = $response_data['message'];
+    } elseif ($http_code === 401) {
+        $error_message = 'Invalid API key. Please check your PayMongo secret key.';
+    } elseif ($http_code === 400) {
+        $error_message = 'Invalid request. Please check the payment details.';
+    } elseif ($http_code >= 500) {
+        $error_message = 'PayMongo server error. Please try again later.';
+    }
+    
+    // Log full error for debugging
+    error_log("PayMongo Error - HTTP: $http_code, Response: " . json_encode($response_data));
+    
     echo json_encode([
         'success' => false,
         'message' => 'Payment gateway error: ' . $error_message,
-        'debug' => $is_sandbox ? $response_data : null
+        'http_code' => $http_code,
+        'debug' => $is_sandbox ? [
+            'response' => $response_data,
+            'raw_response' => substr($response, 0, 500) // First 500 chars for debugging
+        ] : null
     ]);
 }
 ?>

@@ -10,6 +10,20 @@ async function loadNavbar() {
         console.error('Navbar container not found');
         return;
     }
+
+    // Preload logo for faster paint
+    (function preloadLogo() {
+        const head = document.head || document.getElementsByTagName('head')[0];
+        if (!head) return;
+        if (document.getElementById('preload-systemlogo')) return;
+        const link = document.createElement('link');
+        link.id = 'preload-systemlogo';
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = 'systemlogo.png';
+        link.fetchPriority = 'high';
+        head.appendChild(link);
+    })();
     
     try {
         const resp = await fetch('navbar.html', { cache: 'no-cache' });

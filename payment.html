@@ -1498,10 +1498,6 @@
                             localStorage.removeItem('paymentRedirectTime');
                             localStorage.removeItem('paymongoCheckoutUrl');
                             localStorage.removeItem('paymentPageUrl');
-                            
-                            // Hide helper message
-                            const helperMsg = document.getElementById('paymentHelperMessage');
-                            if (helperMsg) helperMsg.style.display = 'none';
                         }
                     }
                 }, 1000); // Check every second

@@ -1372,18 +1372,23 @@
                     // Clear checkout items
                     UserState.setCheckoutItems([]);
                     
-                    // Update order count badge
+                    // Clear orders cache to force fresh fetch
+                    window.__ordersCache = null;
+                    
+                    // Update order count badge (with delay to ensure order is saved)
                     if (typeof updateOrderCount === 'function') {
-                        updateOrderCount();
+                        setTimeout(() => {
+                            updateOrderCount();
+                        }, 300);
                     }
                     
                     // Show success notification
-                    showNotification('Order placed successfully!', 'success');
+                    showNotification('Payment successful! Your order has been placed.', 'success');
                     
                     // Redirect to orders page
                     setTimeout(() => {
                         window.location.href = 'orders.html';
-                    }, 1500);
+                    }, 2000);
                 }
             } catch (error) {
                 console.error('Order placement error:', error);
@@ -1420,9 +1425,14 @@
                 UserState.setPendingCheckoutItems(null);
                 UserState.setPaymentRedirectTime(null);
                 
-                // Update order count badge
+                // Clear orders cache to force fresh fetch
+                window.__ordersCache = null;
+                
+                // Update order count badge (with delay to ensure order is saved)
                 if (typeof updateOrderCount === 'function') {
-                    updateOrderCount();
+                    setTimeout(() => {
+                        updateOrderCount();
+                    }, 300);
                 }
                 
                 showNotification('Payment successful! Your order has been placed.', 'success');

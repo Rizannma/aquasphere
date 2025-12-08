@@ -5170,10 +5170,8 @@
             
             if (!modal) return;
             
-            // Calculate scrollbar width and add padding to prevent layout shift
-            const scrollbarWidth = getScrollbarWidth();
-            document.body.style.paddingRight = scrollbarWidth + 'px';
-            document.body.style.overflow = 'hidden';
+            // Lock body scroll but keep scrollbar visible
+            lockBodyScroll();
             
             modal.style.display = 'flex';
             
@@ -5186,16 +5184,14 @@
             // Add new event listeners
             newConfirmBtn.addEventListener('click', function confirmHandler() {
                 modal.style.display = 'none';
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
+                unlockBodyScroll();
                 performLogout();
                 newConfirmBtn.removeEventListener('click', confirmHandler);
             });
             
             newCancelBtn.addEventListener('click', function cancelHandler() {
                 modal.style.display = 'none';
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
+                unlockBodyScroll();
                 newCancelBtn.removeEventListener('click', cancelHandler);
             });
         }

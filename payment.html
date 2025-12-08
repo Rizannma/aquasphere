@@ -851,9 +851,17 @@
                     <h1>Select Payment Method</h1>
                     <p>Choose your preferred payment option to complete your order</p>
                     <!-- Helper message for stuck users -->
-                    <div id="paymentHelperMessage" style="display: none; margin-top: 1rem; padding: 1rem; background: #fee2e2; border: 2px solid #ef4444; border-radius: 12px; color: #991b1b;">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Payment Issue Detected:</strong> If you're returning from PayMongo after clicking "Fail", the error message should appear automatically. If not, please refresh this page.
+                    <div id="paymentHelperMessage" style="display: none; margin-top: 1rem; padding: 1.5rem; background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border: 2px solid #ef4444; border-radius: 12px; color: #991b1b; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i>
+                            <div style="flex: 1;">
+                                <strong style="display: block; margin-bottom: 0.5rem; font-size: 1.1rem;">Payment Issue Detected</strong>
+                                <p style="margin: 0; font-size: 0.95rem;">You have a pending payment. If you clicked "Fail" on PayMongo, click the button below to show the error message.</p>
+                            </div>
+                        </div>
+                        <button onclick="forceShowPaymentError()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);">
+                            <i class="fas fa-exclamation-circle me-2"></i>Show Payment Error
+                        </button>
                     </div>
                 </div>
                 
@@ -1365,9 +1373,9 @@
                 const currentStatus = new URLSearchParams(window.location.search).get('status');
                 const currentHash = window.location.hash;
                 
-                // Show helper message if pending payment exists
+                // Always show helper message if pending payment exists and enough time passed
                 const helperMsg = document.getElementById('paymentHelperMessage');
-                if (helperMsg && timeSinceRedirect > 3000) {
+                if (helperMsg && timeSinceRedirect > 2000 && window.location.pathname.includes('payment.html')) {
                     helperMsg.style.display = 'block';
                 }
                 
@@ -1376,21 +1384,16 @@
                     !currentStatus && 
                     !currentHash.includes('success')) {
                     
-                    // If more than 3 seconds have passed, assume payment failed/expired
-                    if (timeSinceRedirect > 3000) {
+                    // If more than 2 seconds have passed, check for failure
+                    if (timeSinceRedirect > 2000) {
                         const referrer = document.referrer;
                         
-                        // Show error modal if:
-                        // 1. Coming from PayMongo domain
-                        // 2. Direct navigation (no referrer or empty)
-                        // 3. Enough time has passed (10+ seconds)
-                        // 4. URL contains paymongo (user might have copied URL)
-                        if (referrer.includes('paymongo.com') || 
-                            referrer.includes('secure-authentication') ||
-                            window.location.href.includes('paymongo') ||
-                            !referrer || 
-                            referrer === '' ||
-                            timeSinceRedirect > 10000) {
+                        // Show error modal automatically if:
+                        // 1. Coming from PayMongo domain (definite indicator)
+                        // 2. Enough time has passed (15+ seconds = definitely expired)
+                        if ((referrer.includes('paymongo.com') || 
+                             referrer.includes('secure-authentication')) ||
+                            timeSinceRedirect > 15000) {
                             
                             // Hide helper message
                             if (helperMsg) helperMsg.style.display = 'none';
@@ -1404,6 +1407,7 @@
                             localStorage.removeItem('paymentPageUrl');
                             return true; // Indicate we handled it
                         }
+                        // Otherwise, just show the helper message (user can click button)
                     }
                 }
             } else {
@@ -1546,11 +1550,31 @@
             showLogoutConfirmModal();
         }
         
+        // Force show payment error (for manual trigger)
+        function forceShowPaymentError() {
+            const orderId = localStorage.getItem('pendingOrderId');
+            if (orderId) {
+                showPaymentErrorModal();
+                localStorage.removeItem('pendingOrderId');
+                localStorage.removeItem('pendingCheckoutItems');
+                localStorage.removeItem('paymentRedirectTime');
+                localStorage.removeItem('paymongoCheckoutUrl');
+                localStorage.removeItem('paymentPageUrl');
+                
+                // Hide helper message
+                const helperMsg = document.getElementById('paymentHelperMessage');
+                if (helperMsg) helperMsg.style.display = 'none';
+            } else {
+                showNotification('No pending payment found', 'info');
+            }
+        }
+        
         // Make functions globally available
         window.openSettingsModal = openSettingsModal;
         window.logout = logout;
         window.showLogoutConfirmModal = showLogoutConfirmModal;
         window.performLogout = performLogout;
+        window.forceShowPaymentError = forceShowPaymentError;
         
         // Calculate subtotal
         function calculateSubtotal(items) {

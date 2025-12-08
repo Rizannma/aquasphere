@@ -1388,7 +1388,7 @@
             }
         }
         
-        // Handle PayMongo redirect - SIMPLIFIED: Just check URL params and referrer once
+        // Handle PayMongo redirect - Check URL params and referrer once
         async function handlePaymentRedirect() {
             // Prevent multiple checks
             if (paymentErrorModalShown) {
@@ -1407,7 +1407,7 @@
                 return;
             }
             
-            // Check if coming from PayMongo (user clicked back/cancel)
+            // Check if coming from PayMongo (user clicked fail/back)
             const referrer = document.referrer;
             if (referrer && (referrer.includes('paymongo.com') || referrer.includes('secure-authentication'))) {
                 // User came from PayMongo but no success status = payment failed/cancelled
@@ -1498,12 +1498,12 @@
                 }, 10);
             }, 100);
             
-            // Auto-close after 6 seconds (give user time to read)
+            // Auto-close after 5 seconds (give user time to read)
             const autoCloseTimer = setTimeout(() => {
                 if (errorModal && errorModal.classList.contains('show')) {
                     closePaymentErrorModal();
                 }
-            }, 6000);
+            }, 5000);
             
             // Store timer reference for cleanup
             errorModal._autoCloseTimer = autoCloseTimer;
@@ -1538,7 +1538,8 @@
                     }
                     // Reset flag
                     paymentErrorModalShown = false;
-                    // Don't reload - just close the modal
+                    // Refresh the page after modal closes
+                    window.location.reload();
                 }, 300);
             }
         }

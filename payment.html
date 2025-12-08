@@ -1173,7 +1173,6 @@
         
         // Flag to prevent multiple modals from showing
         let paymentErrorModalShown = false;
-        let paymentMonitoringInterval = null;
         
         // Load order summary from checkout items
         async function loadOrderSummary() {
@@ -1389,201 +1388,55 @@
             }
         }
         
-        // Handle PayMongo redirect
+        // Handle PayMongo redirect - SIMPLIFIED: Just check URL params and referrer once
         async function handlePaymentRedirect() {
-            // Don't check if modal already shown
+            // Prevent multiple checks
             if (paymentErrorModalShown) {
                 return;
             }
             
-            await UserState.loadState();
             const urlParams = new URLSearchParams(window.location.search);
             const urlHash = window.location.hash;
             const status = urlParams.get('status') || (urlHash.includes('failed') ? 'failed' : null);
-            const orderId = UserState.getPendingOrderId();
-            const paymentRedirectTime = UserState.getPaymentRedirectTime();
             
-            // Check for failed payment in URL hash or query params
-            if (urlHash.includes('failed') || urlParams.get('status') === 'failed') {
+            // Check for failed payment in URL params (PayMongo redirects with ?status=failed)
+            if (status === 'failed' || urlHash.includes('failed')) {
                 showPaymentErrorModal();
-                
                 // Clean URL
                 window.history.replaceState({}, document.title, window.location.pathname);
                 return;
             }
             
-            // Check if user returned from PayMongo without success status
-            // This handles cases where PayMongo doesn't redirect properly
-            if (orderId && paymentRedirectTime && !status) {
-                const referrer = document.referrer;
-                
-                // IMMEDIATELY show error if coming from PayMongo (no delay)
-                if (referrer.includes('paymongo.com') || referrer.includes('secure-authentication')) {
-                    showPaymentErrorModal();
-                    return;
-                }
-                
-                // If more than 3 seconds have passed and no success status, assume failure
-                const timeSinceRedirect = Date.now() - parseInt(paymentRedirectTime);
-                if (timeSinceRedirect > 3000) {
-                    showPaymentErrorModal();
-                    return;
-                }
-            }
-            
-            if (status && orderId) {
-                if (status === 'success') {
-                    // Get checkout items that were ordered
-                    const pendingCheckoutItems = UserState.getPendingCheckoutItems() || [];
-                    
-                    // Remove ordered items from cart
-                    if (pendingCheckoutItems.length > 0) {
-                        removeOrderedItemsFromCart(pendingCheckoutItems);
-                    }
-                    
-                    // Clear checkout items and pending data
-                    UserState.setCheckoutItems([]);
-                    UserState.setPendingOrderId(null);
-                    UserState.setPendingCheckoutItems(null);
-                    UserState.setPaymentRedirectTime(null);
-                    
-                    showNotification('Payment successful! Your order has been placed.', 'success');
-                    
-                    setTimeout(() => {
-                        window.location.href = 'orders.html';
-                    }, 2000);
-                } else if (status === 'failed') {
-                    showPaymentErrorModal();
-                    
-                    // Clean URL
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }
-            }
-        }
-        
-        // Monitor for manual navigation back from PayMongo - runs continuously
-        async function monitorPaymentReturn() {
-            // Don't start monitoring if modal already shown
-            if (paymentErrorModalShown) {
+            // Check if coming from PayMongo (user clicked back/cancel)
+            const referrer = document.referrer;
+            if (referrer && (referrer.includes('paymongo.com') || referrer.includes('secure-authentication'))) {
+                // User came from PayMongo but no success status = payment failed/cancelled
+                showPaymentErrorModal();
                 return;
             }
             
-            await UserState.loadState();
-            const orderId = UserState.getPendingOrderId();
-            const paymentRedirectTime = UserState.getPaymentRedirectTime();
-            
-            if (orderId && paymentRedirectTime) {
-                // Check every 1 second for faster detection
-                paymentMonitoringInterval = setInterval(() => {
-                    // Stop if modal already shown
-                    if (paymentErrorModalShown) {
-                        clearInterval(paymentMonitoringInterval);
-                        paymentMonitoringInterval = null;
-                        return;
-                    }
-                    const currentStatus = new URLSearchParams(window.location.search).get('status');
-                    const currentHash = window.location.hash;
-                    const elapsed = Date.now() - parseInt(paymentRedirectTime);
-                    
-                    // Only check if we're on payment page
-                    if (!window.location.pathname.includes('payment.html')) {
-                        return; // Don't clear interval, keep checking
-                    }
-                    
-                    // If success, clear everything
-                    if (currentStatus === 'success' || currentHash.includes('success')) {
-                        clearInterval(paymentMonitoringInterval);
-                        paymentMonitoringInterval = null;
-                        UserState.setPaymentRedirectTime(null);
-                        UserState.setPaymongoCheckoutUrl(null);
-                        UserState.setPaymentPageUrl(null);
-                        return;
-                    }
-                    
-                    // Check referrer immediately (no delay if from PayMongo)
-                    const referrer = document.referrer;
-                    if (referrer.includes('paymongo.com') || 
-                        referrer.includes('secure-authentication')) {
-                        
-                        clearInterval(paymentMonitoringInterval);
-                        paymentMonitoringInterval = null;
-                        showPaymentErrorModal();
-                        return;
-                    }
-                    
-                    // If no success status and enough time has passed (2+ seconds)
-                    if (!currentStatus && !currentHash.includes('success') && elapsed > 2000) {
-                        // Show error if no referrer or enough time passed
-                        if (!referrer || referrer === '' || elapsed > 10000) {
-                            clearInterval(paymentMonitoringInterval);
-                            paymentMonitoringInterval = null;
-                            showPaymentErrorModal();
-                        }
-                    }
-                }, 1000); // Check every second
+            // Handle success case
+            if (status === 'success') {
+                await UserState.loadState();
+                const pendingCheckoutItems = UserState.getPendingCheckoutItems() || [];
                 
-                // Stop checking after 2 minutes
-                setTimeout(() => {
-                    if (paymentMonitoringInterval) {
-                        clearInterval(paymentMonitoringInterval);
-                        paymentMonitoringInterval = null;
-                    }
-                }, 120000);
-            }
-        }
-        
-        // Check if user manually navigated to payment page with pending order
-        async function checkPendingPaymentOnLoad() {
-            // Don't check if modal already shown
-            if (paymentErrorModalShown) {
-                return false;
-            }
-            
-            await UserState.loadState();
-            const orderId = UserState.getPendingOrderId();
-            const paymentRedirectTime = UserState.getPaymentRedirectTime();
-            const paymongoUrl = UserState.getPaymongoCheckoutUrl();
-            
-            if (orderId && paymentRedirectTime && paymongoUrl) {
-                const timeSinceRedirect = Date.now() - parseInt(paymentRedirectTime);
-                const currentStatus = new URLSearchParams(window.location.search).get('status');
-                const currentHash = window.location.hash;
-                
-                // If user is on payment page, has pending order, no success status
-                if (window.location.pathname.includes('payment.html') && 
-                    !currentStatus && 
-                    !currentHash.includes('success')) {
-                    
-                    const referrer = document.referrer;
-                    
-                    // IMMEDIATELY show error modal if coming from PayMongo (no delay)
-                    if (referrer.includes('paymongo.com') || 
-                        referrer.includes('secure-authentication')) {
-                        
-                        // Show error modal immediately - user clearly came from PayMongo
-                        showPaymentErrorModal();
-                        return true; // Indicate we handled it
-                    }
-                    
-                    // If more than 1 second has passed and no referrer (direct navigation), also show
-                    if (timeSinceRedirect > 1000 && (!referrer || referrer === '')) {
-                        showPaymentErrorModal();
-                        return true;
-                    }
-                    
-                    // If enough time has passed (15+ seconds = definitely expired)
-                    if (timeSinceRedirect > 15000) {
-                        showPaymentErrorModal();
-                        localStorage.removeItem('pendingOrderId');
-                        localStorage.removeItem('pendingCheckoutItems');
-                        localStorage.removeItem('paymentRedirectTime');
-                        localStorage.removeItem('paymongoCheckoutUrl');
-                        localStorage.removeItem('paymentPageUrl');
-                        return true;
-                    }
+                // Remove ordered items from cart
+                if (pendingCheckoutItems.length > 0) {
+                    removeOrderedItemsFromCart(pendingCheckoutItems);
                 }
+                
+                // Clear checkout items and pending data
+                UserState.setCheckoutItems([]);
+                UserState.setPendingOrderId(null);
+                UserState.setPendingCheckoutItems(null);
+                UserState.setPaymentRedirectTime(null);
+                
+                showNotification('Payment successful! Your order has been placed.', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'orders.html';
+                }, 2000);
             }
-            return false;
         }
         
         // Show payment error modal
@@ -1671,13 +1524,7 @@
                     clearTimeout(errorModal._autoCloseTimer);
                 }
                 
-                // Stop monitoring intervals
-                if (paymentMonitoringInterval) {
-                    clearInterval(paymentMonitoringInterval);
-                    paymentMonitoringInterval = null;
-                }
-                
-                // Clear state one more time to be sure
+                // Clear state
                 UserState.setPendingOrderId(null);
                 UserState.setPendingCheckoutItems(null);
                 UserState.setPaymentRedirectTime(null);
@@ -1689,10 +1536,9 @@
                     if (errorModal.parentNode) {
                         errorModal.remove();
                     }
-                    // Reset flag before reload
+                    // Reset flag
                     paymentErrorModalShown = false;
-                    // Refresh the page to reset the "Processing..." button state
-                    window.location.reload();
+                    // Don't reload - just close the modal
                 }, 300);
             }
         }
@@ -1930,102 +1776,12 @@
             setTimeout(() => clearInterval(checkNavbar), 5000);
         }
         
-        // Run immediate check as soon as script loads (before DOM ready)
-        (async function immediateCheck() {
-            // Don't check if modal already shown (from previous load)
-            if (paymentErrorModalShown) {
-                return;
-            }
-            
-            await UserState.loadState();
-            const orderId = UserState.getPendingOrderId();
-            const paymentRedirectTime = UserState.getPaymentRedirectTime();
-            
-            // If no pending payment state, clear flag and exit
-            if (!orderId || !paymentRedirectTime) {
-                paymentErrorModalShown = false;
-                return;
-            }
-            
-            const timeSinceRedirect = Date.now() - parseInt(paymentRedirectTime);
-            const currentStatus = new URLSearchParams(window.location.search).get('status');
-            
-            // If on payment page, no success status, and enough time passed
-            if (window.location.pathname.includes('payment.html') && 
-                !currentStatus && 
-                timeSinceRedirect > 3000) {
-                
-                const referrer = document.referrer;
-                console.log('Payment check:', {
-                    orderId,
-                    timeSinceRedirect,
-                    referrer,
-                    currentStatus,
-                    url: window.location.href
-                });
-                
-                // If conditions are met, show error immediately
-                // But only if referrer is from PayMongo OR if it's been a very long time (> 5 minutes)
-                // Don't show if user just navigated directly to payment page
-                if (referrer.includes('paymongo.com') || 
-                    referrer.includes('secure-authentication') ||
-                    timeSinceRedirect > 300000) { // 5 minutes - very old payment attempt
-                    
-                    // Wait for DOM to be ready, then show modal
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', function() {
-                            if (!paymentErrorModalShown) {
-                                showPaymentErrorModal();
-                            }
-                        });
-                    } else {
-                        if (!paymentErrorModalShown) {
-                            showPaymentErrorModal();
-                        }
-                    }
-                } else {
-                    // If conditions not met, clear the old state (stale payment attempt)
-                    UserState.setPendingOrderId(null);
-                    UserState.setPendingCheckoutItems(null);
-                    UserState.setPaymentRedirectTime(null);
-                    UserState.setPaymongoCheckoutUrl(null);
-                    UserState.setPaymentPageUrl(null);
-                }
-            }
-        })();
-        
-        // Initialize on page load
+        // Initialize on page load - SIMPLIFIED: Just check once
         document.addEventListener('DOMContentLoaded', function() {
             loadOrderSummary();
             
-            // IMMEDIATELY check for pending payment on load (handles manual navigation back)
-            // This is the most important check - runs first
-            const handled = checkPendingPaymentOnLoad();
-            
-            // Check for payment redirect immediately (unless already handled)
-            if (!handled) {
-                handlePaymentRedirect();
-            }
-            
-            // Also check after a short delay to catch any late redirects (only if not already handled)
-            setTimeout(() => {
-                if (!handled && !paymentErrorModalShown) {
-                    handlePaymentRedirect();
-                    checkPendingPaymentOnLoad();
-                }
-            }, 300);
-            
-            // More aggressive check after 1 second (only if not already handled)
-            setTimeout(() => {
-                if (!paymentErrorModalShown) {
-                    checkPendingPaymentOnLoad();
-                }
-            }, 1000);
-            
-            // Start monitoring for manual return from PayMongo (only if not already handled)
-            if (!paymentErrorModalShown) {
-                monitorPaymentReturn();
-            }
+            // Check for payment redirect once on page load
+            handlePaymentRedirect();
             
             // Initialize dropdown after navbar loads
             initializeDropdown();
@@ -2034,43 +1790,6 @@
             setTimeout(() => {
                 initializeDropdown();
             }, 1000);
-        });
-        
-        // Also check when page becomes visible (user switches back to tab)
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden && !paymentErrorModalShown) {
-                setTimeout(() => {
-                    if (!paymentErrorModalShown) {
-                        checkPendingPaymentOnLoad();
-                        handlePaymentRedirect();
-                    }
-                }, 100); // Faster response
-            }
-        });
-        
-        // Check on focus (user clicks back to window)
-        window.addEventListener('focus', function() {
-            if (!paymentErrorModalShown) {
-                setTimeout(() => {
-                    if (!paymentErrorModalShown) {
-                        checkPendingPaymentOnLoad();
-                        handlePaymentRedirect();
-                    }
-                }, 100); // Faster response
-            }
-        });
-        
-        // Check on pageshow event (handles back/forward navigation)
-        window.addEventListener('pageshow', function(event) {
-            // If page was loaded from cache (back button), check immediately
-            if (event.persisted && !paymentErrorModalShown) {
-                setTimeout(() => {
-                    if (!paymentErrorModalShown) {
-                        checkPendingPaymentOnLoad();
-                        handlePaymentRedirect();
-                    }
-                }, 100);
-            }
         });
         
         // Also check for payment failure on hash change

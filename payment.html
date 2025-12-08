@@ -1457,11 +1457,25 @@
                 return;
             }
             
-            // Check if coming from PayMongo (user clicked fail/back)
-            // Only check referrer if no success status (already handled above)
+            // Load state to check for pending payment
+            await UserState.loadState();
+            const pendingOrderId = UserState.getPendingOrderId();
+            const paymentRedirectTime = UserState.getPaymentRedirectTime();
             const referrer = document.referrer;
-            if (referrer && (referrer.includes('paymongo.com') || referrer.includes('secure-authentication'))) {
+            
+            // Check if coming from PayMongo (user clicked fail/back)
+            // Multiple conditions to detect failed payment:
+            // 1. Referrer indicates PayMongo
+            // 2. OR there's a pending order but no success status (payment was initiated but failed)
+            const isFromPayMongo = referrer && (
+                referrer.includes('paymongo.com') || 
+                referrer.includes('secure-authentication') ||
+                referrer.includes('paymongo')
+            );
+            
+            if (isFromPayMongo || (pendingOrderId && !status)) {
                 // User came from PayMongo but no success status = payment failed/cancelled
+                // OR there's a pending payment that wasn't completed
                 showPaymentErrorModal();
                 return;
             }
@@ -1816,10 +1830,15 @@
         
         // Initialize on page load - SIMPLIFIED: Just check once
         document.addEventListener('DOMContentLoaded', function() {
+            // Reset modal flag on fresh page load
+            paymentErrorModalShown = false;
+            
             loadOrderSummary();
             
-            // Check for payment redirect once on page load
-            handlePaymentRedirect();
+            // Check for payment redirect once on page load (with delay to ensure state is loaded)
+            setTimeout(() => {
+                handlePaymentRedirect();
+            }, 500);
             
             // Initialize dropdown after navbar loads
             initializeDropdown();
@@ -1844,13 +1863,22 @@
             }, 500);
         }
         
-        // Also check when page becomes visible (in case of redirect)
+        // Also check when page becomes visible (in case of redirect from PayMongo)
         document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
+            if (!document.hidden && !paymentErrorModalShown) {
                 setTimeout(() => {
                     handlePaymentRedirect();
-                }, 300);
+                }, 500);
             }
+        });
+        
+        // Additional check after page fully loads (for cases where referrer/state takes time)
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                if (!paymentErrorModalShown) {
+                    handlePaymentRedirect();
+                }
+            }, 1000);
         });
         
         // Listen for navbar load event if available
@@ -1894,4 +1922,5 @@
     </div>
 </body>
 </html>
+
 

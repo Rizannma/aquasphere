@@ -1473,10 +1473,11 @@
             const prevItem = document.createElement('li');
             prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
             prevItem.innerHTML = `
-                <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;">
+                <button class="page-link" type="button" ${currentPage === 1 ? 'disabled' : ''}>
                     <i class="fas fa-chevron-left"></i>
-                </a>
+                </button>
             `;
+            prevItem.querySelector('button').addEventListener('click', () => goToPage(currentPage - 1));
             paginationList.appendChild(prevItem);
             
             // Page numbers
@@ -1492,7 +1493,8 @@
             if (startPage > 1) {
                 const firstItem = document.createElement('li');
                 firstItem.className = 'page-item';
-                firstItem.innerHTML = `<a class="page-link" href="#" onclick="goToPage(1); return false;">1</a>`;
+                firstItem.innerHTML = `<button class="page-link" type="button">1</button>`;
+                firstItem.querySelector('button').addEventListener('click', () => goToPage(1));
                 paginationList.appendChild(firstItem);
                 
                 if (startPage > 2) {
@@ -1507,7 +1509,8 @@
             for (let i = startPage; i <= endPage; i++) {
                 const pageItem = document.createElement('li');
                 pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
-                pageItem.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>`;
+                pageItem.innerHTML = `<button class="page-link" type="button">${i}</button>`;
+                pageItem.querySelector('button').addEventListener('click', () => goToPage(i));
                 paginationList.appendChild(pageItem);
             }
             
@@ -1522,7 +1525,8 @@
                 
                 const lastItem = document.createElement('li');
                 lastItem.className = 'page-item';
-                lastItem.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;">${totalPages}</a>`;
+                lastItem.innerHTML = `<button class="page-link" type="button">${totalPages}</button>`;
+                lastItem.querySelector('button').addEventListener('click', () => goToPage(totalPages));
                 paginationList.appendChild(lastItem);
             }
             
@@ -1530,10 +1534,11 @@
             const nextItem = document.createElement('li');
             nextItem.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
             nextItem.innerHTML = `
-                <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;">
+                <button class="page-link" type="button" ${currentPage === totalPages ? 'disabled' : ''}>
                     <i class="fas fa-chevron-right"></i>
-                </a>
+                </button>
             `;
+            nextItem.querySelector('button').addEventListener('click', () => goToPage(currentPage + 1));
             paginationList.appendChild(nextItem);
         }
         

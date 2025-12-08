@@ -31,6 +31,7 @@
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
+            scrollbar-gutter: stable;
         }
         
         /* Main Content */
@@ -1627,12 +1628,31 @@
         // Make function globally available
         window.closePaymentErrorModal = closePaymentErrorModal;
         
+        // Get scrollbar width to prevent layout shift
+        function getScrollbarWidth() {
+            const outer = document.createElement('div');
+            outer.style.visibility = 'hidden';
+            outer.style.overflow = 'scroll';
+            outer.style.msOverflowStyle = 'scrollbar';
+            document.body.appendChild(outer);
+            const inner = document.createElement('div');
+            outer.appendChild(inner);
+            const scrollbarWidth = outer.offsetWidth - inner.offsetWidth;
+            outer.parentNode.removeChild(outer);
+            return scrollbarWidth;
+        }
+        
         // Open Settings Modal
         function openSettingsModal() {
             const modal = document.getElementById('settingsModal');
             if (!modal) return;
-            modal.style.display = 'flex';
+            
+            // Calculate scrollbar width and add padding to prevent layout shift
+            const scrollbarWidth = getScrollbarWidth();
+            document.body.style.paddingRight = scrollbarWidth + 'px';
             document.body.style.overflow = 'hidden';
+            
+            modal.style.display = 'flex';
         }
         
         // Close Settings Modal
@@ -1642,6 +1662,7 @@
             if (modal) {
                 modal.style.display = 'none';
                 document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
             }
         }
         
@@ -1652,6 +1673,11 @@
             const cancelBtn = document.getElementById('logoutCancelBtn');
             
             if (!modal) return;
+            
+            // Calculate scrollbar width and add padding to prevent layout shift
+            const scrollbarWidth = getScrollbarWidth();
+            document.body.style.paddingRight = scrollbarWidth + 'px';
+            document.body.style.overflow = 'hidden';
             
             modal.style.display = 'flex';
             
@@ -1664,12 +1690,16 @@
             // Add new event listeners
             newConfirmBtn.addEventListener('click', function confirmHandler() {
                 modal.style.display = 'none';
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
                 performLogout();
                 newConfirmBtn.removeEventListener('click', confirmHandler);
             });
             
             newCancelBtn.addEventListener('click', function cancelHandler() {
                 modal.style.display = 'none';
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
                 newCancelBtn.removeEventListener('click', cancelHandler);
             });
         }

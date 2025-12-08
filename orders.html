@@ -1338,7 +1338,7 @@
         // Pagination variables
         let allOrders = [];
         let currentPage = 1;
-        const ordersPerPage = 1; // show one order at a time (carousel style)
+        const ordersPerPage = 4; // standard pagination (4 per page)
         
         // Load orders
         async function loadOrders() {
@@ -1397,8 +1397,8 @@
                 // Handle approvals: if a pending cancellation ID no longer appears (or is cancelled), show approved modal
                 handleApprovedCancellations(fetchedOrders);
                 
-                // Keep all orders for carousel navigation
-                allOrders = fetchedOrders || [];
+                // Exclude fully cancelled orders so they disappear from My Orders
+                allOrders = (fetchedOrders || []).filter(o => (o.status || '').toLowerCase() !== 'cancelled');
                 currentPage = 1; // Reset to first page
                 renderOrders();
             } catch (error) {
@@ -1447,7 +1447,7 @@
                 ordersList.appendChild(orderCard);
             });
             
-            // Render pagination / carousel controls
+            // Render pagination controls
             renderPagination(totalPages);
         }
         
@@ -1483,11 +1483,18 @@
             }
             paginationList.appendChild(prevItem);
             
-            // Label showing "Order X of Y"
-            const labelItem = document.createElement('li');
-            labelItem.className = 'page-item disabled';
-            labelItem.innerHTML = `<span class="page-link" style="pointer-events: none;">Order ${currentPage} of ${totalPages}</span>`;
-            paginationList.appendChild(labelItem);
+            // Page number buttons
+            for (let page = 1; page <= totalPages; page++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${page === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `
+                    <button class="page-link" type="button">${page}</button>
+                `;
+                if (page !== currentPage) {
+                    pageItem.querySelector('button').addEventListener('click', () => goToPage(page));
+                }
+                paginationList.appendChild(pageItem);
+            }
             
             // Next button
             const nextItem = document.createElement('li');

@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - AquaSphere</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Shared Navbar CSS -->
+    <link rel="stylesheet" href="navbar.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif !important;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+            flex: 1;
+        }
+        
+        /* Orders Container */
+        .orders-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .orders-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .orders-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px rgba(3, 105, 161, 0.1);
+        }
+        
+        .orders-header p {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin: 0;
+        }
+        
+        /* Order Card */
+        .order-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f0f9ff 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .order-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+        }
+        
+        .order-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #0284c7, #06b6d4, #0891b2, #0ea5e9);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease infinite;
+            z-index: 1;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        
+        .order-header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%);
+            padding: 1.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .order-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            animation: rotateGradient 15s linear infinite;
+        }
+        
+        @keyframes rotateGradient {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .order-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .order-info h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            margin: 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .order-info p {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+        }
+        
+        .order-status-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .order-status-badge.pending {
+            background: rgba(251, 191, 36, 0.3);
+            border-color: rgba(251, 191, 36, 0.5);
+        }
+        
+        .order-status-badge.preparing {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        
+        .order-status-badge.out_for_delivery {
+            background: rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+        
+        .order-status-badge.delivered {
+            background: rgba(34, 197, 94, 0.3);
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+        
+        .order-status-badge.cancelled {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+        
+        .order-status-badge.paid {
+            background: rgba(34, 197, 94, 0.3);
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+        
+        .order-body {
+            padding: 2rem;
+        }
+        
+        /* Delivery Tracking */
+        .delivery-tracking {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tracking-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tracking-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            padding: 0 1rem;
+        }
+        
+        .tracking-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+        
+        .tracking-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .tracking-step.active .step-icon {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+            animation: pulse 2s ease infinite;
+        }
+        
+        .tracking-step.completed .step-icon {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        
+        .step-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .tracking-step.active .step-label {
+            color: #0369a1;
+        }
+        
+        .tracking-step.completed .step-label {
+            color: #22c55e;
+        }
+        
+        /* Order Items */
+        .order-items {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .items-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+        
+        .item-details {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        .item-total {
+            font-weight: 700;
+            color: #0369a1;
+            font-size: 1.1rem;
+        }
+        
+        /* Order Summary */
+        .order-summary {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #0ea5e9;
+        }
+        
+        .summary-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 1rem;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+        
+        .summary-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .summary-value {
+            color: #0f172a;
+            font-weight: 600;
+        }
+        
+        .summary-row.total {
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid #cbd5e1;
+        }
+        
+        .summary-row.total .summary-label {
+            font-size: 1.1rem;
+            color: #0369a1;
+            font-weight: 700;
+        }
+        
+        .summary-row.total .summary-value {
+            font-size: 1.5rem;
+            color: #0ea5e9;
+            font-weight: 800;
+        }
+        
+        /* Order Actions */
+        .order-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .btn-cancel {
+            background: white;
+            border: 2px solid #ef4444;
+            color: #ef4444;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-cancel:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-cancel:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Empty State */
+        .empty-orders {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        }
+        
+        .empty-orders-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #0ea5e9;
+        }
+        
+        .empty-orders h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-orders p {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-shop {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            border: none;
+            color: white;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-shop:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(14, 165, 233, 0.4);
+            color: white;
+        }
+        
+        /* Footer Styles */
+        .footer {
+            background: #0369a1;
+            color: white;
+            padding: 20px 0 15px;
+            margin-top: auto;
+            width: 100%;
+        }
+        
+        .footer-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        
+        .footer-link:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            .orders-header h1 {
+                font-size: 2rem;
+            }
+            
+            .order-header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .tracking-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .tracking-steps::before {
+                display: none;
+            }
+            
+            .order-actions {
+                flex-direction: column;
+            }
+            
+            .btn-cancel {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar Container -->
+    <div id="navbar-container"></div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="orders-container">
+                <!-- Header -->
+                <div class="orders-header">
+                    <h1>My Orders</h1>
+                    <p>Track your water delivery orders and manage them here</p>
+                </div>
+                
+                <!-- Orders List -->
+                <div id="ordersList">
+                    <!-- Orders will be dynamically inserted here -->
+                    <div class="empty-orders" id="emptyOrders" style="display: none;">
+                        <div class="empty-orders-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <h3>No Orders Yet</h3>
+                        <p>You haven't placed any orders. Start shopping to see your orders here!</p>
+                        <a href="dashboard.html" class="btn-shop">
+                            <i class="fas fa-store"></i>
+                            Start Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h4 class="footer-title" style="display: flex; align-items: center;">
+                        <img src="systemlogo.png" alt="AquaSphere Logo" style="height: 40px; margin-right: 10px;">
+                        AquaSphere
+                    </h4>
+                    <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.7;">
+                        Your trusted water delivery service. Fast delivery, clean quality water, and reliable service. 
+                        Everything you need for your hydration needs, all in one platform.
+                    </p>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="footer-title">Quick Links</h5>
+                    <a href="dashboard.html" class="footer-link">Home</a>
+                    <a href="orders.html" class="footer-link">My Orders</a>
+                    <a href="profile.html" class="footer-link">Profile</a>
+                    <a href="cart.html" class="footer-link">Cart</a>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="footer-title">Features</h5>
+                    <a href="#" class="footer-link">Easy Ordering</a>
+                    <a href="#" class="footer-link">Delivery Tracking</a>
+                    <a href="#" class="footer-link">Payment Options</a>
+                    <a href="#" class="footer-link">Customer Support</a>
+                </div>
+                
+                <div class="col-lg-3 mb-4">
+                    <h5 class="footer-title">Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <p class="mt-1" style="color: rgba(255, 255, 255, 0.8);">
+                        <i class="fas fa-envelope me-2"></i>support@aquasphere.com
+                    </p>
+                </div>
+            </div>
+            
+            <hr style="border-color: rgba(255, 255, 255, 0.2); margin: 1rem 0 0.8rem;">
+            
+            <div class="text-center" style="color: rgba(255, 255, 255, 0.8); font-size: 0.8rem;">
+                <p>&copy; 2024 AquaSphere. Made with ❤️ for clean water delivery. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Navbar JS -->
+    <script src="navbar.js"></script>
+    
+    <script>
+        // Load orders
+        async function loadOrders() {
+            try {
+                const response = await fetch('api/get_orders.php');
+                const result = await response.json();
+                
+                if (!result.success) {
+                    showNotification(result.message || 'Failed to load orders', 'error');
+                    return;
+                }
+                
+                const orders = result.orders || [];
+                const ordersList = document.getElementById('ordersList');
+                const emptyOrders = document.getElementById('emptyOrders');
+                
+                if (orders.length === 0) {
+                    emptyOrders.style.display = 'block';
+                    ordersList.innerHTML = '';
+                    ordersList.appendChild(emptyOrders);
+                    return;
+                }
+                
+                emptyOrders.style.display = 'none';
+                ordersList.innerHTML = '';
+                
+                orders.forEach(order => {
+                    const orderCard = createOrderCard(order);
+                    ordersList.appendChild(orderCard);
+                });
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                showNotification('Failed to load orders. Please try again.', 'error');
+            }
+        }
+        
+        // Create order card
+        function createOrderCard(order) {
+            const card = document.createElement('div');
+            card.className = 'order-card';
+            
+            const status = order.status.toLowerCase();
+            const statusLabel = status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            
+            // Calculate subtotal from items
+            const subtotal = order.items.reduce((sum, item) => sum + parseFloat(item.subtotal), 0);
+            const deliveryFee = parseFloat(order.total_amount) - subtotal;
+            
+            // Determine tracking steps
+            const trackingSteps = getTrackingSteps(status);
+            
+            card.innerHTML = `
+                <div class="order-header">
+                    <div class="order-header-content">
+                        <div class="order-info">
+                            <h3>Order #${order.id}</h3>
+                            <p><i class="fas fa-calendar me-1"></i> ${formatDate(order.order_date)}</p>
+                        </div>
+                        <div class="order-status-badge ${status}">${statusLabel}</div>
+                    </div>
+                </div>
+                <div class="order-body">
+                    <!-- Delivery Tracking -->
+                    <div class="delivery-tracking">
+                        <div class="tracking-title">
+                            <i class="fas fa-truck"></i>
+                            Delivery Tracking
+                        </div>
+                        <div class="tracking-steps">
+                            ${trackingSteps.map((step, index) => `
+                                <div class="tracking-step ${step.class}">
+                                    <div class="step-icon">
+                                        <i class="${step.icon}"></i>
+                                    </div>
+                                    <div class="step-label">${step.label}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items -->
+                    <div class="order-items">
+                        <div class="items-title">
+                            <i class="fas fa-box"></i>
+                            Order Items
+                        </div>
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <div class="item-info">
+                                    <div class="item-name">${escapeHtml(item.product_name)}</div>
+                                    <div class="item-details">Quantity: ${item.quantity} × ₱${parseFloat(item.product_price).toFixed(2)}</div>
+                                </div>
+                                <div class="item-total">₱${parseFloat(item.subtotal).toFixed(2)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="order-summary">
+                        <div class="summary-title">Order Summary</div>
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal</span>
+                            <span class="summary-value">₱${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Delivery Fee</span>
+                            <span class="summary-value">₱${deliveryFee.toFixed(2)}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span class="summary-label">Total</span>
+                            <span class="summary-value">₱${parseFloat(order.total_amount).toFixed(2)}</span>
+                        </div>
+                        <div class="summary-row" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #cbd5e1;">
+                            <span class="summary-label"><i class="fas fa-credit-card me-1"></i>Payment Method</span>
+                            <span class="summary-value">${escapeHtml(order.payment_method || 'COD')}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Actions -->
+                    <div class="order-actions">
+                        ${canCancelOrder(status) ? `
+                            <button class="btn-cancel" onclick="cancelOrder(${order.id})">
+                                <i class="fas fa-times-circle"></i>
+                                Cancel Order
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // Get tracking steps based on status
+        function getTrackingSteps(status) {
+            const steps = [
+                { label: 'Pending', icon: 'fas fa-clock', class: '' },
+                { label: 'Preparing', icon: 'fas fa-box', class: '' },
+                { label: 'Out for Delivery', icon: 'fas fa-truck', class: '' },
+                { label: 'Delivered', icon: 'fas fa-check-circle', class: '' }
+            ];
+            
+            const statusMap = {
+                'pending': 0,
+                'preparing': 1,
+                'out_for_delivery': 2,
+                'delivered': 3,
+                'paid': 1,
+                'cancelled': -1
+            };
+            
+            const currentStep = statusMap[status] ?? 0;
+            
+            if (currentStep === -1) {
+                // Cancelled - all steps inactive
+                return steps;
+            }
+            
+            return steps.map((step, index) => {
+                if (index < currentStep) {
+                    return { ...step, class: 'completed' };
+                } else if (index === currentStep) {
+                    return { ...step, class: 'active' };
+                } else {
+                    return { ...step, class: '' };
+                }
+            });
+        }
+        
+        // Check if order can be cancelled
+        function canCancelOrder(status) {
+            const cancellable = ['pending', 'preparing', 'paid'];
+            return cancellable.includes(status.toLowerCase());
+        }
+        
+        // Cancel order
+        async function cancelOrder(orderId) {
+            if (!confirm('Are you sure you want to cancel this order?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('api/cancel_order.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Order cancelled successfully', 'success');
+                    // Reload orders
+                    setTimeout(() => {
+                        loadOrders();
+                    }, 1000);
+                } else {
+                    showNotification(result.message || 'Failed to cancel order', 'error');
+                }
+            } catch (error) {
+                console.error('Error cancelling order:', error);
+                showNotification('Failed to cancel order. Please try again.', 'error');
+            }
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
+            notification.style.cssText = 'position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                ${message}
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+            
+            // Auto-refresh every 30 seconds to update tracking
+            setInterval(loadOrders, 30000);
+        });
+    </script>
+</body>
+</html>
+

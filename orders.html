@@ -1335,15 +1335,17 @@
     <script src="navbar.js"></script>
     
     <script>
-        // Carousel-style navigation variables
-        let allOrders = [];
-        let currentIndex = 0; // zero-based index for current order
-        const FETCH_LIMIT = 1000; // fetch up to 1000 orders at once
+        // Pagination variables (server-driven)
+        let currentPage = 1;
+        let totalPages = 1;
+        const ordersPerPage = 1; // fetch and show 1 order per page
+        let currentOrders = [];
         
         // Load orders
-        async function loadOrders() {
+        async function loadOrders(page = 1) {
+            currentPage = page;
             try {
-                const response = await fetch(`api/get_orders.php?page=1&limit=${FETCH_LIMIT}`);
+                const response = await fetch(`api/get_orders.php?page=${currentPage}&limit=${ordersPerPage}`);
                 
                 // Check if response is ok
                 if (!response.ok) {
@@ -1376,7 +1378,7 @@
                     if (result.message && !result.message.toLowerCase().includes('no orders')) {
                         showNotification(result.message || 'Failed to load orders', 'error');
                     }
-                    allOrders = [];
+                    currentOrders = [];
                     renderOrders();
                     return;
                 }
@@ -1398,18 +1400,23 @@
                 handleApprovedCancellations(fetchedOrders);
                 
                 // Exclude fully cancelled orders so they disappear from My Orders
-                allOrders = (fetchedOrders || [])
+                currentOrders = (fetchedOrders || [])
                     .filter(o => (o.status || '').toLowerCase() !== 'cancelled')
-                    // Sort newest first for consistent navigation
+                    // Sort newest first for consistency
                     .sort((a, b) => {
                         const dateA = new Date(a.order_date || a.created_at || 0).getTime();
                         const dateB = new Date(b.order_date || b.created_at || 0).getTime();
                         return dateB - dateA;
                     });
-                // Clamp current index
-                if (currentIndex >= allOrders.length) {
-                    currentIndex = Math.max(0, allOrders.length - 1);
+
+                // Sync pagination from server response
+                if (result.pagination) {
+                    totalPages = Math.max(1, result.pagination.total_pages || 1);
+                    currentPage = Math.max(1, Math.min(totalPages, result.pagination.page || currentPage));
+                } else {
+                    totalPages = Math.max(1, Math.ceil(currentOrders.length / ordersPerPage));
                 }
+
                 renderOrders();
             } catch (error) {
                 console.error('Error loading orders:', error);
@@ -1436,7 +1443,7 @@
                 return;
             }
             
-            if (allOrders.length === 0) {
+            if (currentOrders.length === 0) {
                 emptyOrders.style.display = 'block';
                 ordersList.innerHTML = '';
                 ordersList.appendChild(emptyOrders);
@@ -1446,18 +1453,20 @@
             
             emptyOrders.style.display = 'none';
             
-            // Show only the current order (carousel-style)
-            const order = allOrders[currentIndex];
+            // Show only the current order (server pagination: one per page)
+            const order = currentOrders[0];
             ordersList.innerHTML = '';
-            const orderCard = createOrderCard(order);
-            ordersList.appendChild(orderCard);
+            if (order) {
+                const orderCard = createOrderCard(order);
+                ordersList.appendChild(orderCard);
+            }
             
             // Render navigation controls
-            renderPagination(allOrders.length);
+            renderPagination(totalPages);
         }
         
         // Render navigation controls (prev / label / next)
-        function renderPagination(totalOrders) {
+        function renderPagination(totalPagesInput) {
             const pagination = document.getElementById('ordersPagination');
             const paginationList = document.getElementById('paginationList');
             
@@ -1467,26 +1476,26 @@
                 return;
             }
             
-            if (totalOrders <= 1) {
+            if (totalPagesInput <= 1) {
                 pagination.style.display = 'none';
                 return;
             }
             
             pagination.style.display = 'block';
-            const prevDisabled = currentIndex === 0;
-            const nextDisabled = currentIndex === totalOrders - 1;
+            const prevDisabled = currentPage === 1;
+            const nextDisabled = currentPage === totalPagesInput;
             
             paginationList.innerHTML = `
                 <li class="page-item ${prevDisabled ? 'disabled' : ''}">
-                    <button class="page-link" type="button" onclick="changeOrder(-1)" ${prevDisabled ? 'disabled' : ''}>
+                    <button class="page-link" type="button" onclick="goToPage(${currentPage - 1})" ${prevDisabled ? 'disabled' : ''}>
                         <i class="fas fa-chevron-left"></i>
                     </button>
                 </li>
                 <li class="page-item disabled">
-                    <span class="page-link" style="pointer-events: none;">Order ${currentIndex + 1} of ${totalOrders}</span>
+                    <span class="page-link" style="pointer-events: none;">Order ${currentPage} of ${totalPagesInput}</span>
                 </li>
                 <li class="page-item ${nextDisabled ? 'disabled' : ''}">
-                    <button class="page-link" type="button" onclick="changeOrder(1)" ${nextDisabled ? 'disabled' : ''}>
+                    <button class="page-link" type="button" onclick="goToPage(${currentPage + 1})" ${nextDisabled ? 'disabled' : ''}>
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </li>
@@ -1494,13 +1503,10 @@
         }
         
         // Go to specific page
-        function changeOrder(delta) {
-            const total = allOrders.length;
-            if (total <= 1) return;
-            const nextIndex = Math.max(0, Math.min(total - 1, currentIndex + delta));
-            if (nextIndex === currentIndex) return;
-            currentIndex = nextIndex;
-            renderOrders();
+        async function goToPage(page) {
+            const targetPage = Math.max(1, Math.min(totalPages, parseInt(page, 10)));
+            if (targetPage === currentPage) return;
+            await loadOrders(targetPage);
             
             const ordersList = document.getElementById('ordersList');
             if (ordersList) {
@@ -1508,7 +1514,7 @@
             }
         }
         // Make navigation callable from inline handlers
-        window.changeOrder = changeOrder;
+        window.goToPage = goToPage;
         
         // Create order card
         function createOrderCard(order) {

@@ -1451,6 +1451,15 @@
             renderPagination(totalPages);
         }
         
+        // Delegate pagination clicks to avoid missing listeners after rerenders
+        function handlePaginationClick(event) {
+            const btn = event.target.closest('button[data-page]');
+            if (!btn || btn.disabled) return;
+            const page = parseInt(btn.dataset.page, 10);
+            if (!isFinite(page)) return;
+            goToPage(page);
+        }
+        
         // Render pagination controls
         function renderPagination(totalPages) {
             const pagination = document.getElementById('ordersPagination');
@@ -1472,15 +1481,13 @@
             
             // Previous button
             const prevItem = document.createElement('li');
-            prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            const prevDisabled = currentPage === 1;
+            prevItem.className = `page-item ${prevDisabled ? 'disabled' : ''}`;
             prevItem.innerHTML = `
-                <button class="page-link" type="button">
+                <button class="page-link" type="button" data-page="${currentPage - 1}" ${prevDisabled ? 'disabled' : ''}>
                     <i class="fas fa-chevron-left"></i>
                 </button>
             `;
-            if (currentPage !== 1) {
-                prevItem.querySelector('button').addEventListener('click', () => goToPage(currentPage - 1));
-            }
             paginationList.appendChild(prevItem);
             
             // Page number buttons
@@ -1488,26 +1495,27 @@
                 const pageItem = document.createElement('li');
                 pageItem.className = `page-item ${page === currentPage ? 'active' : ''}`;
                 pageItem.innerHTML = `
-                    <button class="page-link" type="button">${page}</button>
+                    <button class="page-link" type="button" data-page="${page}" ${page === currentPage ? 'disabled' : ''}>${page}</button>
                 `;
-                if (page !== currentPage) {
-                    pageItem.querySelector('button').addEventListener('click', () => goToPage(page));
-                }
                 paginationList.appendChild(pageItem);
             }
             
             // Next button
             const nextItem = document.createElement('li');
-            nextItem.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            const nextDisabled = currentPage === totalPages;
+            nextItem.className = `page-item ${nextDisabled ? 'disabled' : ''}`;
             nextItem.innerHTML = `
-                <button class="page-link" type="button">
+                <button class="page-link" type="button" data-page="${currentPage + 1}" ${nextDisabled ? 'disabled' : ''}>
                     <i class="fas fa-chevron-right"></i>
                 </button>
             `;
-            if (currentPage !== totalPages) {
-                nextItem.querySelector('button').addEventListener('click', () => goToPage(currentPage + 1));
-            }
             paginationList.appendChild(nextItem);
+            
+            // Ensure delegation listener is attached once
+            if (!paginationList.dataset.bound) {
+                paginationList.addEventListener('click', handlePaginationClick);
+                paginationList.dataset.bound = 'true';
+            }
         }
         
         // Go to specific page

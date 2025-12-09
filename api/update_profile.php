@@ -84,10 +84,14 @@ try {
     
     if (empty($first_name)) {
         $errors['first_name'] = 'First name is required.';
+    } elseif (preg_match('/\d/', $first_name) || !preg_match("/^[\p{L}\s'-]+$/u", $first_name)) {
+        $errors['first_name'] = 'First name can only contain letters, spaces, apostrophes, and hyphens.';
     }
     
     if (empty($last_name)) {
         $errors['last_name'] = 'Last name is required.';
+    } elseif (preg_match('/\d/', $last_name) || !preg_match("/^[\p{L}\s'-]+$/u", $last_name)) {
+        $errors['last_name'] = 'Last name can only contain letters, spaces, apostrophes, and hyphens.';
     }
     
     if (empty($gender)) {
@@ -96,6 +100,18 @@ try {
     
     if (empty($date_of_birth)) {
         $errors['date_of_birth'] = 'Date of birth is required.';
+    } else {
+        $dob = DateTime::createFromFormat('Y-m-d', $date_of_birth);
+        $errorsDate = DateTime::getLastErrors();
+        if (!$dob || $errorsDate['warning_count'] > 0 || $errorsDate['error_count'] > 0) {
+            $errors['date_of_birth'] = 'Invalid birthday format.';
+        } else {
+            $today = new DateTime();
+            $age = $today->diff($dob)->y;
+            if ($age < 18) {
+                $errors['date_of_birth'] = 'You must be at least 18 years old.';
+            }
+        }
     }
     
     // If passwords are provided, validate them

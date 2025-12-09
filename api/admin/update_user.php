@@ -71,12 +71,23 @@ if (!$user_exists) {
 $update_fields = [];
 $update_params = [];
 
+// Validate names (if provided)
 if (!empty($first_name)) {
+    if (preg_match('/\d/', $first_name) || !preg_match("/^[\p{L}\s'-]+$/u", $first_name)) {
+        close_connection($conn);
+        echo json_encode(['success' => false, 'message' => 'First name can only contain letters, spaces, apostrophes, and hyphens.']);
+        exit;
+    }
     $update_fields[] = "first_name = ?";
     $update_params[] = $first_name;
 }
 
 if (!empty($last_name)) {
+    if (preg_match('/\d/', $last_name) || !preg_match("/^[\p{L}\s'-]+$/u", $last_name)) {
+        close_connection($conn);
+        echo json_encode(['success' => false, 'message' => 'Last name can only contain letters, spaces, apostrophes, and hyphens.']);
+        exit;
+    }
     $update_fields[] = "last_name = ?";
     $update_params[] = $last_name;
 }
@@ -108,6 +119,21 @@ if (!empty($gender)) {
 }
 
 if (!empty($date_of_birth)) {
+    $dob = DateTime::createFromFormat('Y-m-d', $date_of_birth);
+    $errorsDate = DateTime::getLastErrors();
+    if (!$dob || $errorsDate['warning_count'] > 0 || $errorsDate['error_count'] > 0) {
+        close_connection($conn);
+        echo json_encode(['success' => false, 'message' => 'Invalid birthday format.']);
+        exit;
+    }
+    $today = new DateTime();
+    $age = $today->diff($dob)->y;
+    if ($age < 18) {
+        close_connection($conn);
+        echo json_encode(['success' => false, 'message' => 'User must be at least 18 years old.']);
+        exit;
+    }
+
     $update_fields[] = "date_of_birth = ?";
     $update_params[] = $date_of_birth;
 }

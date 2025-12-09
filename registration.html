@@ -419,6 +419,19 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('registerForm');
+            const birthdayInput = document.getElementById('birthday');
+            
+            const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/;
+
+            // Set birthday max to 18 years ago
+            if (birthdayInput) {
+                const today = new Date();
+                const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+                const yyyy = maxDate.getFullYear();
+                const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(maxDate.getDate()).padStart(2, '0');
+                birthdayInput.max = `${yyyy}-${mm}-${dd}`;
+            }
             
             // Success timers to revert the green glow after 3s
             const successTimers = {};
@@ -475,6 +488,14 @@
                     return false;
                 }
                 
+                // Name validation (no digits)
+                if (['first_name','last_name'].includes(fieldName)) {
+                    if (!nameRegex.test(value)) {
+                        showError(fieldName, 'Only letters, spaces, apostrophes, and hyphens are allowed.');
+                        return false;
+                    }
+                }
+
                 // Additional validations
                 if (fieldName === 'username') {
                     if (value.length < 4 || value.length > 64) {
@@ -517,6 +538,13 @@
                     }
                 }
                 
+                if (fieldName === 'birthday') {
+                    if (!isAtLeast18(value)) {
+                        showError(fieldName, 'You must be at least 18 years old.');
+                        return false;
+                    }
+                }
+
                 // For other fields, if not failing, mark success
                 if (!['username','email','password','confirm_password'].includes(fieldName)) {
                     hideError(fieldName);
@@ -544,6 +572,18 @@
             function isValidEmail(email) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(email);
+            }
+            
+            function isAtLeast18(dateStr) {
+                const dob = new Date(dateStr);
+                if (isNaN(dob.getTime())) return false;
+                const today = new Date();
+                let age = today.getFullYear() - dob.getFullYear();
+                const m = today.getMonth() - dob.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                    age--;
+                }
+                return age >= 18;
             }
             
             // Function to validate all fields

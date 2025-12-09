@@ -712,6 +712,7 @@
             }
             const value = (document.getElementById(fieldId)?.value || '').trim();
             let message = '';
+            const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/;
 
             switch (fieldId) {
                 case 'editEmail':
@@ -720,15 +721,18 @@
                     break;
                 case 'editFirstName':
                     if (!value) message = 'First Name is required.';
+                    else if (!nameRegex.test(value)) message = 'Only letters, spaces, apostrophes, and hyphens are allowed.';
                     break;
                 case 'editLastName':
                     if (!value) message = 'Last Name is required.';
+                    else if (!nameRegex.test(value)) message = 'Only letters, spaces, apostrophes, and hyphens are allowed.';
                     break;
                 case 'editGender':
                     if (!value) message = 'Gender is required.';
                     break;
                 case 'editDateOfBirth':
                     if (!value) message = 'Birthday is required.';
+                    else if (!isAtLeast18(value)) message = 'User must be at least 18 years old.';
                     break;
                 case 'editNewPassword':
                     if (value && value.length < 8) {
@@ -753,6 +757,18 @@
             }
 
             return Boolean(message);
+        }
+
+        function isAtLeast18(dateStr) {
+            const dob = new Date(dateStr);
+            if (isNaN(dob.getTime())) return false;
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            return age >= 18;
         }
 
         function hideFieldError(fieldId) {
@@ -802,6 +818,13 @@
             document.getElementById('editEmail').value = user.email || '';
             document.getElementById('editGender').value = (user.gender || '').toLowerCase();
             document.getElementById('editDateOfBirth').value = user.date_of_birth || '';
+            // Set max birthday to 18 years ago
+            const dobInput = document.getElementById('editDateOfBirth');
+            if (dobInput) {
+                const today = new Date();
+                const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+                dobInput.max = maxDate.toISOString().split('T')[0];
+            }
             document.getElementById('editIsAdmin').checked = user.is_admin == 1;
             document.getElementById('editNewPassword').value = '';
             document.getElementById('editConfirmPassword').value = '';

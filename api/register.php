@@ -65,11 +65,15 @@ if (empty($email)) {
 // First name validation
 if (empty($first_name)) {
     $errors['first_name'] = 'First name is required.';
+} elseif (preg_match('/\d/', $first_name) || !preg_match("/^[\p{L}\s'-]+$/u", $first_name)) {
+    $errors['first_name'] = 'First name can only contain letters, spaces, apostrophes, and hyphens.';
 }
 
 // Last name validation
 if (empty($last_name)) {
     $errors['last_name'] = 'Last name is required.';
+} elseif (preg_match('/\d/', $last_name) || !preg_match("/^[\p{L}\s'-]+$/u", $last_name)) {
+    $errors['last_name'] = 'Last name can only contain letters, spaces, apostrophes, and hyphens.';
 }
 
 // Gender validation
@@ -82,6 +86,18 @@ if (empty($gender)) {
 // Birthday validation
 if (empty($birthday)) {
     $errors['birthday'] = 'Birthday is required.';
+} else {
+    $dob = DateTime::createFromFormat('Y-m-d', $birthday);
+    $errorsDate = DateTime::getLastErrors();
+    if (!$dob || $errorsDate['warning_count'] > 0 || $errorsDate['error_count'] > 0) {
+        $errors['birthday'] = 'Invalid birthday format.';
+    } else {
+        $today = new DateTime();
+        $age = $today->diff($dob)->y;
+        if ($age < 18) {
+            $errors['birthday'] = 'You must be at least 18 years old.';
+        }
+    }
 }
 
 // Password validation

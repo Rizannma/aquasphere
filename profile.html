@@ -1709,11 +1709,18 @@
                 }
             }
             
-            if (v.length < 8) {
+            const isStrong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).{8,}$/.test(v);
+            if (!isStrong) {
                 const min = document.getElementById(idBase + '-min');
-                if (min) min.style.display = 'block';
+                if (min) {
+                    min.textContent = 'Min 8 chars with upper, lower, number, special.';
+                    min.style.display = 'block';
+                }
                 markProfileError(el);
                 return false;
+            } else {
+                const min = document.getElementById(idBase + '-min');
+                if (min) min.textContent = 'Password must be at least 8 characters.';
             }
             
             markProfileClear(el);

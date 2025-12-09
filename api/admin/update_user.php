@@ -144,9 +144,14 @@ if ($is_admin !== null) {
 }
 
 if (!empty($new_password)) {
-    if (strlen($new_password) < 8) {
+    $strong = preg_match('/[a-z]/', $new_password) &&
+              preg_match('/[A-Z]/', $new_password) &&
+              preg_match('/\d/', $new_password) &&
+              preg_match('/[ !"#$%&\'()*+,\-\.\/:;<=>?@\[\]^_`{|}~]/', $new_password) &&
+              strlen($new_password) >= 8;
+    if (!$strong) {
         close_connection($conn);
-        echo json_encode(['success' => false, 'message' => 'New password must be at least 8 characters.']);
+        echo json_encode(['success' => false, 'message' => 'New password must be at least 8 chars with upper, lower, number, and special character.']);
         exit;
     }
     $update_fields[] = "password_hash = ?";

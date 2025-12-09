@@ -103,8 +103,15 @@ if (empty($birthday)) {
 // Password validation
 if (empty($password)) {
     $errors['password'] = 'Password is required.';
-} elseif (strlen($password) < 8) {
-    $errors['password'] = 'Password must be at least 8 characters.';
+} else {
+    $strong = preg_match('/[a-z]/', $password) &&
+              preg_match('/[A-Z]/', $password) &&
+              preg_match('/\d/', $password) &&
+              preg_match('/[ !"#$%&\'()*+,\-\.\/:;<=>?@\[\]^_`{|}~]/', $password) &&
+              strlen($password) >= 8;
+    if (!$strong) {
+        $errors['password'] = 'Password must be at least 8 characters and include upper, lower, number, and special character.';
+    }
 }
 
 // Confirm password validation

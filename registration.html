@@ -541,8 +541,8 @@
                 }
                 
                 if (fieldName === 'password') {
-                    if (value.length < 8) {
-                        showError(fieldName, 'Password must be at least 8 characters.');
+                    if (!isStrongPassword(value)) {
+                        showError(fieldName, 'Min 8 chars with upper, lower, number, special.');
                         return false;
                     } else {
                         hideError(fieldName);
@@ -595,6 +595,11 @@
             function isValidEmail(email) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(email);
+            }
+            
+            function isStrongPassword(pwd) {
+                const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).{8,}$/;
+                return strongRegex.test(pwd);
             }
             
             function isAtLeast18(dateStr) {

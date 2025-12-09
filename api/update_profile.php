@@ -120,21 +120,28 @@ try {
             $errors['password'] = 'Current password is required to change password.';
         } elseif (empty($new_password)) {
             $errors['newPassword'] = 'New password is required.';
-        } elseif (strlen($new_password) < 8) {
-            $errors['newPassword'] = 'New password must be at least 8 characters.';
         } else {
-            // Verify current password
-            $query = "SELECT password_hash FROM users WHERE id = ?";
-            $result = execute_sql($conn, $query, [$user_id]);
-            
-            if ($GLOBALS['use_postgres']) {
-                $user = pg_fetch_assoc($result);
+            $strong = preg_match('/[a-z]/', $new_password) &&
+                      preg_match('/[A-Z]/', $new_password) &&
+                      preg_match('/\d/', $new_password) &&
+                      preg_match('/[ !"#$%&\'()*+,\-\.\/:;<=>?@\[\]^_`{|}~]/', $new_password) &&
+                      strlen($new_password) >= 8;
+            if (!$strong) {
+                $errors['newPassword'] = 'New password must be at least 8 chars with upper, lower, number, and special character.';
             } else {
-                $user = $result->fetchArray(SQLITE3_ASSOC);
-            }
-            
-            if (!$user || !password_verify($password, $user['password_hash'])) {
-                $errors['password'] = 'Current password is incorrect.';
+                // Verify current password
+                $query = "SELECT password_hash FROM users WHERE id = ?";
+                $result = execute_sql($conn, $query, [$user_id]);
+                
+                if ($GLOBALS['use_postgres']) {
+                    $user = pg_fetch_assoc($result);
+                } else {
+                    $user = $result->fetchArray(SQLITE3_ASSOC);
+                }
+                
+                if (!$user || !password_verify($password, $user['password_hash'])) {
+                    $errors['password'] = 'Current password is incorrect.';
+                }
             }
         }
     }

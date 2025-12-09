@@ -749,8 +749,8 @@
                     else if (!isAtLeast18(value)) message = 'User must be at least 18 years old.';
                     break;
                 case 'editNewPassword':
-                    if (value && value.length < 8) {
-                        message = 'Password must be at least 8 characters.';
+                    if (value && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).{8,}$/.test(value)) {
+                        message = 'Min 8 chars with upper, lower, number, special.';
                     }
                     break;
                 case 'editConfirmPassword': {

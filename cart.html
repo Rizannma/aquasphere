@@ -3918,6 +3918,72 @@
             }
         }
         
+        let lastGeocodeLat = null;
+        let lastGeocodeLng = null;
+
+        async function autoFillAddressFromCoords(lat, lng) {
+            try {
+                // Throttle duplicate lookups
+                if (lastGeocodeLat === lat && lastGeocodeLng === lng) return;
+                lastGeocodeLat = lat;
+                lastGeocodeLng = lng;
+
+                const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`);
+                if (!resp.ok) return;
+                const data = await resp.json();
+                const addr = data.address || {};
+
+                const province = (addr.state || addr.region || '').toLowerCase().includes('laguna') ? 'Laguna' : null;
+                if (!province) {
+                    showNotification('Location is outside Laguna; auto-fill skipped.', 'warning');
+                    return;
+                }
+
+                const cityName = addr.city || addr.town || addr.municipality || addr.county || '';
+                const barangayName = addr.suburb || addr.village || addr.neighbourhood || addr.hamlet || '';
+                const postalCode = addr.postcode || '';
+
+                const regionSelect = document.getElementById('region');
+                const provinceSelect = document.getElementById('province');
+                const citySelect = document.getElementById('city');
+                const barangaySelect = document.getElementById('barangay');
+                const postalInput = document.getElementById('postalCode');
+
+                if (regionSelect) {
+                    regionSelect.value = Object.keys(philippineLocations)[0] || '';
+                    updateProvinces();
+                }
+
+                if (provinceSelect) {
+                    provinceSelect.value = 'Laguna';
+                    updateCities();
+                }
+
+                if (citySelect && cityName) {
+                    citySelect.value = cityName;
+                    updateBarangays();
+                }
+
+                if (barangaySelect) {
+                    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+                    if (barangayName) {
+                        const opt = document.createElement('option');
+                        opt.value = barangayName;
+                        opt.textContent = barangayName;
+                        barangaySelect.appendChild(opt);
+                        barangaySelect.value = barangayName;
+                        barangaySelect.disabled = false;
+                    }
+                }
+
+                if (postalInput && postalCode) {
+                    postalInput.value = postalCode;
+                }
+            } catch (e) {
+                console.warn('Reverse geocode failed:', e);
+            }
+        }
+
         // Update location display inputs
         function updateLocationDisplay(lat, lng) {
             console.log('updateLocationDisplay called with:', lat, lng);
@@ -3932,6 +3998,7 @@
                 locationDisplayGroup.style.display = 'block';
                 if (locationHint) locationHint.style.display = 'none';
                 console.log('Location display updated:', latDisplay.value, lngDisplay.value);
+                autoFillAddressFromCoords(lat, lng);
             } else {
                 console.error('Location display elements not found:', {
                     latDisplay: !!latDisplay,

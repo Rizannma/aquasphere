@@ -266,7 +266,7 @@ function loadNotifications() {
     const wrapper = document.getElementById('navNotificationsWrapper');
     if (!list || !wrapper) return;
 
-    fetch('api/get_orders.php?limit=20')
+    fetch('api/get_orders.php?limit=200')
         .then(resp => {
             if (!resp.ok) {
                 if (resp.status === 401) {
@@ -313,8 +313,11 @@ function loadNotifications() {
             renderNotificationPage();
 
             if (badge) {
-                badge.textContent = notifications.length;
-                badge.style.display = notifications.length > 0 ? 'flex' : 'none';
+                const totalCount = (data.pagination && data.pagination.total !== undefined)
+                    ? data.pagination.total
+                    : notifications.length;
+                badge.textContent = totalCount;
+                badge.style.display = totalCount > 0 ? 'flex' : 'none';
             }
         })
         .catch(err => {
@@ -388,6 +391,16 @@ function formatNotifTime(ts) {
     });
     return ` • ${formatted}`;
 }
+
+// Prevent dropdown from closing when paginating/clearing
+document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (!target) return;
+    if (target.id === 'notifPrevBtn' || target.id === 'notifNextBtn' || target.id === 'notifClearBtn' || target.closest('#notifPrevBtn') || target.closest('#notifNextBtn') || target.closest('#notifClearBtn')) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+});
 
 // Load navbar immediately (before DOMContentLoaded to prevent lag)
 // This ensures navbar appears instantly without delay

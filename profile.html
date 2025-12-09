@@ -1710,6 +1710,11 @@
             }
             
             const isStrong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).{8,}$/.test(v);
+            if (idBase === 'profilePassword') {
+                // Current password: do not show strength error, only required check above
+                markProfileClear(el);
+                return true;
+            }
             if (!isStrong) {
                 const min = document.getElementById(idBase + '-min');
                 if (min) {

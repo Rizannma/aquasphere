@@ -2293,9 +2293,9 @@
                         <div class="error-message">Please fill out this field</div>
                     </div>
                     <div class="form-group">
-                        <label for="phoneNumber">Phone Number</label>
-                        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" autocomplete="off" pattern="[0-9]*" inputmode="numeric" required>
-                        <div class="error-message">Please fill out this field</div>
+                        <label for="phoneNumber">Phone Number (+63 or 09, 11 digits)</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+639xxxxxxxxx or 09xxxxxxxxx" autocomplete="off" pattern="[0-9]*" inputmode="numeric" required>
+                        <div class="error-message">Please enter a valid PH number (11 digits, starts with +63 or 09).</div>
                     </div>
                     </div>
                     
@@ -3446,7 +3446,7 @@
                 document.getElementById('fullName').value = address.fullName || '';
                 // Clean phone number to remove any non-numeric characters
                 const phoneNumber = (address.phoneNumber || '').replace(/[^0-9]/g, '');
-                document.getElementById('phoneNumber').value = phoneNumber;
+                document.getElementById('phoneNumber').value = formatPhonePrefill(phoneNumber);
                 document.getElementById('postalCode').value = address.postalCode || '';
                 document.getElementById('streetAddress').value = address.streetAddress || '';
                 
@@ -4141,22 +4141,51 @@
         }
         
         // Add event listeners to clear errors on input
-        // Restrict phone number input to numbers only
+        // Restrict phone number input to PH format (+63 or 09, total 11 digits)
         function restrictPhoneNumberInput() {
             const phoneInput = document.getElementById('phoneNumber');
             if (phoneInput) {
                 phoneInput.addEventListener('input', function(e) {
-                    // Remove any non-numeric characters
-                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    let v = e.target.value.replace(/[^0-9+]/g, '');
+                    
+                    if (v.startsWith('+')) {
+                        if (!v.startsWith('+63')) {
+                            v = '+63' + v.replace(/^\+*/, '').replace(/^63/, '');
+                        }
+                        v = '+63' + v.slice(3, 13); // +63 + up to 10 digits
+                    } else {
+                        if (v.startsWith('0')) {
+                            v = v.slice(0, 11); // 0 + 10 digits
+                        } else if (v.length > 0) {
+                            v = '0' + v.slice(0, 10);
+                        }
+                    }
+                    
+                    e.target.value = v;
                 });
                 
                 phoneInput.addEventListener('keypress', function(e) {
-                    // Prevent non-numeric key presses (allow backspace, delete, tab, enter, arrows)
-                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                    const allowed = /[0-9+]/.test(e.key) || ['Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key);
+                    if (!allowed) {
                         e.preventDefault();
                     }
                 });
             }
+        }
+
+        function formatPhonePrefill(digitsOnly) {
+            if (!digitsOnly) return '';
+            if (digitsOnly.startsWith('63')) {
+                const body = digitsOnly.slice(2).slice(0, 10);
+                return '+63' + body;
+            }
+            if (digitsOnly.startsWith('9') && digitsOnly.length <= 10) {
+                return '0' + digitsOnly;
+            }
+            if (digitsOnly.startsWith('0')) {
+                return digitsOnly.slice(0, 11);
+            }
+            return '09' + digitsOnly.slice(0, 9);
         }
         
         document.addEventListener('DOMContentLoaded', function() {

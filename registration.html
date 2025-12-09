@@ -546,18 +546,24 @@
                         return false;
                     } else {
                         hideError(fieldName);
-                        markSuccess(fieldName);
+                        // Do not mark success yet; wait for confirm to match
                     }
                 }
                 
                 if (fieldName === 'confirm_password') {
                     const password = document.getElementById('password').value;
+                    if (!isStrongPassword(password)) {
+                        showError('password', 'Min 8 chars with upper, lower, number, special.');
+                        return false;
+                    }
                     if (value !== password) {
                         showError(fieldName, 'Passwords do not match.');
                         return false;
                     } else {
                         hideError(fieldName);
+                        hideError('password');
                         markSuccess(fieldName);
+                        markSuccess('password');
                     }
                 }
                 

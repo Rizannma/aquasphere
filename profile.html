@@ -1510,7 +1510,7 @@
         }
         
         function hideProfileErrors(idBase) {
-            const errors = ['error', 'format-error', 'required', 'min', 'same', 'mismatch', 'incorrect'];
+            const errors = ['error', 'format-error', 'required', 'min', 'same', 'mismatch', 'incorrect', 'length-error', 'unique-error'];
             errors.forEach(suffix => {
                 const errEl = document.getElementById(idBase + '-' + suffix);
                 if (errEl) errEl.style.display = 'none';

@@ -558,9 +558,11 @@
                     const password = document.getElementById('password').value;
                     if (!isStrongPassword(password)) {
                         showError('password', 'Min 8 chars with upper, lower, number, special.');
+                        showError(fieldName, 'Min 8 chars with upper, lower, number, special.');
                         return false;
                     }
                     if (value !== password) {
+                        hideError('password');
                         showError(fieldName, 'Passwords do not match.');
                         return false;
                     } else {

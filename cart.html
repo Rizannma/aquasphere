@@ -2379,10 +2379,6 @@
                             <div style="display: flex; gap: 0.5rem;">
                                 <input type="text" id="latitudeDisplay" class="form-control" placeholder="Latitude" readonly style="background: #f8f9fa; cursor: not-allowed;">
                                 <input type="text" id="longitudeDisplay" class="form-control" placeholder="Longitude" readonly style="background: #f8f9fa; cursor: not-allowed;">
-                                <button type="button" class="btn-map-control" onclick="refreshAddressFromPin()" title="Use pin to fill address" style="white-space: nowrap; padding: 10px 16px;">
-                                    <i class="fas fa-sync-alt"></i>
-                                    Use Pin
-                                </button>
                                 <button type="button" class="btn-map-control" onclick="clearLocation()" title="Clear location" style="white-space: nowrap; padding: 10px 16px;">
                                     <i class="fas fa-times"></i>
                                     Clear
@@ -3764,10 +3760,11 @@
                         return;
                     }
                     
-                    // If accuracy is poor, continue but warn user to adjust pin
-                    if (!accuracy || accuracy > 800) {
-                        console.warn('Location accuracy is low:', accuracy, 'meters. Proceeding but suggest manual adjust.');
-                        showNotification('Location accuracy is limited. We placed a pin—please drag it to your exact spot for accuracy.', 'warning');
+                    // Check if accuracy is reasonable (within 1000 meters / 1km)
+                    if (accuracy > 1000) {
+                        console.warn('Location accuracy is low:', accuracy, 'meters. This may not be your exact location.');
+                        // Still use it, but warn the user
+                        showNotification('Location accuracy is limited. The marker may not be exactly at your location. You can drag it to adjust.', 'warning');
                     }
                     
                     // Ensure map container is visible
@@ -3921,8 +3918,16 @@
             }
         }
         
+        let lastGeocodeLat = null;
+        let lastGeocodeLng = null;
+
         async function autoFillAddressFromCoords(lat, lng) {
             try {
+                // Throttle duplicate lookups
+                if (lastGeocodeLat === lat && lastGeocodeLng === lng) return;
+                lastGeocodeLat = lat;
+                lastGeocodeLng = lng;
+
                 const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`);
                 if (!resp.ok) return;
                 const data = await resp.json();
@@ -4001,15 +4006,6 @@
                     locationDisplayGroup: !!locationDisplayGroup
                 });
             }
-        }
-
-        function refreshAddressFromPin() {
-            if (!marker) {
-                showNotification('Place the pin on the map first.', 'warning');
-                return;
-            }
-            const pos = marker.getLatLng();
-            autoFillAddressFromCoords(pos.lat, pos.lng);
         }
         
         // Clear location

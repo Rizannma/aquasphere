@@ -3760,19 +3760,10 @@
                         return;
                     }
                     
-                    // Check if accuracy is reasonable; if very poor, require manual adjust
+                    // If accuracy is poor, continue but warn user to adjust pin
                     if (!accuracy || accuracy > 800) {
-                        console.warn('Location accuracy is low:', accuracy, 'meters. Skipping auto-set.');
-                        // Ensure map is visible so user can place/drag marker manually
-                        const mapContainer = document.getElementById('mapContainer');
-                        const mapPlaceholder = document.getElementById('mapPlaceholder');
-                        if (mapPlaceholder) mapPlaceholder.style.display = 'none';
-                        if (mapContainer) mapContainer.style.display = 'block';
-                        showNotification('Location accuracy is limited. Please tap on the map to place the pin or drag it to your exact spot.', 'warning');
-                        if (mapLoading) {
-                            mapLoading.style.display = 'none';
-                        }
-                        return;
+                        console.warn('Location accuracy is low:', accuracy, 'meters. Proceeding but suggest manual adjust.');
+                        showNotification('Location accuracy is limited. We placed a pin—please drag it to your exact spot for accuracy.', 'warning');
                     }
                     
                     // Ensure map container is visible

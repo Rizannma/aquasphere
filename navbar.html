@@ -21,6 +21,28 @@
                         <span class="cart-badge" id="cartCount">0</span>
                     </a>
                 </li>
+                <li class="nav-item dropdown" id="navNotificationsWrapper">
+                    <a class="nav-link" href="#" id="navNotifications" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications" style="position: relative;">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationCount">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="navNotifications">
+                        <li class="notification-header">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-bell"></i>
+                                <span>Notifications</span>
+                            </div>
+                            <button class="btn-clear" type="button" onclick="clearNotificationBadge()">Clear</button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li id="notificationList">
+                            <div class="notification-empty">
+                                <i class="fas fa-inbox"></i>
+                                <p>No notifications yet.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="orders.html" id="navOrders" title="My Orders" style="position: relative;">
                         <i class="fas fa-box"></i>

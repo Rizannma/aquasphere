@@ -20,6 +20,7 @@ async function loadNavbar() {
         initializeNavbar();
         window.dispatchEvent(new Event('navbarLoaded'));
         setTimeout(updateOrderCount, 50);
+        setTimeout(loadNotifications, 120);
     } catch (error) {
         console.error('Error loading navbar:', error);
     }
@@ -57,6 +58,9 @@ function initializeNavbar() {
     
     // Update order count (with delay to ensure navbar is fully rendered)
     setTimeout(updateOrderCount, 100);
+
+    // Load notifications (after navbar render)
+    setTimeout(loadNotifications, 150);
 }
 
 // Load user data for navbar
@@ -189,6 +193,150 @@ function updateOrderCount() {
 
 // Make updateOrderCount available globally so pages can call it
 window.updateOrderCount = updateOrderCount;
+
+// ---------------- Notifications ----------------
+function clearNotificationBadge() {
+    const badge = document.getElementById('notificationCount');
+    if (badge) {
+        badge.style.display = 'none';
+        badge.textContent = '0';
+    }
+}
+
+function getNotificationMessage(order) {
+    const status = (order.status || '').toLowerCase();
+    const payment = (order.payment_method || order.paymentMethod || '').toLowerCase();
+
+    if (status === 'pending') {
+        return {
+            title: 'Order Placed',
+            desc: 'Your order has been placed! Kindly wait for admin approval.',
+            color: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+            icon: 'fas fa-check-circle'
+        };
+    }
+    if (status === 'preparing') {
+        return {
+            title: 'Preparing',
+            desc: 'Your order has been approved and is now being prepared.',
+            color: 'linear-gradient(135deg, #6366f1, #4338ca)',
+            icon: 'fas fa-box'
+        };
+    }
+    if (status === 'shipped') {
+        return {
+            title: 'Shipped',
+            desc: 'Your order has been shipped and is now in transit. Please await our next update regarding delivery.',
+            color: 'linear-gradient(135deg, #06b6d4, #0ea5e9)',
+            icon: 'fas fa-shipping-fast'
+        };
+    }
+    if (status === 'out_for_delivery') {
+        const isCod = payment === 'cod';
+        return {
+            title: 'Out for Delivery',
+            desc: isCod
+                ? 'Your order is now out for delivery. Please ensure the corresponding payment is prepared.'
+                : 'Your order is now out for delivery and will reach you soon.',
+            color: 'linear-gradient(135deg, #22c55e, #16a34a)',
+            icon: 'fas fa-truck'
+        };
+    }
+    if (status === 'cancelled') {
+        const isCod = payment === 'cod';
+        return {
+            title: 'Order Cancelled',
+            desc: isCod
+                ? 'The cancellation of your order has been completed successfully.'
+                : 'Your order has been successfully cancelled. Your payment has been refunded to your GCash account.',
+            color: 'linear-gradient(135deg, #ef4444, #dc2626)',
+            icon: 'fas fa-ban'
+        };
+    }
+    return null;
+}
+
+function loadNotifications() {
+    const badge = document.getElementById('notificationCount');
+    const list = document.getElementById('notificationList');
+    const wrapper = document.getElementById('navNotificationsWrapper');
+    if (!list || !wrapper) return;
+
+    fetch('api/get_orders.php?limit=20')
+        .then(resp => {
+            if (!resp.ok) {
+                if (resp.status === 401) {
+                    wrapper.style.display = 'none';
+                    return null;
+                }
+                throw new Error('Failed to fetch notifications');
+            }
+            return resp.json();
+        })
+        .then(data => {
+            if (!data) return;
+
+            if (!data.success || !Array.isArray(data.orders)) {
+                list.innerHTML = `
+                    <div class="notification-empty">
+                        <i class="fas fa-inbox"></i>
+                        <p>No notifications yet.</p>
+                    </div>`;
+                clearNotificationBadge();
+                return;
+            }
+
+            const orders = data.orders.slice().sort((a, b) => {
+                const da = new Date(a.order_date || a.created_at || 0).getTime();
+                const db = new Date(b.order_date || b.created_at || 0).getTime();
+                return db - da;
+            });
+
+            const notifications = [];
+            orders.forEach(order => {
+                const msg = getNotificationMessage(order);
+                if (msg) {
+                    notifications.push({
+                        ...msg,
+                        orderId: order.id,
+                        when: order.order_date || order.created_at || ''
+                    });
+                }
+            });
+
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="notification-empty">
+                        <i class="fas fa-inbox"></i>
+                        <p>No notifications yet.</p>
+                    </div>`;
+                clearNotificationBadge();
+                return;
+            }
+
+            const latest = notifications.slice(0, 6);
+            list.innerHTML = latest.map(n => `
+                <div class="notification-item">
+                    <div class="notification-icon" style="background:${n.color};">
+                        <i class="${n.icon}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">${n.title}</div>
+                        <p class="notification-desc">${n.desc}</p>
+                        <div class="notification-meta">Order #${n.orderId}${n.when ? ' • ' + new Date(n.when).toLocaleString() : ''}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            if (badge) {
+                badge.textContent = notifications.length;
+                badge.style.display = notifications.length > 0 ? 'flex' : 'none';
+            }
+        })
+        .catch(err => {
+            console.error('Notifications error:', err);
+        });
+}
 
 // Load navbar immediately (before DOMContentLoaded to prevent lag)
 // This ensures navbar appears instantly without delay

@@ -1473,6 +1473,9 @@
                 // Handle approvals: if a pending cancellation ID no longer appears (or is cancelled), show approved modal
                 await handleApprovedCancellations(fetchedOrders);
                 
+                // Preserve current order ID before filtering
+                const currentOrderId = allOrders[currentIndex]?.id;
+                
                 // Exclude cancelled and delivered orders so they disappear from My Orders
                 const cleaned = (fetchedOrders || [])
                     .filter(o => {
@@ -1488,6 +1491,9 @@
 
                 // Store all filtered orders
                 allOrders = cleaned;
+                console.log('Filtered orders count:', allOrders.length);
+                console.log('All orders:', allOrders);
+                
                 // Share with navbar to avoid duplicate fetch for badge (already filtered - no delivered/cancelled)
                 window.__ordersCache = allOrders;
                 
@@ -1497,22 +1503,26 @@
                 }
                 
                 // Preserve the currently viewed order if still present
-                const currentId = allOrders[currentIndex]?.id;
-                if (currentId && allOrders.length > 0) {
-                    const foundIndex = allOrders.findIndex(o => o.id === currentId);
+                if (currentOrderId && allOrders.length > 0) {
+                    const foundIndex = allOrders.findIndex(o => o.id === currentOrderId);
                     if (foundIndex >= 0) {
                         currentIndex = foundIndex;
+                        console.log('Preserved order index:', currentIndex);
                     } else {
                         currentIndex = 0;
+                        console.log('Current order not found, resetting to 0');
                     }
                 } else {
                     currentIndex = 0;
+                    console.log('No current order ID, resetting to 0');
                 }
 
                 // Ensure index is valid
                 if (currentIndex >= allOrders.length) {
                     currentIndex = Math.max(0, allOrders.length - 1);
                 }
+                
+                console.log('Final currentIndex:', currentIndex, 'out of', allOrders.length);
 
                 renderOrders();
             } catch (error) {
@@ -1559,12 +1569,16 @@
             if (currentIndex >= allOrders.length) currentIndex = allOrders.length - 1;
 
             // Show only the current order (client carousel)
+            console.log('renderOrders - currentIndex:', currentIndex, 'allOrders.length:', allOrders.length);
+            
             if (currentIndex < 0 || currentIndex >= allOrders.length) {
                 console.warn('Invalid index:', currentIndex, 'Total orders:', allOrders.length);
                 return;
             }
             
             const order = allOrders[currentIndex];
+            console.log('Rendering order at index', currentIndex, ':', order);
+            
             if (!order) {
                 console.warn('No order at index', currentIndex);
                 return;
@@ -1575,6 +1589,7 @@
             const orderCard = createOrderCard(order);
             if (orderCard) {
                 ordersList.appendChild(orderCard);
+                console.log('Order card appended successfully');
             } else {
                 console.error('Failed to create order card for order:', order.id);
             }
@@ -1611,12 +1626,27 @@
         
         // Navigate to next/previous order
         function changeOrder(delta) {
-            if (allOrders.length <= 1) return;
+            console.log('changeOrder called with delta:', delta);
+            console.log('Current index:', currentIndex, 'Total orders:', allOrders.length);
+            
+            if (allOrders.length <= 1) {
+                console.log('Not enough orders to navigate');
+                return;
+            }
+            
             const newIndex = currentIndex + delta;
-            if (newIndex < 0 || newIndex >= allOrders.length) return;
+            console.log('New index would be:', newIndex);
+            
+            if (newIndex < 0 || newIndex >= allOrders.length) {
+                console.log('New index out of bounds');
+                return;
+            }
             
             // Update index and render
             currentIndex = newIndex;
+            console.log('Updated currentIndex to:', currentIndex);
+            console.log('Order at new index:', allOrders[currentIndex]);
+            
             renderOrders();
             
             // Scroll to top of orders list for better UX

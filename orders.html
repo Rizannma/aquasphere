@@ -1400,9 +1400,12 @@
                 // Handle approvals: if a pending cancellation ID no longer appears (or is cancelled), show approved modal
                 await handleApprovedCancellations(fetchedOrders);
                 
-                // Exclude fully cancelled orders so they disappear from My Orders
+                // Exclude cancelled and delivered orders so they disappear from My Orders
                 const cleaned = (fetchedOrders || [])
-                    .filter(o => (o.status || '').toLowerCase() !== 'cancelled')
+                    .filter(o => {
+                        const status = (o.status || '').toLowerCase();
+                        return status !== 'cancelled' && status !== 'delivered';
+                    })
                     // Sort newest first for consistency
                     .sort((a, b) => {
                         const dateA = new Date(a.order_date || a.created_at || 0).getTime();

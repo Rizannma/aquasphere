@@ -714,61 +714,6 @@
             font-size: 0.9rem;
         }
         
-        /* Recent Orders Section */
-        .recent-orders {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0369a1;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid #f1f5f9;
-            transition: all 0.3s ease;
-        }
-        
-        .order-item:hover {
-            background: #f8fafc;
-            border-radius: 10px;
-        }
-        
-        .order-item:last-child {
-            border-bottom: none;
-        }
-        
-        .order-info h5 {
-            margin: 0;
-            color: #0369a1;
-            font-weight: 600;
-        }
-        
-        .order-info p {
-            margin: 0.25rem 0 0 0;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-        
-        .order-status {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
         
         .status-pending {
             background: #fef3c7;
@@ -1306,19 +1251,6 @@
                 </div>
             </div>
             
-            <!-- Recent Orders Section -->
-            <div class="recent-orders">
-                <h2 class="section-title">
-                    <i class="fas fa-clock"></i>
-                    Recent Orders
-                </h2>
-                <div id="recentOrdersList">
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>No recent orders yet. Start ordering to see them here!</p>
-                    </div>
-                </div>
-            </div>
         </div>
     </main>
 
@@ -1419,32 +1351,6 @@
             });
         });
         
-        // Load recent orders (mock data for now)
-        function loadRecentOrders() {
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            const ordersList = document.getElementById('recentOrdersList');
-            
-            if (orders.length === 0) {
-                ordersList.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>No recent orders yet. Start ordering to see them here!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            ordersList.innerHTML = orders.slice(0, 5).map(order => `
-                <div class="order-item">
-                    <div class="order-info">
-                        <h5>Order #${order.id}</h5>
-                        <p>${order.items.length} item(s) • ₱${order.total.toFixed(2)}</p>
-                    </div>
-                    <span class="order-status status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
-                </div>
-            `).join('');
-        }
-        
         // Load stats from API
         async function loadStats() {
             let orders = [];
@@ -1522,7 +1428,6 @@
         
         // Initialize
         updateCartCount();
-        loadRecentOrders();
         loadStats();
         
         // Navbar scroll effect

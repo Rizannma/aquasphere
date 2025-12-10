@@ -56,13 +56,13 @@ if ($GLOBALS['use_postgres']) {
 
 // Get users
 if ($GLOBALS['use_postgres']) {
-    $query = "SELECT id, username, email, first_name, last_name, gender, date_of_birth, is_admin, created_at, last_login 
+    $query = "SELECT id, username, email, first_name, last_name, gender, date_of_birth, is_admin, created_at, last_login, suspended, suspension_reason, suspended_at, suspension_lifted_at 
               FROM users 
               WHERE $where_clause 
               ORDER BY created_at DESC 
               LIMIT $limit OFFSET $offset";
 } else {
-    $query = "SELECT id, username, email, first_name, last_name, gender, date_of_birth, is_admin, created_at, last_login 
+    $query = "SELECT id, username, email, first_name, last_name, gender, date_of_birth, is_admin, created_at, last_login, suspended, suspension_reason, suspended_at, suspension_lifted_at 
               FROM users 
               WHERE $where_clause 
               ORDER BY created_at DESC 

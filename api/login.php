@@ -111,6 +111,17 @@ try {
     }
     
     if ($user && password_verify($password, $user['password_hash'])) {
+        // Block suspended accounts
+        if (isset($user['suspended']) && intval($user['suspended']) === 1) {
+            close_connection($conn);
+            ob_clean();
+            http_response_code(403);
+            $reason = $user['suspension_reason'] ?? 'Your account is suspended.';
+            echo json_encode(['success' => false, 'message' => "Account suspended: $reason"]);
+            ob_end_flush();
+            exit;
+        }
+
         // Update last login time
         $updateQuery = "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?";
         execute_sql($conn, $updateQuery, [$user['id']]);

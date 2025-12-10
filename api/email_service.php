@@ -288,5 +288,78 @@ function send_password_reset_otp_email_brevo($email, $otp_code, $username) {
     $result = $brevo_service->send_email($email, $subject, $html_content, $text_content, $username);
     return $result['success'];
 }
+
+/**
+ * Send account suspension email
+ */
+function send_suspension_email_brevo($email, $username, $reason) {
+    $brevo_service = get_brevo_service();
+    if (!$brevo_service) {
+        error_log("Suspension notice for $username ($email): $reason");
+        return false;
+    }
+
+    $subject = "AquaSphere - Account Suspended";
+    $html_content = "
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset='UTF-8'><title>Account Suspended</title></head>
+    <body style='font-family: Arial, sans-serif; color: #0f172a;'>
+        <div style='max-width:600px;margin:0 auto;padding:20px;'>
+            <div style='background:linear-gradient(135deg,#0ea5e9,#0284c7);padding:16px;border-radius:12px 12px 0 0;color:white;text-align:center;'>
+                <h2 style='margin:0;'>Account Suspended</h2>
+            </div>
+            <div style='background:#f8fafc;padding:24px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;'>
+                <p>Hello <strong>$username</strong>,</p>
+                <p>Your AquaSphere account has been <strong>temporarily suspended</strong>.</p>
+                <p><strong>Reason provided by admin:</strong><br>" . nl2br(htmlspecialchars($reason)) . "</p>
+                <p>If you believe this is a mistake or need more information, please contact support.</p>
+                <p style='margin-top:24px;'>Thank you,<br>AquaSphere Team</p>
+            </div>
+        </div>
+    </body>
+    </html>";
+
+    $text_content = "Hello $username,\n\nYour AquaSphere account has been temporarily suspended.\nReason: $reason\n\nIf you believe this is a mistake, please contact support.\n\nThank you,\nAquaSphere Team";
+
+    $result = $brevo_service->send_email($email, $subject, $html_content, $text_content, $username);
+    return $result['success'];
+}
+
+/**
+ * Send account unsuspension email
+ */
+function send_unsuspension_email_brevo($email, $username) {
+    $brevo_service = get_brevo_service();
+    if (!$brevo_service) {
+        error_log("Unsuspension notice for $username ($email)");
+        return false;
+    }
+
+    $subject = "AquaSphere - Suspension Lifted";
+    $html_content = "
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset='UTF-8'><title>Suspension Lifted</title></head>
+    <body style='font-family: Arial, sans-serif; color: #0f172a;'>
+        <div style='max-width:600px;margin:0 auto;padding:20px;'>
+            <div style='background:linear-gradient(135deg,#22c55e,#16a34a);padding:16px;border-radius:12px 12px 0 0;color:white;text-align:center;'>
+                <h2 style='margin:0;'>Suspension Lifted</h2>
+            </div>
+            <div style='background:#f8fafc;padding:24px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;'>
+                <p>Hello <strong>$username</strong>,</p>
+                <p>Your AquaSphere account suspension has been <strong>lifted</strong>. You can now sign in again.</p>
+                <p>If you have any concerns, please contact support.</p>
+                <p style='margin-top:24px;'>Thank you,<br>AquaSphere Team</p>
+            </div>
+        </div>
+    </body>
+    </html>";
+
+    $text_content = "Hello $username,\n\nYour AquaSphere account suspension has been lifted. You can now sign in again.\n\nThank you,\nAquaSphere Team";
+
+    $result = $brevo_service->send_email($email, $subject, $html_content, $text_content, $username);
+    return $result['success'];
+}
 ?>
 

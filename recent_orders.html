@@ -36,93 +36,272 @@
             margin: 0;
         }
         .orders-wrapper {
-            max-width: 1100px;
+            max-width: 900px;
             margin: 0 auto;
+            position: relative;
+            padding: 0 60px;
         }
+        
+        .order-carousel {
+            position: relative;
+            min-height: 500px;
+        }
+        
         .order-card {
-            background: #fff;
-            border-radius: 18px;
-            padding: 18px 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-            border: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f0f9ff 100%);
+            border-radius: 28px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInSlide 0.5s ease;
         }
+        
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .order-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #0ea5e9, #0284c7, #06b6d4, #0891b2, #0ea5e9);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease infinite;
+            z-index: 1;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        
         .order-header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%);
+            padding: 2rem 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .order-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            animation: rotateGradient 15s linear infinite;
+        }
+        
+        @keyframes rotateGradient {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .order-header-content {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
+            align-items: flex-start;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
-        .order-id {
+        
+        .order-info h3 {
+            font-size: 1.75rem;
             font-weight: 800;
-            color: #0ea5e9;
-            margin: 0;
+            color: white;
+            margin: 0 0 0.5rem 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
+        
         .order-date {
-            color: #64748b;
+            color: rgba(255, 255, 255, 0.9);
             margin: 0;
             font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
+        
+        .order-date i {
+            font-size: 0.85rem;
+        }
+        
         .status-pill {
-            padding: 6px 12px;
+            padding: 0.6rem 1.2rem;
             border-radius: 999px;
             font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: capitalize;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        .status-delivered {
-            background: #dcfce7;
-            color: #15803d;
-            border: 1px solid #86efac;
+        
+        .order-body {
+            padding: 2rem 2.5rem;
         }
-        .status-completed {
-            background: #e0f2fe;
-            color: #0284c7;
-            border: 1px solid #bae6fd;
-        }
+        
         .order-items {
-            border-top: 1px dashed #e2e8f0;
-            padding-top: 12px;
-            margin-top: 12px;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
+        
+        .items-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
         .item-row {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            padding: 8px 0;
-            border-bottom: 1px dashed #f1f5f9;
             align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
         }
+        
         .item-row:last-child {
             border-bottom: none;
         }
+        
+        .item-info {
+            flex: 1;
+        }
+        
         .item-name {
             font-weight: 600;
             color: #0f172a;
-            margin: 0;
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
         }
+        
         .item-qty {
             color: #64748b;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             margin: 0;
         }
+        
         .item-price {
             font-weight: 700;
-            color: #0ea5e9;
+            color: #0369a1;
+            font-size: 1.1rem;
             margin: 0;
         }
+        
+        .order-total-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid #0ea5e9;
+        }
+        
         .order-total {
             display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+            justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
             font-weight: 800;
-            color: #0f172a;
         }
-        .order-total span {
+        
+        .total-label {
             color: #64748b;
+            font-size: 1rem;
+        }
+        
+        .total-amount {
+            color: #0369a1;
+            font-size: 1.75rem;
+        }
+        
+        .nav-arrows {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-arrows:hover {
+            background: #0ea5e9;
+            border-color: #0ea5e9;
+            color: white;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .nav-arrows:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+        
+        .nav-arrows.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .nav-arrows.prev {
+            left: 0;
+        }
+        
+        .nav-arrows.next {
+            right: 0;
+        }
+        
+        .nav-arrows i {
+            font-size: 1.2rem;
+            color: #0369a1;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-arrows:hover i {
+            color: white;
+        }
+        
+        .order-counter {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #64748b;
+            font-size: 0.95rem;
             font-weight: 600;
         }
         .empty-state {
@@ -570,11 +749,21 @@
                 <h1><i class="fas fa-receipt me-2 text-primary"></i>Recent Orders</h1>
                 <p>Your completed and delivered orders in one place.</p>
             </div>
-            <div class="orders-wrapper" id="ordersWrapper">
-                <div class="loader" id="ordersLoader">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+            <div class="orders-wrapper">
+                <div class="order-carousel" id="orderCarousel">
+                    <div class="loader" id="ordersLoader">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
+                    <button class="nav-arrows prev" id="prevBtn" onclick="navigateOrder(-1)" style="display: none;">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div id="ordersWrapper"></div>
+                    <button class="nav-arrows next" id="nextBtn" onclick="navigateOrder(1)" style="display: none;">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="order-counter" id="orderCounter" style="display: none;"></div>
                 </div>
             </div>
         </div>
@@ -584,6 +773,9 @@
     <script src="js/user_state.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        let allOrders = [];
+        let currentOrderIndex = 0;
+
         document.addEventListener('DOMContentLoaded', () => {
             loadRecentOrders();
         });
@@ -591,6 +783,10 @@
         async function loadRecentOrders() {
             const wrapper = document.getElementById('ordersWrapper');
             const loader = document.getElementById('ordersLoader');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const counter = document.getElementById('orderCounter');
+            
             let orders = [];
             try {
                 const res = await fetch('api/get_orders.php?limit=1000');
@@ -621,23 +817,70 @@
                         </div>
                     </div>
                 `;
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                counter.style.display = 'none';
                 return;
             }
 
-            wrapper.innerHTML = filtered.map(renderOrderCard).join('');
+            // Store orders and display first one
+            allOrders = filtered;
+            currentOrderIndex = 0;
+            displayOrder(currentOrderIndex);
+            updateNavigation();
+        }
+
+        function displayOrder(index) {
+            const wrapper = document.getElementById('ordersWrapper');
+            if (index < 0 || index >= allOrders.length) return;
+            
+            const order = allOrders[index];
+            wrapper.innerHTML = renderOrderCard(order);
+        }
+
+        function navigateOrder(direction) {
+            const newIndex = currentOrderIndex + direction;
+            if (newIndex >= 0 && newIndex < allOrders.length) {
+                currentOrderIndex = newIndex;
+                displayOrder(currentOrderIndex);
+                updateNavigation();
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const counter = document.getElementById('orderCounter');
+            
+            // Show/hide navigation buttons
+            if (allOrders.length > 1) {
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+                counter.style.display = 'block';
+                
+                // Update button states
+                prevBtn.classList.toggle('disabled', currentOrderIndex === 0);
+                nextBtn.classList.toggle('disabled', currentOrderIndex === allOrders.length - 1);
+                
+                // Update counter
+                counter.textContent = `Order ${currentOrderIndex + 1} of ${allOrders.length}`;
+            } else {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                counter.style.display = 'none';
+            }
         }
 
         function renderOrderCard(order) {
             const items = Array.isArray(order.items) ? order.items : [];
             const status = (order.status || '').toLowerCase();
-            const statusClass = status === 'delivered' ? 'status-delivered' : 'status-completed';
             const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
             const total = parseFloat(order.total_amount || 0).toFixed(2);
             const date = formatDate(order.order_date);
 
             const itemsHtml = items.map(item => `
                 <div class="item-row">
-                    <div>
+                    <div class="item-info">
                         <p class="item-name">${escapeHtml(item.product_name || 'Item')}</p>
                         <p class="item-qty">${item.quantity || 0} pc(s)</p>
                     </div>
@@ -648,17 +891,31 @@
             return `
                 <div class="order-card">
                     <div class="order-header">
-                        <div>
-                            <p class="order-id">Order #${order.id}</p>
-                            <p class="order-date">${date}</p>
+                        <div class="order-header-content">
+                            <div class="order-info">
+                                <h3>Order #${order.id}</h3>
+                                <p class="order-date">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    ${date}
+                                </p>
+                            </div>
+                            <span class="status-pill">${statusLabel}</span>
                         </div>
-                        <span class="status-pill ${statusClass}">${statusLabel}</span>
                     </div>
-                    <div class="order-items">
-                        ${itemsHtml || '<p class="text-muted mb-0">No items found.</p>'}
-                    </div>
-                    <div class="order-total">
-                        <span>Total:</span> ₱${total}
+                    <div class="order-body">
+                        <div class="order-items">
+                            <div class="items-title">
+                                <i class="fas fa-box"></i>
+                                Order Items
+                            </div>
+                            ${itemsHtml || '<p class="text-muted mb-0">No items found.</p>'}
+                        </div>
+                        <div class="order-total-section">
+                            <div class="order-total">
+                                <span class="total-label">Total Amount</span>
+                                <span class="total-amount">₱${total}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;

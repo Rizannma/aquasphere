@@ -1486,17 +1486,27 @@
                         return dateB - dateA;
                     });
 
-                // Preserve the currently viewed order if still present
-                const currentId = allOrders[currentIndex]?.id;
+                // Store all filtered orders
                 allOrders = cleaned;
                 // Share with navbar to avoid duplicate fetch for badge
                 window.__ordersCache = allOrders;
-                if (currentId) {
+                
+                // Preserve the currently viewed order if still present
+                const currentId = allOrders[currentIndex]?.id;
+                if (currentId && allOrders.length > 0) {
                     const foundIndex = allOrders.findIndex(o => o.id === currentId);
-                    if (foundIndex >= 0) currentIndex = foundIndex;
-                    else currentIndex = 0;
+                    if (foundIndex >= 0) {
+                        currentIndex = foundIndex;
+                    } else {
+                        currentIndex = 0;
+                    }
                 } else {
                     currentIndex = 0;
+                }
+
+                // Ensure index is valid
+                if (currentIndex >= allOrders.length) {
+                    currentIndex = Math.max(0, allOrders.length - 1);
                 }
 
                 renderOrders();
@@ -1544,11 +1554,24 @@
             if (currentIndex >= allOrders.length) currentIndex = allOrders.length - 1;
 
             // Show only the current order (client carousel)
+            if (currentIndex < 0 || currentIndex >= allOrders.length) {
+                console.warn('Invalid index:', currentIndex, 'Total orders:', allOrders.length);
+                return;
+            }
+            
             const order = allOrders[currentIndex];
+            if (!order) {
+                console.warn('No order at index', currentIndex);
+                return;
+            }
+            
+            // Clear and render order immediately
             ordersList.innerHTML = '';
-            if (order) {
-                const orderCard = createOrderCard(order);
+            const orderCard = createOrderCard(order);
+            if (orderCard) {
                 ordersList.appendChild(orderCard);
+            } else {
+                console.error('Failed to create order card for order:', order.id);
             }
             
             // Update navigation controls
@@ -1586,8 +1609,16 @@
             if (allOrders.length <= 1) return;
             const newIndex = currentIndex + delta;
             if (newIndex < 0 || newIndex >= allOrders.length) return;
+            
+            // Update index and render
             currentIndex = newIndex;
             renderOrders();
+            
+            // Scroll to top of orders list for better UX
+            const ordersList = document.getElementById('ordersList');
+            if (ordersList) {
+                ordersList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
         // Make navigation callable from inline handlers
         window.changeOrder = changeOrder;

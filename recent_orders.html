@@ -34,12 +34,30 @@
             margin: 0 auto;
         }
         .order-card {
-            background: #fff;
+            background: linear-gradient(145deg, #ffffff 0%, #f8fbff 100%);
             border-radius: 18px;
             padding: 18px 20px;
             margin-bottom: 16px;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
             border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+        .order-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(14,165,233,0));
+            pointer-events: none;
+        }
+        .order-card::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: linear-gradient(180deg, #0ea5e9, #0284c7);
         }
         .order-header {
             display: flex;
@@ -79,6 +97,8 @@
             border-top: 1px dashed #e2e8f0;
             padding-top: 12px;
             margin-top: 12px;
+            position: relative;
+            z-index: 1;
         }
         .item-row {
             display: flex;
@@ -114,6 +134,8 @@
             margin-top: 10px;
             font-weight: 800;
             color: #0f172a;
+            position: relative;
+            z-index: 1;
         }
         .order-total span {
             color: #64748b;
@@ -133,6 +155,61 @@
             justify-content: center;
             align-items: center;
             padding: 40px 0;
+        }
+        footer {
+            background: #0ea5e9;
+            color: #e2f3fb;
+            padding: 18px 0;
+            margin-top: 20px;
+        }
+        footer .brand {
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+        footer a {
+            color: #e2f3fb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        /* Modal basics (Settings & Logout) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1050;
+            backdrop-filter: blur(4px);
+        }
+        .modal-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            width: 360px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+            border: 1px solid #e2e8f0;
+        }
+        .modal-card h5 {
+            margin: 0 0 10px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .modal-card p {
+            margin: 0 0 14px;
+            color: #475569;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .modal-actions .btn {
+            min-width: 110px;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -154,6 +231,37 @@
             </div>
         </div>
     </main>
+    
+    <footer>
+        <div class="container d-flex justify-content-between align-items-center">
+            <span class="brand">AquaSphere</span>
+            <span>Pure, refreshing water delivered to your door.</span>
+            <a href="contact.html">Contact</a>
+        </div>
+    </footer>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal" onclick="closeSettingsModal(event)">
+        <div class="modal-card">
+            <h5>Settings</h5>
+            <p>Settings are currently not configurable here.</p>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeSettingsModal(event)">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirm Modal -->
+    <div class="modal-overlay" id="logoutConfirmModal">
+        <div class="modal-card">
+            <h5>Logout</h5>
+            <p>Are you sure you want to logout?</p>
+            <div class="modal-actions">
+                <button class="btn btn-outline-secondary" id="logoutCancelBtn">Cancel</button>
+                <button class="btn btn-danger" id="logoutConfirmBtn">Logout</button>
+            </div>
+        </div>
+    </div>
 
     <script src="navbar.js"></script>
     <script src="js/user_state.js"></script>
@@ -260,6 +368,62 @@
             div.textContent = text;
             return div.innerHTML;
         }
+
+        // Modal helpers
+        function lockBodyScroll() {
+            const scrollY = document.documentElement.style.getPropertyValue('--scroll-y') || window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+        }
+        function unlockBodyScroll() {
+            const scrollY = document.body.style.top;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        }
+        window.addEventListener('scroll', () => {
+            document.documentElement.style.setProperty('--scroll-y', `${window.scrollY}px`);
+        });
+        function openSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            if (!modal) return;
+            lockBodyScroll();
+            modal.style.display = 'flex';
+        }
+        function closeSettingsModal(event) {
+            const modal = document.getElementById('settingsModal');
+            if (!modal) return;
+            if (event && event.target && event.target.id !== 'settingsModal' && !event.target.closest('.modal-card')) return;
+            modal.style.display = 'none';
+            unlockBodyScroll();
+        }
+        window.openSettingsModal = openSettingsModal;
+        window.closeSettingsModal = closeSettingsModal;
+
+        function showLogoutConfirmModal() {
+            const modal = document.getElementById('logoutConfirmModal');
+            if (!modal) return;
+            lockBodyScroll();
+            modal.style.display = 'flex';
+            const confirmBtn = document.getElementById('logoutConfirmBtn');
+            const cancelBtn = document.getElementById('logoutCancelBtn');
+            if (confirmBtn) confirmBtn.onclick = () => {
+                if (typeof logout === 'function') {
+                    logout();
+                } else {
+                    window.location.href = 'api/logout.php';
+                }
+            };
+            if (cancelBtn) cancelBtn.onclick = hideLogoutConfirmModal;
+        }
+        function hideLogoutConfirmModal() {
+            const modal = document.getElementById('logoutConfirmModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+            unlockBodyScroll();
+        }
+        window.showLogoutConfirmModal = showLogoutConfirmModal;
+        window.hideLogoutConfirmModal = hideLogoutConfirmModal;
     </script>
 </body>
 </html>

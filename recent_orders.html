@@ -664,6 +664,7 @@
             `;
         }
 
+        // Format date in PH time format (matches admin side and other sections)
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
             const normalized = dateString.match(/Z|[\\+\\-]\\d\\d:?\\d\\d$/) ? dateString : `${dateString}Z`;

@@ -1366,7 +1366,10 @@
                 console.error('Error loading stats:', err);
             }
             // Fallback to zero if none
-            const total = orders.length;
+            const total = orders.filter(o => {
+                const s = (o.status || '').toLowerCase();
+                return s === 'pending' || s === 'preparing';
+            }).length;
             const active = orders.filter(o => {
                 const s = (o.status || '').toLowerCase();
                 return s === 'shipped' || s === 'out_for_delivery';

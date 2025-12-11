@@ -1529,8 +1529,9 @@
         
         .form-group.error input,
         .form-group.error select {
-            border-color: #ef4444;
-            background: #fef2f2;
+            border-color: #dc3545;
+            background: #fff;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
         }
         
         .form-group input.success,
@@ -1542,8 +1543,8 @@
         
         .form-group.error input:focus,
         .form-group.error select:focus {
-            border-color: #ef4444;
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12), 0 4px 12px rgba(239, 68, 68, 0.15);
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
         }
         
         .form-group input.success,
@@ -1573,29 +1574,22 @@
             transform: none;
         }
         
-        .form-group .error-message {
+        /* Match login validation bar design */
+        .form-group .error-message,
+        .custom-error {
+            background-color: #fee;
+            color: #c33;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-top: 8px;
             display: none;
-            margin-top: 0.4rem;
-            padding: 0.5rem 0.75rem;
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            border: 1px solid #fca5a5;
-            border-radius: 8px;
-            color: #991b1b;
-            font-size: 0.85rem;
+            border-left: 3px solid #dc3545;
             font-weight: 500;
-            position: relative;
-            animation: errorSlideIn 0.3s ease;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
         }
         
         .form-group.error .error-message {
             display: block;
-        }
-        
-        .form-group .error-message::before {
-            content: '⚠️';
-            margin-right: 0.5rem;
-            font-size: 0.9rem;
         }
         
         @keyframes errorSlideIn {

@@ -1001,11 +1001,24 @@
             box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.25);
         }
         
-        .form-group .error-message {
-            color: #ef4444;
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
+        /* Match login validation bar design */
+        .form-group .error-message,
+        .custom-error {
+            background-color: #fee;
+            color: #c33;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-top: 8px;
             display: none;
+            border-left: 3px solid #dc3545;
+            font-weight: 500;
+        }
+        .form-group .error-message + .error-message {
+            margin-top: 8px;
+        }
+        .form-group.error .error-message {
+            display: block;
         }
         
         .label-section {

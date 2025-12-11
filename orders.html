@@ -1819,10 +1819,12 @@
             body.textContent = message;
             modal.style.display = 'flex';
             
-            // Auto close after 4 seconds
+            // Auto close after 4 seconds, then refresh to sync UI
             if (cancelApprovedTimer) clearTimeout(cancelApprovedTimer);
             cancelApprovedTimer = setTimeout(() => {
                 modal.style.display = 'none';
+                // Small delay before refresh to ensure UI hides cleanly
+                setTimeout(() => window.location.reload(), 150);
             }, 4000);
         }
         

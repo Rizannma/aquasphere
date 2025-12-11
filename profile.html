@@ -157,7 +157,8 @@
         .form-group.error input,
         .form-group.error select {
             border-color: #ef4444;
-            background: #fef2f2;
+            background: #fff;
+            box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.12);
         }
         
         .form-group input.success,
@@ -202,30 +203,32 @@
         
         .form-group .error-message {
             display: none;
-            margin-top: 0.4rem;
-            padding: 0.5rem 0.75rem;
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            border: 1px solid #fca5a5;
-            border-radius: 8px;
-            color: #991b1b;
+            margin-top: 0.35rem;
+            padding: 0.4rem 0.6rem;
+            background: #fdecea;
+            border: 1px solid #f8b4b4;
+            border-radius: 6px;
+            color: #c81e1e;
             font-size: 0.85rem;
             font-weight: 500;
             position: relative;
-            animation: errorSlideIn 0.3s ease;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+            animation: errorSlideIn 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
         }
         .form-group .error-message + .error-message {
-            margin-top: 0.75rem;
+            margin-top: 0.4rem;
         }
         
         .form-group.error .error-message {
-            display: block;
+            display: flex;
         }
         
         .form-group .error-message::before {
-            content: '⚠️';
-            margin-right: 0.5rem;
+            content: '\26A0';
             font-size: 0.9rem;
+            color: #c81e1e;
         }
         
         @keyframes errorSlideIn {

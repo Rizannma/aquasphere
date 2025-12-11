@@ -361,11 +361,13 @@ function loadNotifications(force = false) {
             renderNotificationPage();
 
             if (badge) {
-                // Prefer API total when available; fall back to filtered length
+                // When user cleared locally, honor filtered count (post-clear)
+                // Otherwise prefer API total if provided.
                 const apiTotal = data.pagination?.total;
-                const totalCount = (typeof apiTotal === 'number' && apiTotal >= 0)
-                    ? apiTotal
-                    : notifications.length;
+                const filteredCount = notifications.length;
+                const totalCount = clearedAt > 0
+                    ? filteredCount
+                    : (typeof apiTotal === 'number' && apiTotal >= 0 ? apiTotal : filteredCount);
                 badge.textContent = totalCount;
                 badge.style.display = totalCount > 0 ? 'flex' : 'none';
             }

@@ -361,8 +361,11 @@ function loadNotifications(force = false) {
             renderNotificationPage();
 
             if (badge) {
-                // Badge shows filtered count (respects local clear timestamp)
-                const totalCount = notifications.length;
+                // Prefer API total when available; fall back to filtered length
+                const apiTotal = data.pagination?.total;
+                const totalCount = (typeof apiTotal === 'number' && apiTotal >= 0)
+                    ? apiTotal
+                    : notifications.length;
                 badge.textContent = totalCount;
                 badge.style.display = totalCount > 0 ? 'flex' : 'none';
             }

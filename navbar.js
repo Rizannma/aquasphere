@@ -280,6 +280,17 @@ function getNotificationMessage(order) {
             icon: 'fas fa-check-circle'
         };
     }
+    if (status === 'cancellation_requested') {
+        const isCod = payment === 'cod';
+        return {
+            title: 'Cancellation Requested',
+            desc: isCod
+                ? 'Your cancellation request is being reviewed by our admin. Please wait for approval.'
+                : 'Your cancellation request is being reviewed by our admin. Please wait for approval.',
+            color: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+            icon: 'fas fa-clock'
+        };
+    }
     if (status === 'cancelled') {
         const isCod = payment === 'cod';
         return {

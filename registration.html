@@ -864,6 +864,49 @@
             });
         });
     </script>
+    <script>
+        // Client-side guard: scrub obvious XSS/SQLi patterns as user types/pastes
+        (function guardInputs() {
+            const BAD_PATTERNS = [
+                /<|>/g,
+                /javascript:/gi,
+                /onerror\s*=/gi,
+                /onload\s*=/gi,
+                /onclick\s*=/gi,
+                /onmouseover\s*=/gi,
+                /--/g,
+                /\/\*/g,
+                /\*\//g,
+                /'\s*or\s*1=1/gi,
+                /"\s*or\s*1=1/gi
+            ];
+            function scrub(v) {
+                let out = v;
+                BAD_PATTERNS.forEach(re => { out = out.replace(re, ''); });
+                return out;
+            }
+            function attach(el) {
+                if (!el) return;
+                const handler = (e) => {
+                    const before = el.value;
+                    const after = scrub(before);
+                    if (after !== before) {
+                        const start = el.selectionStart;
+                        const delta = before.length - after.length;
+                        el.value = after;
+                        const pos = Math.max(0, (start ?? after.length) - delta);
+                        el.setSelectionRange(pos, pos);
+                        e.preventDefault();
+                    }
+                };
+                el.addEventListener('input', handler);
+                el.addEventListener('paste', () => setTimeout(handler, 0));
+            }
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], textarea').forEach(attach);
+            });
+        })();
+    </script>
 
     <!-- Footer -->
     <footer class="footer">

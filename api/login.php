@@ -21,8 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require_once 'sanitize.php';
+
 // Get form data
-$username = trim($_POST['username'] ?? '');
+$username = assert_safe_string($_POST['username'] ?? '', 'username', 64);
 $password = $_POST['password'] ?? '';
 $remember_me = isset($_POST['remember_me']) ? 1 : 0;
 

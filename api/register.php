@@ -15,6 +15,7 @@ ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
 require_once 'database.php';
+require_once 'sanitize.php';
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -24,12 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Get form data
-$username = trim($_POST['username'] ?? '');
-$email = trim($_POST['email'] ?? '');
-$first_name = trim($_POST['first_name'] ?? '');
-$last_name = trim($_POST['last_name'] ?? '');
-$gender = trim($_POST['gender'] ?? '');
-$birthday = trim($_POST['birthday'] ?? '');
+$username = assert_safe_string($_POST['username'] ?? '', 'username', 64);
+$email = sanitize_email($_POST['email'] ?? '', 128);
+$first_name = assert_safe_string($_POST['first_name'] ?? '', 'first_name', 128);
+$last_name = assert_safe_string($_POST['last_name'] ?? '', 'last_name', 128);
+$gender = assert_safe_string($_POST['gender'] ?? '', 'gender', 32);
+$birthday = assert_safe_string($_POST['birthday'] ?? '', 'birthday', 32);
 $password = $_POST['password'] ?? '';
 $confirm_password = $_POST['confirm_password'] ?? '';
 

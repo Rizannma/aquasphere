@@ -17,10 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 require_once 'database.php';
+require_once 'sanitize.php';
 require_once 'email_service.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
-$email = trim($input['email'] ?? '');
+$email = sanitize_email($input['email'] ?? '', 128);
 
 if (empty($email)) {
     ob_clean();

@@ -15,6 +15,7 @@ ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
 require_once 'database.php';
+require_once 'sanitize.php';
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -27,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Get JSON data
 $data = json_decode(file_get_contents('php://input'), true);
-$email = trim($data['email'] ?? '');
-$otp_code = trim($data['otp_code'] ?? '');
+$email = sanitize_email($data['email'] ?? '', 128);
+$otp_code = assert_safe_string($data['otp_code'] ?? '', 'otp_code', 16);
 
 // Validation
 if (empty($email)) {

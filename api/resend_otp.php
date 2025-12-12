@@ -15,6 +15,7 @@ ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
 require_once 'database.php';
+require_once 'sanitize.php';
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -25,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Get JSON data
 $data = json_decode(file_get_contents('php://input'), true);
-$email = trim($data['email'] ?? '');
+$email = sanitize_email($data['email'] ?? '', 128);
 
 // Validation
 if (empty($email)) {

@@ -17,10 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 require_once 'database.php';
+require_once 'sanitize.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
-$email = trim($input['email'] ?? '');
-$new_password = $input['new_password'] ?? '';
+$email = sanitize_email($input['email'] ?? '', 128);
+$new_password = assert_safe_string($input['new_password'] ?? '', 'new_password', 255);
 
 $errors = [];
 

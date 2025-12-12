@@ -305,7 +305,7 @@
         
         .quantity-btn:active {
             background: #bae6fd;
-            transform: scale(0.95);
+            /* Removed transform to prevent button movement that breaks continuous clicks */
         }
         
         .quantity-btn.decrease {
@@ -2850,7 +2850,22 @@
             
             UserState.setCart(cart);
             updateCartCount(); // Update navbar count immediately
-            loadCart();
+            
+            // Update only the specific item's display instead of re-rendering everything
+            const quantityInput = document.getElementById(`qty-cart-${productId}`);
+            const subtotalEl = document.getElementById(`subtotal-${productId}`);
+            
+            if (quantityInput) {
+                quantityInput.value = item.quantity;
+            }
+            
+            if (subtotalEl) {
+                const subtotal = item.price * item.quantity;
+                subtotalEl.textContent = `₱${subtotal.toFixed(2)}`;
+            }
+            
+            // Update summary without full re-render
+            updateSummary();
         }
         
         // Update quantity from input

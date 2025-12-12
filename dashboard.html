@@ -530,6 +530,7 @@
             background: rgba(255, 255, 255, 0.3);
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
+            pointer-events: none; /* keep clicks flowing to the button */
         }
         
         .btn-add-cart:hover::before {
@@ -544,6 +545,7 @@
         
         .btn-add-cart:active {
             transform: translateY(-1px);
+            /* Keep transform minimal to allow continuous clicks */
         }
         
         .btn-add-cart i {
@@ -624,7 +626,7 @@
         
         .quantity-btn:active {
             background: #bae6fd;
-            transform: scale(0.95);
+            /* Removed transform to prevent button movement that breaks continuous clicks */
         }
         
         .quantity-input {

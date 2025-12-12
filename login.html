@@ -1460,30 +1460,47 @@
             }
             
             // Real-time password validation
+            const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[ !"#$%&'()*+,\-\.\/:;<=>?@\[\]^_`{|}~]).{8,}$/;
+            
             const newPasswordEl = document.getElementById('newPassword');
             if (newPasswordEl) {
+                // Show requirement message when user focuses on the field
+                newPasswordEl.addEventListener('focus', function() {
+                    const newPasswordError = document.getElementById('newPassword-error');
+                    newPasswordError.textContent = 'Min 8 chars with upper, lower, number, special.';
+                    newPasswordError.style.display = 'block';
+                });
+                
                 newPasswordEl.addEventListener('input', function() {
                     const password = this.value;
                     const confirmPassword = document.getElementById('confirmPassword').value;
                     const newPasswordError = document.getElementById('newPassword-error');
                     const confirmPasswordError = document.getElementById('confirmPassword-error');
                     
-                    newPasswordError.style.display = 'none';
-                    confirmPasswordError.style.display = 'none';
-                    
-                    if (password && password.length < 8) {
-                        newPasswordError.textContent = 'Password must be at least 8 characters.';
+                    // Validate new password strength
+                    if (password) {
+                        if (!strongPasswordRegex.test(password)) {
+                            newPasswordError.textContent = 'Min 8 chars with upper, lower, number, special.';
+                            newPasswordError.style.display = 'block';
+                        } else {
+                            newPasswordError.style.display = 'none';
+                        }
+                    } else {
+                        // Keep showing requirement when field is empty
+                        newPasswordError.textContent = 'Min 8 chars with upper, lower, number, special.';
                         newPasswordError.style.display = 'block';
                     }
                     
-                    if (confirmPassword && confirmPassword.length < 8) {
-                        confirmPasswordError.textContent = 'Password must be at least 8 characters.';
-                        confirmPasswordError.style.display = 'block';
-                    }
-                    
-                    if (password && password.length >= 8 && confirmPassword && confirmPassword.length >= 8 && password !== confirmPassword) {
-                        confirmPasswordError.textContent = 'Passwords do not match.';
-                        confirmPasswordError.style.display = 'block';
+                    // Validate confirm password match
+                    if (confirmPassword) {
+                        if (password && password !== confirmPassword) {
+                            confirmPasswordError.textContent = 'Passwords do not match.';
+                            confirmPasswordError.style.display = 'block';
+                        } else if (password && strongPasswordRegex.test(password)) {
+                            confirmPasswordError.style.display = 'none';
+                        }
+                    } else {
+                        confirmPasswordError.style.display = 'none';
                     }
                 });
             }
@@ -1496,22 +1513,28 @@
                     const newPasswordError = document.getElementById('newPassword-error');
                     const confirmPasswordError = document.getElementById('confirmPassword-error');
                     
-                    newPasswordError.style.display = 'none';
-                    confirmPasswordError.style.display = 'none';
-                    
-                    if (password && password.length < 8) {
-                        newPasswordError.textContent = 'Password must be at least 8 characters.';
-                        newPasswordError.style.display = 'block';
+                    // Validate new password strength
+                    if (password) {
+                        if (!strongPasswordRegex.test(password)) {
+                            newPasswordError.textContent = 'Min 8 chars with upper, lower, number, special.';
+                            newPasswordError.style.display = 'block';
+                        } else {
+                            newPasswordError.style.display = 'none';
+                        }
+                    } else {
+                        newPasswordError.style.display = 'none';
                     }
                     
-                    if (confirmPassword && confirmPassword.length < 8) {
-                        confirmPasswordError.textContent = 'Password must be at least 8 characters.';
-                        confirmPasswordError.style.display = 'block';
-                    }
-                    
-                    if (password && password.length >= 8 && confirmPassword && confirmPassword.length >= 8 && password !== confirmPassword) {
-                        confirmPasswordError.textContent = 'Passwords do not match.';
-                        confirmPasswordError.style.display = 'block';
+                    // Validate confirm password match
+                    if (confirmPassword) {
+                        if (password && password !== confirmPassword) {
+                            confirmPasswordError.textContent = 'Passwords do not match.';
+                            confirmPasswordError.style.display = 'block';
+                        } else {
+                            confirmPasswordError.style.display = 'none';
+                        }
+                    } else {
+                        confirmPasswordError.style.display = 'none';
                     }
                 });
             }

@@ -881,7 +881,8 @@
         // Show notification
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
-            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
+            // Use alert-info (blue) for success notifications instead of alert-success (green)
+            notification.className = `alert alert-${type === 'success' ? 'info' : 'danger'}`;
             notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px;';
             
             const icon = document.createElement('i');

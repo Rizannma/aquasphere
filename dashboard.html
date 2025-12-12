@@ -533,19 +533,19 @@
             pointer-events: none; /* keep clicks flowing to the button */
         }
         
+        /* Keep hover/active minimal to avoid breaking continuous clicks */
         .btn-add-cart:hover::before {
-            width: 300px;
-            height: 300px;
+            width: 200px;
+            height: 200px;
         }
         
         .btn-add-cart:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+            box-shadow: 0 6px 16px rgba(14, 165, 233, 0.35);
+            transform: translateY(-1px);
         }
         
         .btn-add-cart:active {
-            transform: translateY(-1px);
-            /* Keep transform minimal to allow continuous clicks */
+            transform: translateY(0);
         }
         
         .btn-add-cart i {
@@ -573,16 +573,6 @@
             flex-wrap: nowrap;
         }
         
-        .quantity-controls:hover {
-            border-color: #0ea5e9;
-            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.15);
-        }
-        
-        .quantity-controls:focus-within {
-            border-color: #0ea5e9;
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-        }
-        
         .quantity-btn {
             width: 40px;
             height: 40px;
@@ -598,6 +588,8 @@
             font-size: 1.2rem;
             position: relative;
             flex-shrink: 0;
+            pointer-events: auto;
+            z-index: 2;
             min-width: 40px;
             margin: 0;
             padding: 0;
@@ -611,14 +603,6 @@
             border-left: 1px solid #e2e8f0;
         }
         
-        .quantity-controls:hover .quantity-btn.decrease {
-            border-right-color: #0ea5e9;
-        }
-        
-        .quantity-controls:hover .quantity-btn.increase {
-            border-left-color: #0ea5e9;
-        }
-        
         .quantity-btn:hover {
             background: #e0f2fe;
             color: #0ea5e9;
@@ -626,7 +610,6 @@
         
         .quantity-btn:active {
             background: #bae6fd;
-            /* Removed transform to prevent button movement that breaks continuous clicks */
         }
         
         .quantity-input {

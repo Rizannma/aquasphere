@@ -2653,7 +2653,8 @@
         }
         
         // Pagination variables
-        let currentPage = 1;
+        // Load saved page from localStorage, default to 1
+        let currentPage = parseInt(localStorage.getItem('cartCurrentPage') || '1', 10);
         const itemsPerPage = 4;
         
         // Track selected items across all pages (will be hydrated from server)
@@ -2681,7 +2682,20 @@
                 checkoutBtn.disabled = true;
                 clearSelection();
                 updateSummary();
+                // Reset page to 1 when cart is empty
+                currentPage = 1;
+                localStorage.setItem('cartCurrentPage', '1');
                 return;
+            }
+            
+            // Validate current page is within valid range
+            const totalPages = Math.ceil(cart.length / itemsPerPage);
+            if (currentPage > totalPages && totalPages > 0) {
+                currentPage = totalPages;
+                localStorage.setItem('cartCurrentPage', String(currentPage));
+            } else if (currentPage < 1) {
+                currentPage = 1;
+                localStorage.setItem('cartCurrentPage', '1');
             }
             
             emptyCart.style.display = 'none';
@@ -2811,11 +2825,14 @@
             if (page < 1 || page > totalPages) return;
             
             currentPage = page;
+            // Save current page to localStorage
+            localStorage.setItem('cartCurrentPage', String(currentPage));
+            
             renderCartItems(cart);
             renderPagination(cart.length);
             
-            // Scroll to top of cart items
-            document.getElementById('cartItemsList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Scroll to top of page to keep header visible
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
         // Update quantity
@@ -2999,6 +3016,8 @@
                 } else if (totalPages === 0) {
                     currentPage = 1;
                 }
+                // Save current page to localStorage
+                localStorage.setItem('cartCurrentPage', String(currentPage));
                 
                 loadCart();
                 updateCartCount();

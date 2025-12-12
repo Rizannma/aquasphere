@@ -3104,109 +3104,107 @@
         // Current status: San Pablo City has been updated with complete 80 barangays (verified)
         // Other municipalities/cities may need verification and updates from official sources
         const philippineLocations = {
-            'CALABARZON': {
-                name: 'IV-A – CALABARZON',
-                provinces: {
-                    'Laguna': {
-                        cities: {
-                            // 6 Component Cities
-                            'Calamba': {
-                                barangays: ['Bagong Kalsada', 'Banadero', 'Banlic', 'Barandal', 'Bucal', 'Bunggo', 'Burol', 'Camaligan', 'Canlubang', 'Halang', 'Hornalan', 'Kay-Anlog', 'La Mesa', 'Laguerta', 'Lawa', 'Lecheria', 'Lingga', 'Looc', 'Mabato', 'Majada Labas', 'Makiling', 'Mapagong', 'Masili', 'Maunong', 'Mayapa', 'Paciano Rizal', 'Palingon', 'Palo-Alto', 'Pansol', 'Parian', 'Prinza', 'Pulo', 'Puting Lupa', 'Real', 'Saimsim', 'Sampiruhan', 'San Cristobal', 'San Jose', 'San Juan', 'San Nicolas', 'San Roque', 'Santo Tomas', 'Sucol', 'Turbina', 'Ulango', 'Uwisan']
-                            },
-                            'San Pedro': {
-                                barangays: ['Bagong Silang', 'Calendola', 'Cuyab', 'Estrella', 'Landayan', 'Langgam', 'Magsaysay', 'Narra', 'Nueva', 'Pacita Complex I', 'Pacita Complex II', 'Poblacion', 'Rosario', 'San Antonio', 'San Roque', 'San Vicente', 'Santo Niño', 'United Bayanihan', 'United Better Living']
-                            },
-                            'Santa Rosa': {
-                                barangays: ['Aplaya', 'Balibago', 'Caingin', 'Dila', 'Labas', 'Macabling', 'Malitlit', 'Malusak', 'Poblacion', 'Pulong Santa Cruz', 'Sinalhan', 'Tagapo']
-                            },
-                            'Biñan': {
-                                barangays: ['Bungahan', 'Canlalay', 'Casile', 'De La Paz', 'Ganado', 'Langkiwa', 'Loma', 'Malaban', 'Malamig', 'Mampalasan', 'Platero', 'Poblacion', 'San Antonio', 'San Francisco', 'San Jose', 'San Vicente', 'Santo Domingo', 'Santo Niño', 'Santo Tomas', 'Soro-Soro', 'Timbao', 'Tubigan', 'Zapote']
-                            },
-                            'Los Baños': {
-                                barangays: ['Anos', 'Bagong Silang', 'Bambang', 'Batong Malake', 'Baybayin', 'Lalakay', 'Maahas', 'Malinta', 'Mayondon', 'Putho-Tuntungin', 'San Antonio', 'Tadlac', 'Timugan']
-                            },
-                            'Cabuyao': {
-                                barangays: ['Baclaran', 'Banay-banay', 'Banlic', 'Bigaa', 'Butong', 'Casile', 'Diezmo', 'Gulod', 'Mamatid', 'Marinig', 'Niugan', 'Pittland', 'Pulo', 'Sala', 'San Isidro', 'Santa Rosa', 'Santo Niño', 'Ulong Tubig', 'Unisan']
-                            },
-                            // 24 Municipalities
-                            'Alaminos': {
-                                barangays: ['Barangay I (Pob.)', 'Barangay II (Pob.)', 'Barangay III (Pob.)', 'Barangay IV (Pob.)', 'Del Carmen', 'Gulod', 'Magsaysay', 'Poblacion', 'San Agustin', 'San Andres', 'San Benito', 'San Gregorio', 'San Isidro', 'San Jose', 'San Juan', 'San Miguel', 'San Pablo', 'San Roque', 'Santa Cruz', 'Santa Maria', 'Santo Niño', 'Santo Tomas']
-                            },
-                            'Bay': {
-                                barangays: ['Bitin', 'Calo', 'Dila', 'Maitim', 'Masaya', 'Paciano Rizal', 'Puypuy', 'San Agustin', 'San Antonio', 'San Isidro', 'Tagumpay', 'Tranca']
-                            },
-                            'Calauan': {
-                                barangays: ['San Isidro', 'Poblacion I', 'Poblacion II', 'Poblacion III', 'Poblacion IV', 'Bubukal', 'Masili', 'Dayap', 'Lamot I', 'Lamot II', 'Limao', 'Mabacan', 'Masiit', 'Paliparan', 'Pansol', 'San Antonio', 'San Cristobal', 'San Juan', 'San Pablo', 'San Salvador', 'Santo Tomas', 'Santo Toribio', 'Talangan', 'Tambo', 'Tiaong', 'Tulay', 'Ulat', 'Ulong Tubig', 'Villa Espina', 'Villa Mercedes']
-                            },
-                            'Cavinti': {
-                                barangays: ['Anglas', 'Bancal', 'Bokbok', 'Bukal', 'Calumpang', 'Duhat', 'Inao-Awan', 'Kanluran Talaongan', 'Labayo', 'Layasin', 'Layug', 'Mahipon', 'Paowin', 'Poblacion', 'Silangan Talaongan', 'Sumucab', 'Tibatib', 'Tulo']
-                            },
-                            'Famy': {
-                                barangays: ['Asana', 'Bacong-Sigcay', 'Bagong Pag-asa', 'Balite', 'Banaba', 'Batuhan', 'Bubukal', 'Bulihan', 'Calumpang', 'Kapatalan', 'Kaytitinga', 'Kinabuan', 'Lutuc', 'Mabuhay', 'Macatad', 'Poblacion', 'San Antonio', 'San Isidro', 'San Jose', 'San Pablo', 'San Pedro', 'Santa Cruz', 'Santo Niño', 'Sinalhan', 'Tunhac', 'Wawa']
-                            },
-                            'Kalayaan': {
-                                barangays: ['Longos', 'Mabilog', 'Malaking Ambling', 'Malamig', 'Masiit', 'Palina', 'San Antonio', 'San Juan', 'Santo Tomas']
-                            },
-                            'Liliw': {
-                                barangays: ['Bagong Anyo', 'Bayate', 'Bubukal', 'Burgos', 'Cabuyao', 'Calumpang', 'Culoy', 'Dagatan', 'Laguan', 'Malamig', 'Masikap', 'Maslun', 'Pag-asa', 'Palayan', 'Poblacion', 'Rizal', 'San Isidro', 'San Roque', 'Santo Niño', 'Taytay', 'Tiaong']
-                            },
-                            'Luisiana': {
-                                barangays: ['Barangay I (Pob.)', 'Barangay II (Pob.)', 'Barangay III (Pob.)', 'Barangay IV (Pob.)', 'Barangay V (Pob.)', 'Barangay VI (Pob.)', 'Barangay VII (Pob.)', 'Barangay VIII (Pob.)', 'Barangay IX (Pob.)', 'Barangay X (Pob.)', 'Barangay XI (Pob.)', 'Barangay XII (Pob.)', 'Barangay XIII (Pob.)', 'Barangay XIV (Pob.)', 'Barangay XV (Pob.)', 'Barangay XVI (Pob.)', 'Barangay XVII (Pob.)', 'Barangay XVIII (Pob.)', 'Barangay XIX (Pob.)', 'Barangay XX (Pob.)', 'Barangay XXI (Pob.)', 'Barangay XXII (Pob.)', 'Barangay XXIII (Pob.)', 'Barangay XXIV (Pob.)', 'Barangay XXV (Pob.)', 'Barangay XXVI (Pob.)', 'Barangay XXVII (Pob.)', 'Barangay XXVIII (Pob.)', 'Barangay XXIX (Pob.)', 'Barangay XXX (Pob.)', 'Barangay XXXI (Pob.)', 'Barangay XXXII (Pob.)', 'Barangay XXXIII (Pob.)', 'Barangay XXXIV (Pob.)', 'Barangay XXXV (Pob.)', 'Barangay XXXVI (Pob.)', 'Barangay XXXVII (Pob.)', 'Barangay XXXVIII (Pob.)', 'Barangay XXXIX (Pob.)', 'Barangay XL (Pob.)', 'Barangay XLI (Pob.)', 'Barangay XLII (Pob.)', 'Barangay XLIII (Pob.)', 'Barangay XLIV (Pob.)', 'Barangay XLV (Pob.)', 'Barangay XLVI (Pob.)', 'Barangay XLVII (Pob.)', 'Barangay XLVIII (Pob.)', 'Barangay XLIX (Pob.)', 'Barangay L (Pob.)']
-                            },
-                            'Lumban': {
-                                barangays: ['Bagong Silang', 'Balimbingan', 'Concepcion', 'Lewin', 'Maracta', 'Maytalang I', 'Maytalang II', 'Primera Parang', 'Segunda Parang', 'Santo Niño', 'Wawa']
-                            },
-                            'Mabitac': {
-                                barangays: ['Amuyong', 'Lambac', 'Mabatang', 'Macatad', 'Maligaya', 'Masikap', 'Masikap Sur', 'Nanguma', 'Paagahan', 'San Antonio', 'San Miguel', 'Sinagtala', 'Taytay']
-                            },
-                            'Magdalena': {
-                                barangays: ['Baanan', 'Balanac', 'Buenavista', 'Bungalon', 'Bucal', 'Calumpang', 'Calumpang Este', 'Calumpang Oeste', 'Dingin', 'Halayhayin', 'Ibabang Atingay', 'Ibabang Butnong', 'Ilayang Atingay', 'Ilayang Butnong', 'Malaking Ambling', 'Malinao', 'Malusak', 'Poblacion', 'Sabang', 'San Bartolome', 'San Gabriel', 'San Juan', 'San Nicolas', 'Santa Elena', 'Santa Maria', 'Santo Niño', 'Talahib', 'Tanawan']
-                            },
-                            'Majayjay': {
-                                barangays: ['Bagong Silang', 'Balanac', 'Bubukal', 'Burgos', 'Buenavista', 'Bukal', 'Calumpang', 'Concepcion', 'Gagalot', 'Ibabang Banga', 'Ibabang Yuni', 'Ilayang Banga', 'Ilayang Yuni', 'Mabato', 'Mabunga', 'Malinao', 'Malinao', 'Mamala', 'Manggahan', 'Masikap', 'Mataas na Kahoy', 'Munting Kahoy', 'Olla', 'Olla', 'Pagsawitan', 'Poblacion', 'San Francisco', 'San Isidro', 'San Miguel', 'San Roque', 'Santa Catalina', 'Santo Niño', 'Taytay', 'Tiaong', 'Tulay na Lupa', 'Villa Nogales']
-                            },
-                            'Nagcarlan': {
-                                barangays: ['Abuyon', 'Alibungbungan', 'Alumbrado', 'Balayong', 'Balimbing', 'Bambang', 'Banilad', 'Bayaquitos', 'Bubukal', 'Buenavista', 'Bukal', 'Bungkol', 'Calumpang', 'Calumpang Cerca', 'Calumpang Lejos', 'Canlubang', 'Comon', 'Concepcion', 'Hulo', 'Ibabang Palina', 'Ilayang Palina', 'Imok', 'Kanluran Talaongan', 'Labney', 'Laguna', 'Lawaguin', 'Layasin', 'Mahipon', 'Malinao', 'Malusak', 'Manasa', 'Maravilla', 'Masikap', 'Maslun', 'Mataas na Kahoy', 'Munting Kahoy', 'Olla', 'Olla', 'Pagsawitan', 'Palayan', 'Poblacion', 'Sabang', 'San Francisco', 'San Isidro', 'San Miguel', 'San Roque', 'Santa Catalina', 'Santo Niño', 'Taytay', 'Tiaong', 'Tulay na Lupa', 'Villa Nogales']
-                            },
-                            'Paete': {
-                                barangays: ['Bagumbayan', 'Balanac', 'Bubukal', 'Burgos', 'Buenavista', 'Bukal', 'Calumpang', 'Concepcion', 'Gagalot', 'Ibabang Banga', 'Ibabang Yuni', 'Ilayang Banga', 'Ilayang Yuni', 'Mabato', 'Mabunga', 'Malinao', 'Malinao', 'Mamala', 'Manggahan', 'Masikap', 'Mataas na Kahoy', 'Munting Kahoy', 'Olla', 'Olla', 'Pagsawitan', 'Poblacion', 'San Francisco', 'San Isidro', 'San Miguel', 'San Roque', 'Santa Catalina', 'Santo Niño', 'Taytay', 'Tiaong', 'Tulay na Lupa', 'Villa Nogales']
-                            },
-                            'Pagsanjan': {
-                                barangays: ['Anibong', 'Barangay I (Pob.)', 'Barangay II (Pob.)', 'Barangay III (Pob.)', 'Barangay IV (Pob.)', 'Barangay V (Pob.)', 'Barangay VI (Pob.)', 'Barangay VII (Pob.)', 'Barangay VIII (Pob.)', 'Barangay IX (Pob.)', 'Barangay X (Pob.)', 'Barangay XI (Pob.)', 'Barangay XII (Pob.)', 'Barangay XIII (Pob.)', 'Barangay XIV (Pob.)', 'Barangay XV (Pob.)', 'Barangay XVI (Pob.)', 'Barangay XVII (Pob.)', 'Barangay XVIII (Pob.)', 'Barangay XIX (Pob.)', 'Barangay XX (Pob.)', 'Barangay XXI (Pob.)', 'Barangay XXII (Pob.)', 'Barangay XXIII (Pob.)', 'Barangay XXIV (Pob.)', 'Barangay XXV (Pob.)', 'Barangay XXVI (Pob.)', 'Barangay XXVII (Pob.)', 'Barangay XXVIII (Pob.)', 'Barangay XXIX (Pob.)', 'Barangay XXX (Pob.)', 'Barangay XXXI (Pob.)', 'Barangay XXXII (Pob.)', 'Barangay XXXIII (Pob.)', 'Barangay XXXIV (Pob.)', 'Barangay XXXV (Pob.)', 'Barangay XXXVI (Pob.)', 'Barangay XXXVII (Pob.)', 'Barangay XXXVIII (Pob.)', 'Barangay XXXIX (Pob.)', 'Barangay XL (Pob.)', 'Barangay XLI (Pob.)', 'Barangay XLII (Pob.)', 'Barangay XLIII (Pob.)', 'Barangay XLIV (Pob.)', 'Barangay XLV (Pob.)', 'Barangay XLVI (Pob.)', 'Barangay XLVII (Pob.)', 'Barangay XLVIII (Pob.)', 'Barangay XLIX (Pob.)', 'Barangay L (Pob.)', 'Biñan', 'Maahas', 'Sabang']
-                            },
-                            'Pakil': {
-                                barangays: ['Banilan', 'Burgos', 'Casinsin', 'Concepcion', 'Gonzalvo', 'Lumbang', 'Pagsawitan', 'Poblacion', 'Rizal', 'San Antonio', 'San Isidro', 'San Jose', 'San Miguel', 'San Roque', 'Santa Catalina', 'Santo Niño', 'Sierra', 'Taytay', 'Tiaong']
-                            },
-                            'Pangil': {
-                                barangays: ['Balian', 'Dambo', 'Galalan', 'Isla', 'Nabua', 'Pambuhan', 'Poblacion', 'San Antonio', 'San Isidro', 'San Jose', 'San Miguel', 'San Roque', 'Santa Catalina', 'Santo Niño', 'Sierra', 'Taytay', 'Tiaong']
-                            },
-                            'Pila': {
-                                barangays: ['Aplaya', 'Bagong Pook', 'Bagumbayan', 'Bubukal', 'Bulanan', 'Concepcion', 'Labuin', 'Linga', 'Masico', 'Moog', 'Pansol', 'Poblacion', 'San Antonio', 'San Miguel', 'Santa Clara', 'Santo Niño', 'Taytay']
-                            },
-                            'Rizal': {
-                                barangays: ['Antipolo', 'Bagong Silang', 'Bagong Pook', 'Bubukal', 'Burgos', 'Calumpang', 'Concepcion', 'Laguna', 'Malinao', 'Poblacion', 'San Antonio', 'San Isidro', 'San Jose', 'San Miguel', 'San Roque', 'Santa Catalina', 'Santo Niño', 'Taytay']
-                            },
-                            'San Pablo': {
-                                barangays: ['Bagong Bayan II-A', 'Bagong Pook VI-C', 'Barangay I-A', 'Barangay I-B', 'Barangay II-A', 'Barangay II-B', 'Barangay II-C', 'Barangay II-D', 'Barangay II-E', 'Barangay II-F', 'Barangay III-A', 'Barangay III-B', 'Barangay III-C', 'Barangay III-D', 'Barangay III-E', 'Barangay III-F', 'Barangay IV-A', 'Barangay IV-B', 'Barangay IV-C', 'Barangay V-A', 'Barangay V-B', 'Barangay V-C', 'Barangay V-D', 'Barangay VI-A', 'Barangay VI-B', 'Barangay VI-D', 'Barangay VI-E', 'Barangay VII-A', 'Barangay VII-B', 'Barangay VII-C', 'Barangay VII-D', 'Barangay VII-E', 'Bautista', 'Concepción', 'Del Remedio', 'Dolores', 'San Antonio 1', 'San Antonio 2', 'San Bartolomé', 'San Buenaventura', 'San Crispín', 'San Cristóbal', 'San Diego', 'San Francisco', 'San Gabriel', 'San Gregorio', 'San Ignacio', 'San Isidro', 'San Joaquín', 'San José', 'San Juan', 'San Lorenzo', 'San Lucas 1', 'San Lucas 2', 'San Marcos', 'San Mateo', 'San Miguel', 'San Nicolás', 'San Pedro', 'San Rafael', 'San Roque', 'San Vicente', 'Santa Ana', 'Santa Catalina', 'Santa Cruz', 'Santa Felomina', 'Santa Isabel', 'Santa María Magdalena', 'Santa Verónica I', 'Santiago I', 'Santiago II', 'Santisimo Rosario', 'Santo Ángel', 'Santo Cristo', 'Santo Niño', 'Soledad', 'Santa Elena', 'Santa María', 'Santa Moníca', 'Santa Verónica II']
-                            },
-                            'Santa Cruz': {
-                                barangays: ['Bagumbayan', 'Bubukal', 'Calios', 'Duhat', 'Gatid', 'Jasaan', 'Labuin', 'Malinao', 'Oogong', 'Pagsawitan', 'Paiisa', 'Palasan', 'Patimbao', 'San Jose', 'San Juan', 'San Pablo Norte', 'San Pablo Sur', 'Santo Angel Norte', 'Santo Angel Sur', 'Santo Domingo', 'Tagbakin', 'Tuburan']
-                            },
-                            'Santa Maria': {
-                                barangays: ['Adia', 'Bagong Pook', 'Bagumbayan', 'Bubukal', 'Burgos', 'Concepcion', 'Del Remedio', 'Dolores', 'Ibabang Atingay', 'Ibabang Butnong', 'Ilayang Atingay', 'Ilayang Butnong', 'Malinao', 'Mamala', 'Manggahan', 'Masikap', 'Mataas na Kahoy', 'Munting Kahoy', 'Olla', 'Pagsawitan', 'Poblacion', 'San Francisco', 'San Isidro', 'San Miguel', 'San Roque', 'Santa Catalina', 'Santo Niño', 'Taytay', 'Tiaong', 'Tulay na Lupa', 'Villa Nogales']
-                            },
-                            'Siniloan': {
-                                barangays: ['Bagong Pook', 'Bagumbayan', 'Bubukal', 'Burgos', 'Concepcion', 'Del Remedio', 'Dolores', 'Ibabang Atingay', 'Ibabang Butnong', 'Ilayang Atingay', 'Ilayang Butnong', 'Malinao', 'Mamala', 'Manggahan', 'Masikap', 'Mataas na Kahoy', 'Munting Kahoy', 'Olla', 'Pagsawitan', 'Poblacion', 'San Francisco', 'San Isidro', 'San Miguel', 'San Roque', 'Santa Catalina', 'Santo Niño', 'Taytay', 'Tiaong', 'Tulay na Lupa', 'Villa Nogales']
-                            },
-                            'Victoria': {
-                                barangays: ['Bagong Silang', 'Bubukal', 'Burgos', 'Concepcion', 'Del Remedio', 'Dolores', 'Ibabang Atingay', 'Ibabang Butnong', 'Ilayang Atingay', 'Ilayang Butnong', 'Malinao', 'Mamala', 'Manggahan', 'Masikap', 'Mataas na Kahoy', 'Munting Kahoy', 'Olla', 'Pagsawitan', 'Poblacion', 'San Francisco', 'San Isidro', 'San Miguel', 'San Roque', 'Santa Catalina', 'Santo Niño', 'Taytay', 'Tiaong', 'Tulay na Lupa', 'Villa Nogales']
-                            }
-                        }
-                    }
+    'CALABARZON': {
+        name: 'IV-A - CALABARZON',
+        provinces: {
+            'Laguna': {
+                cities: {
+                    'Alaminos': {
+                        barangays: ["Barangay I", "Barangay II", "Barangay III", "Barangay IV", "Del Carmen", "Palma", "San Agustin", "San Andres", "San Benito", "San Gregorio", "San Ildefonso", "San Juan", "San Miguel", "San Roque", "Santa Rosa"]
+                    },
+                    'Bay': {
+                        barangays: ["Bitin", "Calo", "Dila", "Maitim", "Masaya", "Paciano Rizal", "Puypuy", "San Agustin", "San Antonio", "San Isidro", "San Nicolas", "Santa Cruz", "Santo Domingo", "Tagumpay", "Tranca"]
+                    },
+                    'Biñan': {
+                        barangays: ["Biñan", "Bungahan", "Canlalay", "Casile", "De La Paz", "Ganado", "Langkiwa", "Loma", "Malaban", "Malamig", "Mampalasan", "Platero", "Poblacion", "San Antonio", "San Francisco", "San Jose", "San Vicente", "Santo Domingo", "Santo Niño", "Santo Tomas", "Soro-soro", "Timbao", "Tubigan", "Zapote"]
+                    },
+                    'Cabuyao': {
+                        barangays: ["Baclaran", "Banaybanay", "Banlic", "Barangay Dos", "Barangay Tres", "Barangay Uno", "Bigaa", "Butong", "Casile", "Diezmo", "Gulod", "Mamatid", "Marinig", "Niugan", "Pittland", "Pulo", "Sala", "San Isidro"]
+                    },
+                    'Calamba': {
+                        barangays: ["Bagong Kalsada", "Banadero", "Banlic", "Barandal", "Barangay 1", "Barangay 2", "Barangay 3", "Barangay 4", "Barangay 5", "Barangay 6", "Barangay 7", "Batino", "Bubuyan", "Bucal", "Bunggo", "Burol", "Camaligan", "Canlubang", "Halang", "Hornalan", "Kay-Anlog", "La Mesa", "Laguerta", "Lawa", "Lecheria", "Lingga", "Looc", "Mabato", "Majada Labas", "Makiling", "Mapagong", "Masili", "Maunong", "Mayapa", "Milagrosa", "Paciano Rizal", "Palingon", "Palo-Alto", "Pansol", "Parian", "Prinza", "Punta", "Puting Lupa", "Real", "Saimsim", "Sampiruhan", "San Cristobal", "San Jose", "San Juan", "Sirang Lupa", "Sucol", "Turbina", "Ulango", "Uwisan"]
+                    },
+                    'Calauan': {
+                        barangays: ["Balayhangin", "Bangyas", "Dayap", "Hanggan", "Imok", "Kanluran", "Lamot 1", "Lamot 2", "Limao", "Mabacan", "Masiit", "Paliparan", "Perez", "Prinza", "San Isidro", "Santo Tomas", "Silangan"]
+                    },
+                    'Cavinti': {
+                        barangays: ["Anglas", "Bangco", "Bukal", "Bulajo", "Cansuso", "Duhat", "Inao-awan", "Kanluran Talaongan", "Labayo", "Layasin", "Layug", "Mahipon", "Paowin", "Poblacion", "Silangan Talaongan", "Sisilmin", "Sumucab", "Tibatib", "Udia"]
+                    },
+                    'Famy': {
+                        barangays: ["Asana", "Bacong-Sigsigan", "Bagong Pag-asa", "Balitoc", "Banaba", "Batuhan", "Bulihan", "Caballero", "Calumpang", "Cuebang Bato", "Damayan", "Kapatalan", "Kataypuanan", "Liyang", "Maate", "Magdalo", "Mayatba", "Minayutan", "Salangbato", "Tunhac"]
+                    },
+                    'Kalayaan': {
+                        barangays: ["Longos", "San Antonio", "San Juan"]
+                    },
+                    'Liliw': {
+                        barangays: ["Bagong Anyo", "Bayate", "Bongkol", "Bubukal", "Cabuyao", "Calumpang", "Culoy", "Dagatan", "Daniw", "Dita", "Ibabang Palina", "Ibabang San Roque", "Ibabang Sungi", "Ibabang Taykin", "Ilayang Palina", "Ilayang San Roque", "Ilayang Sungi", "Ilayang Taykin", "Kanlurang Bukal", "Laguan", "Luquin", "Malabo-Kalantukan", "Masikap", "Maslun", "Mojon", "Novaliches", "Oples", "Pag-asa", "Palayan", "Rizal", "San Isidro", "Silangang Bukal", "Tuy-Baanan"]
+                    },
+                    'Los Baños': {
+                        barangays: ["Anos", "Bagong Silang", "Bambang", "Batong Malake", "Baybayin", "Bayog", "Lalakay", "Maahas", "Malinta", "Mayondon", "Putho Tuntungin", "San Antonio", "Tadlak", "Timugan"]
+                    },
+                    'Luisiana': {
+                        barangays: ["Barangay Zone I", "Barangay Zone II", "Barangay Zone III", "Barangay Zone IV", "Barangay Zone V", "Barangay Zone VI", "Barangay Zone VII", "Barangay Zone VIII", "De La Paz", "San Antonio", "San Buenaventura", "San Diego", "San Isidro", "San Jose", "San Juan", "San Luis", "San Pablo", "San Pedro", "San Rafael", "San Roque", "San Salvador", "Santo Domingo", "Santo Tomas"]
+                    },
+                    'Lumban': {
+                        barangays: ["Bagong Silang", "Balimbingan", "Balubad", "Caliraya", "Concepcion", "Lewin", "Maracta", "Maytalang I", "Maytalang II", "Primera Parang", "Primera Pulo", "Salac", "Santo Niño", "Segunda Parang", "Segunda Pulo", "Wawa"]
+                    },
+                    'Mabitac': {
+                        barangays: ["Amuyong", "Bayanihan", "Lambac", "Libis ng Nayon", "Lucong", "Maligaya", "Masikap", "Matalatala", "Nanguma", "Numero", "Paagahan", "Pag-asa", "San Antonio", "San Miguel", "Sinagtala"]
+                    },
+                    'Magdalena': {
+                        barangays: ["Alipit", "Baanan", "Balanac", "Bucal", "Buenavista", "Bungkol", "Buo", "Burlungan", "Cigaras", "Halayhayin", "Ibabang Atingay", "Ibabang Butnong", "Ilayang Atingay", "Ilayang Butnong", "Ilog", "Malaking Ambling", "Malinao", "Maravilla", "Munting Ambling", "Poblacion", "Sabang", "Salasad", "Tanawan", "Tipunan"]
+                    },
+                    'Majayjay': {
+                        barangays: ["Amonoy", "Bakia", "Balanac", "Balayong", "Banilad", "Banti", "Bitaoy", "Botocan", "Bukal", "Burgos", "Burol", "Coralao", "Gagalot", "Ibabang Banga", "Ibabang Bayucain", "Ilayang Banga", "Ilayang Bayucain", "Isabang", "Malinao", "May-it", "Munting Kawayan", "Olla", "Oobi", "Origuel", "Panalaban", "Pangil", "Panglan", "Piit", "Pook", "Rizal", "San Francisco", "San Isidro", "San Miguel", "San Roque", "Santa Catalina", "Suba", "Talortor", "Tanawan", "Taytay", "Villa Nogales"]
+                    },
+                    'Nagcarlan': {
+                        barangays: ["Abo", "Alibungbungan", "Alumbrado", "Balayong", "Balimbing", "Balinacon", "Bambang", "Banago", "Banca-banca", "Bangcuro", "Banilad", "Bayaquitos", "Buboy", "Buenavista", "Buhanginan", "Bukal", "Bunga", "Cabuyew", "Calumpang", "Kanluran Kabubuhayan", "Kanluran Lazaan", "Labangan", "Lagulo", "Lawaguin", "Maiit", "Malaya", "Malinao", "Manaol", "Maravilla", "Nagcalbang", "Oples", "Palayan", "Palina", "Poblacion I", "Poblacion II", "Poblacion III", "Sabang", "San Francisco", "Santa Lucia", "Sibulan", "Silangan Ilaya", "Silangan Kabubuhayan", "Silangan Lazaan", "Silangan Napapatid", "Sinipian", "Sulsuguin", "Talahib", "Talangan", "Taytay", "Tipacan", "Wakat", "Yukos"]
+                    },
+                    'Paete': {
+                        barangays: ["Bagumbayan", "Bangkusay", "Ermita", "Ibaba del Norte", "Ibaba del Sur", "Ilaya del Norte", "Ilaya del Sur", "Maytoong", "Quinale"]
+                    },
+                    'Pagsanjan': {
+                        barangays: ["Anibong", "Barangay I", "Barangay II", "Biñan", "Buboy", "Cabanbanan", "Calusiche", "Dingin", "Lambac", "Layugan", "Magdapio", "Maulawin", "Pinagsanjan", "Sabang", "Sampaloc", "San Isidro"]
+                    },
+                    'Pakil': {
+                        barangays: ["Banilan", "Baño", "Burgos", "Casa Real", "Casinsin", "Dorado", "Gonzales", "Kabulusan", "Matikiw", "Rizal", "Saray", "Taft", "Tavera"]
+                    },
+                    'Pangil': {
+                        barangays: ["Balian", "Dambo", "Galalan", "Isla", "Mabato-Azufre", "Natividad", "San Jose", "Sulib"]
+                    },
+                    'Pila': {
+                        barangays: ["Aplaya", "Bagong Pook", "Bukal", "Bulilan Norte", "Bulilan Sur", "Concepcion", "Labuin", "Linga", "Masico", "Mojon", "Pansol", "Pinagbayanan", "San Antonio", "San Miguel", "Santa Clara Norte", "Santa Clara Sur", "Tubuan"]
+                    },
+                    'Rizal': {
+                        barangays: ["Antipolo", "East Poblacion", "Entablado", "Laguan", "Paule 1", "Paule 2", "Pook", "Tala", "Talaga", "Tuy", "West Población"]
+                    },
+                    'San Pablo': {
+                        barangays: ["Atisan", "Bagong Bayan II-A", "Bagong Pook VI-C", "Barangay I-A", "Barangay I-B", "Barangay II-A", "Barangay II-B", "Barangay II-C", "Barangay II-D", "Barangay II-E", "Barangay II-F", "Barangay III-A", "Barangay III-B", "Barangay III-C", "Barangay III-D", "Barangay III-E", "Barangay III-F", "Barangay IV-A", "Barangay IV-B", "Barangay IV-C", "Barangay V-A", "Barangay V-B", "Barangay V-C", "Barangay V-D", "Barangay VI-A", "Barangay VI-B", "Barangay VI-D", "Barangay VI-E", "Barangay VII-A", "Barangay VII-B", "Barangay VII-C", "Barangay VII-D", "Barangay VII-E", "Bautista", "Concepcion", "Del Remedio", "Dolores", "San Antonio 1", "San Antonio 2", "San Bartolome", "San Buenaventura", "San Crispin", "San Cristobal", "San Diego", "San Francisco", "San Gabriel", "San Gregorio", "San Ignacio", "San Isidro", "San Joaquin", "San Jose", "San Juan", "San Lorenzo", "San Lucas 1", "San Lucas 2", "San Marcos", "San Mateo", "San Miguel", "San Nicolas", "San Pedro", "San Rafael", "San Roque", "San Vicente", "Santa Ana", "Santa Catalina", "Santa Cruz", "Santa Elena", "Santa Felomina", "Santa Isabel", "Santa Maria", "Santa Maria Magdalena", "Santa Monica", "Santa Veronica", "Santiago I", "Santiago II", "Santisimo Rosario", "Santo Angel", "Santo Cristo", "Santo Niño", "Soledad"]
+                    },
+                    'San Pedro': {
+                        barangays: ["Bagong Silang", "Calendola", "Chrysanthemum", "Cuyab", "Estrella", "Fatima", "G.S.I.S.", "Landayan", "Langgam", "Laram", "Magsaysay", "Maharlika", "Narra", "Nueva", "Pacita 1", "Pacita 2", "Poblacion", "Riverside", "Rosario", "Sampaguita Village", "San Antonio", "San Lorenzo Ruiz", "San Roque", "San Vicente", "Santo Niño", "United Bayanihan", "United Better Living"]
+                    },
+                    'Santa Cruz': {
+                        barangays: ["Alipit", "Bagumbayan", "Barangay I", "Barangay II", "Barangay III", "Barangay IV", "Barangay V", "Bubukal", "Calios", "Duhat", "Gatid", "Jasaan", "Labuin", "Malinao", "Oogong", "Pagsawitan", "Palasan", "Patimbao", "San Jose", "San Juan", "San Pablo Norte", "San Pablo Sur", "Santisima Cruz", "Santo Angel Central", "Santo Angel Norte", "Santo Angel Sur"]
+                    },
+                    'Santa Maria': {
+                        barangays: ["Adia", "Bagong Pook", "Bagumbayan", "Barangay I", "Barangay II", "Barangay III", "Barangay IV", "Bubukal", "Cabooan", "Calangay", "Cambuja", "Coralan", "Cueva", "Inayapan", "Jose Laurel, Sr.", "Jose Rizal", "Kayhakat", "Macasipac", "Masinao", "Mataling-ting", "Pao-o", "Parang ng Buho", "Santiago", "Talangka", "Tungkod"]
+                    },
+                    'Santa Rosa': {
+                        barangays: ["Aplaya", "Balibago", "Caingin", "Dila", "Dita", "Don Jose", "Ibaba", "Kanluran", "Labas", "Macabling", "Malitlit", "Malusak", "Market Area", "Pook", "Pulong Santa Cruz", "Santo Domingo", "Sinalhan", "Tagapo"]
+                    },
+                    'Siniloan': {
+                        barangays: ["Acevida", "Bagong Pag-asa", "Bagumbarangay", "Buhay", "G. Redor", "Gen. Luna", "Halayhayin", "J. Rizal", "Kapatalan", "Laguio", "Liyang", "Llavac", "Macatad", "Magsaysay", "Mayatba", "Mendiola", "P. Burgos", "Pandeno", "Salubungan", "Wawa"]
+                    },
+                    'Victoria': {
+                        barangays: ["Banca-banca", "Daniw", "Masapang", "Nanhaya", "Pagalangan", "San Benito", "San Felix", "San Francisco", "San Roque"]
+                    },
                 }
             }
-        };
-        
+        }
+    }
+};
+
         // Initialize location dropdowns
         function initializeLocationDropdowns() {
             const regionSelect = document.getElementById('region');

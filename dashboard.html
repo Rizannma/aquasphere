@@ -518,6 +518,9 @@
             box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
             position: relative;
             overflow: hidden;
+            pointer-events: auto !important;
+            cursor: pointer;
+            user-select: none;
         }
         
         /* Disable ripple overlay to keep pointer events simple */
@@ -529,6 +532,11 @@
         .btn-add-cart:active {
             box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
             transform: none;
+            pointer-events: auto;
+        }
+        
+        .btn-add-cart:focus {
+            outline: none;
         }
         
         .btn-add-cart i {
@@ -1102,7 +1110,7 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(1)">+</button>
                                 </div>
                             </div>
-                            <button class="btn-add-cart" onclick="addToCart(1, '5-Gallon Refill', 25)">
+                            <button type="button" class="btn-add-cart" onclick="addToCart(1, '5-Gallon Refill', 25)">
                                 <i class="fas fa-cart-plus"></i>
                                 <span>Add to Cart</span>
                             </button>
@@ -1129,7 +1137,7 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(2)">+</button>
                                 </div>
                             </div>
-                            <button class="btn-add-cart" onclick="addToCart(2, 'New 5-Gallon + Container', 150)">
+                            <button type="button" class="btn-add-cart" onclick="addToCart(2, 'New 5-Gallon + Container', 150)">
                                 <i class="fas fa-cart-plus"></i>
                                 <span>Add to Cart</span>
                             </button>
@@ -1156,7 +1164,7 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(3)">+</button>
                                 </div>
                             </div>
-                            <button class="btn-add-cart" onclick="addToCart(3, '1-Liter Bottle (12-pack)', 120)">
+                            <button type="button" class="btn-add-cart" onclick="addToCart(3, '1-Liter Bottle (12-pack)', 120)">
                                 <i class="fas fa-cart-plus"></i>
                                 <span>Add to Cart</span>
                             </button>
@@ -1183,7 +1191,7 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(4)">+</button>
                                 </div>
                             </div>
-                            <button class="btn-add-cart" onclick="addToCart(4, '500ml Bottle (24-pack)', 100)">
+                            <button type="button" class="btn-add-cart" onclick="addToCart(4, '500ml Bottle (24-pack)', 100)">
                                 <i class="fas fa-cart-plus"></i>
                                 <span>Add to Cart</span>
                             </button>
@@ -1210,7 +1218,7 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(5)">+</button>
                                 </div>
                             </div>
-                            <button class="btn-add-cart" onclick="addToCart(5, 'Bring Your Jug (Refill)', 20)">
+                            <button type="button" class="btn-add-cart" onclick="addToCart(5, 'Bring Your Jug (Refill)', 20)">
                                 <i class="fas fa-cart-plus"></i>
                                 <span>Add to Cart</span>
                             </button>

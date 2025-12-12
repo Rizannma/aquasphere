@@ -4030,29 +4030,55 @@
                 // Normalize and match city/municipality to our dataset
                 const normalizeName = (name) => {
                     return name.toLowerCase()
-                        .replace('city of ', '')
-                        .replace('city ', '')
-                        .replace('city', '')
-                        .replace('municipality of ', '')
-                        .replace('municipality ', '')
+                        .replace(/city of /g, '')
+                        .replace(/city/g, '')
+                        .replace(/municipality of /g, '')
+                        .replace(/municipality/g, '')
+                        .replace(/province of /g, '')
+                        .replace(/philippines/g, '')
+                        .replace(/[^a-z0-9]+/g, ' ')
                         .trim();
+                };
+
+                const findBestCityMatch = (raw) => {
+                    const target = normalizeName(raw || '');
+                    const cityKeys = Object.keys(philippineLocations['CALABARZON'].provinces['Laguna'].cities);
+                    if (!target) return '';
+
+                    // Exact normalized
+                    const exact = cityKeys.find(k => normalizeName(k) === target);
+                    if (exact) return exact;
+
+                    // Contains either way
+                    const contains = cityKeys.find(k => target.includes(normalizeName(k))) ||
+                                     cityKeys.find(k => normalizeName(k).includes(target));
+                    if (contains) return contains;
+
+                    // Token overlap scoring
+                    const tgtTokens = target.split(' ').filter(Boolean);
+                    let best = '';
+                    let bestScore = 0;
+                    for (const k of cityKeys) {
+                        const ktokens = normalizeName(k).split(' ').filter(Boolean);
+                        const overlap = ktokens.filter(t => tgtTokens.includes(t)).length;
+                        const score = overlap / Math.max(1, ktokens.length);
+                        if (score > bestScore) {
+                            bestScore = score;
+                            best = k;
+                        }
+                    }
+                    return best;
                 };
 
                 let matchedCity = '';
                 if (citySelect) {
-                    const target = rawCityName ? normalizeName(rawCityName) : '';
-                    const cityKeys = Object.keys(philippineLocations['CALABARZON'].provinces['Laguna'].cities);
-                    matchedCity =
-                        (target && cityKeys.find(k => normalizeName(k) === target)) ||
-                        (target && cityKeys.find(k => target.includes(normalizeName(k)))) ||
-                        (target && cityKeys.find(k => normalizeName(k).includes(target))) ||
-                        '';
+                    matchedCity = findBestCityMatch(rawCityName);
 
                     if (matchedCity) {
                         citySelect.value = matchedCity;
                         updateBarangays();
                     } else {
-                        // Keep city dropdown enabled for manual selection
+                        // No match; leave enabled for manual selection
                         citySelect.disabled = false;
                     }
                 }

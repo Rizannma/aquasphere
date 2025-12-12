@@ -386,18 +386,16 @@
             border-radius: 24px;
             overflow: hidden;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
-            transition: box-shadow 0.15s ease, border-color 0.15s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             border: 1px solid rgba(14, 165, 233, 0.1);
-            pointer-events: auto;
         }
         
         .product-card:hover {
-            /* Keep card stationary to avoid losing hover during rapid clicks */
-            transform: none;
-            box-shadow: 0 10px 26px rgba(14, 165, 233, 0.1), 0 0 0 1px rgba(14, 165, 233, 0.15);
-            border-color: rgba(14, 165, 233, 0.18);
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15), 0 0 0 1px rgba(14, 165, 233, 0.2);
+            border-color: rgba(14, 165, 233, 0.3);
         }
         
         .product-image {
@@ -482,6 +480,8 @@
             margin-top: auto;
             padding-top: 1.25rem;
             border-top: 2px solid #f1f5f9;
+            position: relative;
+            z-index: 5;
         }
         
         .product-price-row {
@@ -521,10 +521,11 @@
             justify-content: center;
             box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             pointer-events: auto !important;
             cursor: pointer;
             user-select: none;
+            z-index: 10;
         }
         
         /* Disable ripple overlay to keep pointer events simple */
@@ -1365,7 +1366,7 @@
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
-            notification.style.cssText = 'position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);';
+            notification.style.cssText = 'position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); pointer-events: none;';
             notification.innerHTML = `
                 <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
                 ${message}

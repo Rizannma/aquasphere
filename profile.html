@@ -1609,11 +1609,14 @@
                 return true;
             }
             
-            // Debounced availability check
+            // Debounced availability check (reduced delay for faster feedback)
             if (emailDebounce) clearTimeout(emailDebounce);
             emailDebounce = setTimeout(() => {
-                checkProfileEmailAvailability(v);
-            }, 250);
+                checkProfileEmailAvailability(v).then(() => {
+                    // Update button state after async validation completes
+                    checkProfileRequiredFields();
+                });
+            }, 150);
             
             markProfileClear(emailInput);
             markProfileSuccess(emailInput, 'email');
@@ -1917,22 +1920,23 @@
             const updateBtn = document.getElementById('updateProfileBtn');
             if (!updateBtn) return;
             
-            const requiredFields = ['profileUsername', 'profileEmail', 'profileFirstName', 'profileLastName', 'profileGender', 'profileBirthday'];
-            let allValid = true;
-            
-            requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    const value = (field.value || '').trim();
-                    if (!value) {
-                        allValid = false;
-                    }
-                }
-            });
-            
-            if (allValid) {
-                allValid = validateProfileEmail();
+            // First, check for any visible errors immediately (this catches async errors that have already appeared)
+            const hasErrors = document.querySelectorAll('.form-group.error, input.error, select.error').length > 0;
+            if (hasErrors) {
+                updateBtn.disabled = true;
+                updateBtn.style.opacity = '0.6';
+                updateBtn.style.cursor = 'not-allowed';
+                return;
             }
+            
+            // Validate all fields synchronously for immediate feedback
+            let allValid = true;
+            allValid = validateProfileUsername() && allValid;
+            allValid = validateProfileEmail() && allValid;
+            allValid = validateProfileFirstName() && allValid;
+            allValid = validateProfileLastName() && allValid;
+            allValid = validateProfileGender() && allValid;
+            allValid = validateProfileBirthday() && allValid;
             
             if (allValid && anyPasswordFilled()) {
                 const currentEl = document.getElementById('profilePassword');
@@ -1945,12 +1949,10 @@
                 allValid = validatePasswordSameAsCurrent() && allValid;
             }
             
-            // Check if there are any validation errors (fields with error class or form-group.error)
-            if (allValid) {
-                const hasErrors = document.querySelectorAll('.form-group.error, input.error, select.error').length > 0;
-                if (hasErrors) {
-                    allValid = false;
-                }
+            // Check again for errors after validation (in case validation just marked new errors)
+            const hasErrorsAfterValidation = document.querySelectorAll('.form-group.error, input.error, select.error').length > 0;
+            if (hasErrorsAfterValidation) {
+                allValid = false;
             }
             
             // Check if there are any changes from original values
@@ -2004,21 +2006,27 @@
             
             if (usernameInput) {
                 usernameInput.addEventListener('input', () => {
-                    validateProfileUsername();
+                    const isValid = validateProfileUsername();
                     const uniqueErr = document.getElementById('profileUsername-unique-error');
                     if (uniqueErr) uniqueErr.style.display = 'none';
                     clearTimeout(usernameDebounce);
                     const v = usernameInput.value.trim();
-                    if (v.length >= 4) {
-                        usernameDebounce = setTimeout(() => checkProfileUsernameAvailability(v), 350);
-                    }
+                    // Update button state immediately
                     checkProfileRequiredFields();
+                    if (v.length >= 4 && isValid) {
+                        // Reduce debounce delay for faster feedback
+                        usernameDebounce = setTimeout(() => {
+                            checkProfileUsernameAvailability(v);
+                            // Re-check button state after async validation
+                            checkProfileRequiredFields();
+                        }, 150);
+                    }
                 });
-                usernameInput.addEventListener('blur', () => {
+                usernameInput.addEventListener('blur', async () => {
                     validateProfileUsername();
                     const v = usernameInput.value.trim();
                     if (v.length >= 4) {
-                        checkProfileUsernameAvailability(v);
+                        await checkProfileUsernameAvailability(v);
                     }
                     checkProfileRequiredFields();
                 });
@@ -2027,10 +2035,14 @@
             if (emailInput) {
                 emailInput.addEventListener('input', () => {
                     validateProfileEmail();
+                    // Update button state immediately
                     checkProfileRequiredFields();
+                    // The debounced check in validateProfileEmail will call checkProfileRequiredFields when complete
                 });
-                emailInput.addEventListener('blur', () => {
+                emailInput.addEventListener('blur', async () => {
                     validateProfileEmail();
+                    // Wait a bit for async check, then update button
+                    await new Promise(resolve => setTimeout(resolve, 300));
                     checkProfileRequiredFields();
                 });
             }

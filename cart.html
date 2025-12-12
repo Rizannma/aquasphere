@@ -2642,6 +2642,15 @@
             4: 'fa-wine-bottle',
             5: 'fa-hand-holding-water'
         };
+        // Simple HTML escaper to avoid DOM injection when rendering user data
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
         
         // Pagination variables
         let currentPage = 1;
@@ -2720,7 +2729,7 @@
                             <i class="fas ${icon}"></i>
                         </div>
                         <div class="item-details">
-                            <div class="item-name">${item.name}</div>
+                            <div class="item-name">${escapeHtml(item.name)}</div>
                             <div class="item-price">₱${item.price.toFixed(2)} per unit</div>
                         </div>
                         <div class="item-quantity">

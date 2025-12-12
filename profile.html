@@ -2113,15 +2113,20 @@
             }
         }
         
-        // Show Notification
+        // Show Notification (escape message to prevent injection)
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
-            notification.style.cssText = 'position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);';
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
-                ${message}
-            `;
+            notification.style.cssText = 'position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px;';
+            
+            const icon = document.createElement('i');
+            icon.className = `fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2`;
+            
+            const text = document.createElement('span');
+            text.textContent = message;
+            
+            notification.appendChild(icon);
+            notification.appendChild(text);
             document.body.appendChild(notification);
             
             setTimeout(() => {

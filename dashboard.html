@@ -1290,12 +1290,13 @@
                 event.stopPropagation();
             }
             
+            // Get current cart and update immediately (synchronous)
             cart = UserState.getCart();
             const quantityInput = document.getElementById('qty-' + productId);
             const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
             
+            // Update cart array immediately
             const existingItem = cart.find(item => item.id === productId);
-            
             if (existingItem) {
                 existingItem.quantity += quantity;
             } else {
@@ -1307,11 +1308,24 @@
                 });
             }
             
-            UserState.setCart(cart);
-            updateCartCount();
+            // Update localStorage immediately (synchronous, fast)
+            localStorage.setItem('cart', JSON.stringify(cart));
             
-            // Show success feedback (non-blocking, debounced)
-            showNotificationFast(`${quantity}x ${productName} added to cart!`, 'success');
+            // Update cart count immediately (synchronous, fast)
+            cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartCountEl = document.getElementById('cartCount');
+            if (cartCountEl) {
+                cartCountEl.textContent = cartCount;
+                cartCountEl.style.display = cartCount > 0 ? 'flex' : 'none';
+            }
+            
+            // Defer server save (non-blocking)
+            UserState.setCart(cart);
+            
+            // Defer notification (non-blocking)
+            setTimeout(() => {
+                showNotificationFast(`${quantity}x ${productName} added to cart!`, 'success');
+            }, 0);
             
             // Reset quantity to 1
             if (quantityInput) {

@@ -1506,6 +1506,8 @@
             }
             el.classList.remove('error');
             el.classList.add('success');
+            const group = el?.closest('.form-group');
+            if (group) group.classList.remove('error');
             if (profileSuccessTimers[key]) clearTimeout(profileSuccessTimers[key]);
             profileSuccessTimers[key] = setTimeout(() => {
                 el.classList.remove('success');
@@ -1530,6 +1532,8 @@
         function markProfileClear(el) {
             if (el) {
                 el.classList.remove('error');
+                const group = el?.closest('.form-group');
+                if (group) group.classList.remove('error');
             }
         }
         
@@ -1545,6 +1549,8 @@
                 const err = document.getElementById('profileUsername-error');
                 if (err) err.style.display = 'block';
                 markProfileError(input);
+                const group = input?.closest('.form-group');
+                if (group) group.classList.add('error');
                 return false;
             }
             
@@ -1552,6 +1558,8 @@
                 const err = document.getElementById('profileUsername-length-error');
                 if (err) err.style.display = 'block';
                 markProfileError(input);
+                const group = input?.closest('.form-group');
+                if (group) group.classList.add('error');
                 return false;
             }
 
@@ -1757,6 +1765,8 @@
                     if (data.exists) {
                         if (uniqueErr) uniqueErr.style.display = 'block';
                         markProfileError(input);
+                        const group = input?.closest('.form-group');
+                        if (group) group.classList.add('error');
                     } else {
                         if (uniqueErr) uniqueErr.style.display = 'none';
                         if (value.length >= 4) markProfileSuccess(input, 'username');
@@ -2475,6 +2485,9 @@
                                     errEl.style.display = 'block';
                                 }
                                 markProfileError(input);
+                                if (input && input.closest('.form-group')) {
+                                    input.closest('.form-group').classList.add('error');
+                                }
                                 showNotification(errorMsg, 'error');
                             } else if (field === 'email') {
                                 const existsEl = document.getElementById('profileEmail-exists-error');

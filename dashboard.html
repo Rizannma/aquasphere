@@ -393,9 +393,10 @@
         }
         
         .product-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15), 0 0 0 1px rgba(14, 165, 233, 0.2);
-            border-color: rgba(14, 165, 233, 0.3);
+            /* Keep card stationary to avoid losing hover during rapid clicks */
+            transform: none;
+            box-shadow: 0 12px 30px rgba(14, 165, 233, 0.12), 0 0 0 1px rgba(14, 165, 233, 0.15);
+            border-color: rgba(14, 165, 233, 0.22);
         }
         
         .product-image {

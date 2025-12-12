@@ -4039,18 +4039,21 @@
                 };
 
                 let matchedCity = '';
-                if (citySelect && rawCityName) {
-                    const target = normalizeName(rawCityName);
+                if (citySelect) {
+                    const target = rawCityName ? normalizeName(rawCityName) : '';
                     const cityKeys = Object.keys(philippineLocations['CALABARZON'].provinces['Laguna'].cities);
                     matchedCity =
-                        cityKeys.find(k => normalizeName(k) === target) ||
-                        cityKeys.find(k => target.includes(normalizeName(k))) ||
-                        cityKeys.find(k => normalizeName(k).includes(target)) ||
+                        (target && cityKeys.find(k => normalizeName(k) === target)) ||
+                        (target && cityKeys.find(k => target.includes(normalizeName(k)))) ||
+                        (target && cityKeys.find(k => normalizeName(k).includes(target))) ||
                         '';
 
                     if (matchedCity) {
                         citySelect.value = matchedCity;
                         updateBarangays();
+                    } else {
+                        // Keep city dropdown enabled for manual selection
+                        citySelect.disabled = false;
                     }
                 }
 
@@ -4096,6 +4099,9 @@
                         opt.textContent = barangayName;
                         barangaySelect.appendChild(opt);
                         barangaySelect.value = barangayName;
+                        barangaySelect.disabled = false;
+                    } else {
+                        // No city matched and no barangay name; keep enabled for manual selection
                         barangaySelect.disabled = false;
                     }
                 }

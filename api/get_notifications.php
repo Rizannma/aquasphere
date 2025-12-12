@@ -9,6 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once 'database.php';
+require_once 'sanitize.php';
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
@@ -18,8 +19,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-$limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 50;
+$page = isset($_GET['page']) ? max(1, sanitize_int($_GET['page'])) : 1;
+$limit = isset($_GET['limit']) ? max(1, sanitize_int($_GET['limit'])) : 50;
 $offset = ($page - 1) * $limit;
 
 init_db();

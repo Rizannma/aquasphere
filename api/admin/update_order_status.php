@@ -15,6 +15,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once '../database.php';
+require_once '../sanitize.php';
 
 // Check if user is admin
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
@@ -31,9 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Get JSON input
-$input = json_decode(file_get_contents('php://input'), true);
-$order_id = intval($input['order_id'] ?? 0);
-$status = trim($input['status'] ?? '');
+$input = sanitize_array_recursive(json_decode(file_get_contents('php://input'), true));
+$order_id = sanitize_int($input['order_id'] ?? 0);
+$status = sanitize_string($input['status'] ?? '', 64);
 
 if ($order_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'Valid order_id is required']);

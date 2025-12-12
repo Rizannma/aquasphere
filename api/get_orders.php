@@ -15,6 +15,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once 'database.php';
+require_once 'sanitize.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -30,8 +31,8 @@ init_db();
 $conn = get_db_connection();
 
 // Pagination inputs
-$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-$limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 10;
+$page = isset($_GET['page']) ? max(1, sanitize_int($_GET['page'])) : 1;
+$limit = isset($_GET['limit']) ? max(1, sanitize_int($_GET['limit'])) : 10;
 $offset = ($page - 1) * $limit;
 
 // Get total count first

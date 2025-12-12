@@ -15,6 +15,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once 'database.php';
+require_once 'sanitize.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -31,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Get JSON input
-$input = json_decode(file_get_contents('php://input'), true);
-$order_id = intval($input['order_id'] ?? 0);
+$input = sanitize_array_recursive(json_decode(file_get_contents('php://input'), true));
+$order_id = sanitize_int($input['order_id'] ?? 0);
 
 if ($order_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'Valid order_id is required']);

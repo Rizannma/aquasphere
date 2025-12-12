@@ -12,6 +12,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 // Load environment variables from .env file
 require_once 'load_env.php';
 require_once 'database.php';
+require_once 'sanitize.php';
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -21,14 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Get JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+$input = sanitize_array_recursive(json_decode(file_get_contents('php://input'), true));
 
 // Validate required fields
-$amount = floatval($input['amount'] ?? 0);
-$order_id = $input['order_id'] ?? null;
-$redirect_url = $input['redirect_url'] ?? null;
-$link_order = $input['link_order'] ?? false; // If true, just link existing order to source_id
-$source_id = $input['source_id'] ?? null;
+$amount = sanitize_float($input['amount'] ?? 0);
+$order_id = sanitize_int($input['order_id'] ?? null);
+$redirect_url = sanitize_string($input['redirect_url'] ?? null, 512);
+$link_order = !empty($input['link_order']);
+$source_id = sanitize_string($input['source_id'] ?? null, 128);
 
 // If linking order, handle that separately
 if ($link_order && $order_id && $source_id) {

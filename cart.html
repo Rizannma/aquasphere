@@ -4005,8 +4005,8 @@
                     return;
                 }
 
-                const cityName = addr.city || addr.town || addr.municipality || addr.county || '';
-                const barangayName = addr.suburb || addr.village || addr.neighbourhood || addr.hamlet || '';
+                const rawCityName = addr.city || addr.town || addr.municipality || addr.county || '';
+                const rawBarangayName = addr.suburb || addr.village || addr.neighbourhood || addr.hamlet || '';
                 const postalCode = addr.postcode || '';
 
                 const regionSelect = document.getElementById('region');
@@ -4025,14 +4025,63 @@
                     updateCities();
                 }
 
-                if (citySelect && cityName) {
-                    citySelect.value = cityName;
-                    updateBarangays();
+                // Normalize and match city/municipality to our dataset
+                const normalizeName = (name) => {
+                    return name.toLowerCase()
+                        .replace('city of ', '')
+                        .replace('city ', '')
+                        .replace('city', '')
+                        .replace('municipality of ', '')
+                        .replace('municipality ', '')
+                        .trim();
+                };
+
+                let matchedCity = '';
+                if (citySelect && rawCityName) {
+                    const target = normalizeName(rawCityName);
+                    const cityKeys = Object.keys(philippineLocations['CALABARZON'].provinces['Laguna'].cities);
+                    matchedCity =
+                        cityKeys.find(k => normalizeName(k) === target) ||
+                        cityKeys.find(k => target.includes(normalizeName(k))) ||
+                        cityKeys.find(k => normalizeName(k).includes(target)) ||
+                        '';
+
+                    if (matchedCity) {
+                        citySelect.value = matchedCity;
+                        updateBarangays();
+                    }
                 }
 
                 if (barangaySelect) {
                     barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
-                    if (barangayName) {
+                    const barangayName = rawBarangayName || '';
+
+                    if (matchedCity && barangayName) {
+                        const list = philippineLocations['CALABARZON'].provinces['Laguna'].cities[matchedCity]?.barangays || [];
+                        const match = list.find(b => b.toLowerCase() === barangayName.toLowerCase());
+                        const fallback = list.find(b => barangayName.toLowerCase().includes(b.toLowerCase())) || list.find(b => b.toLowerCase().includes(barangayName.toLowerCase()));
+
+                        const finalBarangay = match || fallback || barangayName;
+
+                        list.forEach(b => {
+                            const opt = document.createElement('option');
+                            opt.value = b;
+                            opt.textContent = b;
+                            barangaySelect.appendChild(opt);
+                        });
+
+                        // If not found in list, add the raw name as last resort
+                        if (!match && !fallback) {
+                            const opt = document.createElement('option');
+                            opt.value = barangayName;
+                            opt.textContent = barangayName;
+                            barangaySelect.appendChild(opt);
+                        }
+
+                        barangaySelect.value = finalBarangay;
+                        barangaySelect.disabled = false;
+                    } else if (barangayName) {
+                        // No matched city; still populate a single option
                         const opt = document.createElement('option');
                         opt.value = barangayName;
                         opt.textContent = barangayName;

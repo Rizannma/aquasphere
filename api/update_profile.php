@@ -60,17 +60,18 @@ if (!$data) {
 
 try {
     require_once 'database.php';
+    require_once 'sanitize.php';
     
     $conn = get_db_connection();
     $user_id = $_SESSION['user_id'];
     
     // Get form data
-    $username = trim($data['username'] ?? '');
-    $email = trim($data['email'] ?? '');
-    $first_name = trim($data['firstName'] ?? $data['first_name'] ?? '');
-    $last_name = trim($data['lastName'] ?? $data['last_name'] ?? '');
-    $gender = trim($data['gender'] ?? '');
-    $date_of_birth = trim($data['birthday'] ?? $data['date_of_birth'] ?? '');
+    $username = assert_safe_string($data['username'] ?? '', 'username', 64);
+    $email = sanitize_email($data['email'] ?? '', 128);
+    $first_name = assert_safe_string($data['firstName'] ?? $data['first_name'] ?? '', 'first_name', 128);
+    $last_name = assert_safe_string($data['lastName'] ?? $data['last_name'] ?? '', 'last_name', 128);
+    $gender = assert_safe_string($data['gender'] ?? '', 'gender', 32);
+    $date_of_birth = assert_safe_string($data['birthday'] ?? $data['date_of_birth'] ?? '', 'date_of_birth', 32);
     $password = $data['password'] ?? '';
     $new_password = $data['newPassword'] ?? '';
     

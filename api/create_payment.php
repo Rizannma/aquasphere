@@ -27,9 +27,9 @@ $input = sanitize_array_recursive(json_decode(file_get_contents('php://input'), 
 // Validate required fields
 $amount = sanitize_float($input['amount'] ?? 0);
 $order_id = sanitize_int($input['order_id'] ?? null);
-$redirect_url = sanitize_string($input['redirect_url'] ?? null, 512);
+$redirect_url = assert_safe_string($input['redirect_url'] ?? null, 'redirect_url', 512);
 $link_order = !empty($input['link_order']);
-$source_id = sanitize_string($input['source_id'] ?? null, 128);
+$source_id = assert_safe_string($input['source_id'] ?? null, 'source_id', 128);
 
 // If linking order, handle that separately
 if ($link_order && $order_id && $source_id) {

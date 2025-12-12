@@ -60,6 +60,10 @@ init_db();
 foreach ($settings_to_save as $key) {
     if (isset($data[$key])) {
         $value = $data[$key];
+        // Strings: enforce safe text; numerics/bools are fine as-is
+        if (is_string($value)) {
+            $value = assert_safe_string($value, $key, 255);
+        }
         error_log("Saving setting: $key = " . (in_array($key, ['brevo_api_key']) ? '***HIDDEN***' : $value));
         $result = update_system_setting($key, $value, $user_id);
         if ($result) {

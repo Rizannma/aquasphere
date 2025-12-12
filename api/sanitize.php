@@ -50,3 +50,46 @@ function sanitize_array_recursive($data) {
     return $data;
 }
 
+/**
+ * Detect common malicious patterns (XSS/SQLi). Intentionally conservative to avoid false positives.
+ */
+function has_malicious_payload($value) {
+    if ($value === null || $value === '') return false;
+    if (!is_string($value)) $value = (string)$value;
+    $v = strtolower($value);
+    
+    // Basic XSS patterns
+    $xss_needles = [
+        '<script', '</script', '<img', '<svg', '<iframe', '<object', '<embed',
+        'javascript:', 'onerror=', 'onload=', 'onclick=', 'onmouseover=', 'onfocus='
+    ];
+    foreach ($xss_needles as $needle) {
+        if (strpos($v, $needle) !== false) return true;
+    }
+    
+    // Basic SQL injection patterns
+    $sql_needles = [
+        "' or 1=1", '" or 1=1', "' or '1'='1", '" or "1"="1',
+        ' or 1=1', ' and 1=1',
+        '--', '/*', '*/', ';--'
+    ];
+    foreach ($sql_needles as $needle) {
+        if (strpos($v, $needle) !== false) return true;
+    }
+    return false;
+}
+
+/**
+ * Sanitize + enforce no malicious patterns; exits with 400 JSON on violation.
+ */
+function assert_safe_string($value, $field = 'input', $max_len = 255) {
+    $clean = sanitize_string($value, $max_len);
+    if (has_malicious_payload($clean)) {
+        http_response_code(400);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => "Invalid {$field}"]);
+        exit;
+    }
+    return $clean;
+}
+

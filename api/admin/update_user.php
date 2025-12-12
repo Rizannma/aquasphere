@@ -35,13 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input = sanitize_array_recursive(json_decode(file_get_contents('php://input'), true));
 
 $user_id = sanitize_int($input['user_id'] ?? 0);
-$first_name = sanitize_string($input['first_name'] ?? '', 128);
-$last_name = sanitize_string($input['last_name'] ?? '', 128);
+$first_name = assert_safe_string($input['first_name'] ?? '', 'first_name', 128);
+$last_name = assert_safe_string($input['last_name'] ?? '', 'last_name', 128);
 $email = sanitize_email($input['email'] ?? '', 128);
-$gender = sanitize_string($input['gender'] ?? '', 32);
-$date_of_birth = sanitize_string($input['date_of_birth'] ?? '', 32);
+$gender = assert_safe_string($input['gender'] ?? '', 'gender', 32);
+$date_of_birth = assert_safe_string($input['date_of_birth'] ?? '', 'date_of_birth', 32);
 $is_admin = isset($input['is_admin']) ? sanitize_int($input['is_admin']) : null;
-$new_password = sanitize_string($input['new_password'] ?? '', 255);
+$new_password = assert_safe_string($input['new_password'] ?? '', 'new_password', 255);
 
 if ($user_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'Valid user_id is required']);

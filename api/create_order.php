@@ -10,6 +10,7 @@ header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
 require_once 'database.php';
+require_once 'sanitize.php';
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -19,15 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Get JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+$input = sanitize_array_recursive(json_decode(file_get_contents('php://input'), true));
 
 // Validate required fields
-$user_id = intval($input['user_id'] ?? 0);
+$user_id = sanitize_int($input['user_id'] ?? 0);
 $items = $input['items'] ?? [];
 $delivery_address = $input['delivery_address'] ?? null;
-$payment_method = $input['payment_method'] ?? 'COD';
-$delivery_date = $input['delivery_date'] ?? null;
-$delivery_time = $input['delivery_time'] ?? null;
+$payment_method = assert_safe_string($input['payment_method'] ?? 'COD', 'payment_method', 32);
+$delivery_date = assert_safe_string($input['delivery_date'] ?? null, 'delivery_date', 32);
+$delivery_time = assert_safe_string($input['delivery_time'] ?? null, 'delivery_time', 32);
 
 if ($user_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'Valid user_id is required']);
@@ -109,9 +110,10 @@ foreach ($items as $item) {
     $item_quantity = intval($item['quantity']);
     $item_subtotal = $item_price * $item_quantity;
     
+    $product_name = assert_safe_string($item['name'] ?? $item['product_name'] ?? 'Unknown Product', 'product_name', 255);
     execute_sql($conn, $item_query, [
         $order_id,
-        $item['name'] ?? $item['product_name'] ?? 'Unknown Product',
+        $product_name,
         $item_price,
         $item_quantity,
         $item_subtotal

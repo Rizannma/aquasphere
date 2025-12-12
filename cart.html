@@ -182,7 +182,8 @@
             background: white;
         }
         
-        .cart-item:hover {
+        .cart-item:hover,
+        .cart-item.force-hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             border-color: #e0f2fe;
         }
@@ -289,6 +290,7 @@
         
         .quantity-btn:active {
             background: #f1f5f9;
+            /* No transform to prevent button movement that breaks continuous clicks */
         }
         
         .quantity-btn.decrease {
@@ -2731,9 +2733,9 @@
                         </div>
                         <div class="item-quantity">
                             <div class="quantity-controls">
-                                <button type="button" class="quantity-btn decrease" onclick="updateQuantity(${item.id}, -1)">−</button>
+                                <button type="button" class="quantity-btn decrease" onclick="return updateQuantity(${item.id}, -1, event)">−</button>
                                 <input type="number" class="quantity-input" id="qty-cart-${item.id}" value="${item.quantity}" min="1" onchange="updateQuantityInput(${item.id})">
-                                <button type="button" class="quantity-btn increase" onclick="updateQuantity(${item.id}, 1)">+</button>
+                                <button type="button" class="quantity-btn increase" onclick="return updateQuantity(${item.id}, 1, event)">+</button>
                             </div>
                         </div>
                         <div class="item-subtotal" id="subtotal-${item.id}">
@@ -2819,11 +2821,18 @@
         }
         
         // Update quantity
-        function updateQuantity(productId, change) {
+        function updateQuantity(productId, change, event) {
+            // Prevent any default behavior that might interfere
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            // Get cart and update immediately (synchronous)
             const cart = UserState.getCart();
             const item = cart.find(i => i.id === productId);
             
-            if (!item) return;
+            if (!item) return false;
             
             item.quantity += change;
             
@@ -2831,10 +2840,10 @@
                 item.quantity = 1;
             }
             
-            UserState.setCart(cart);
-            updateCartCount(); // Update navbar count immediately
+            // Update localStorage immediately (synchronous, fast)
+            localStorage.setItem('cart', JSON.stringify(cart));
             
-            // Update only the specific item's display instead of re-rendering everything
+            // Update display immediately (synchronous, fast)
             const quantityInput = document.getElementById(`qty-cart-${productId}`);
             const subtotalEl = document.getElementById(`subtotal-${productId}`);
             
@@ -2847,8 +2856,16 @@
                 subtotalEl.textContent = `₱${subtotal.toFixed(2)}`;
             }
             
-            // Update summary without full re-render
+            // Update cart count immediately (synchronous, fast)
+            updateCartCount();
+            
+            // Update summary immediately (synchronous, fast)
             updateSummary();
+            
+            // Defer server save (non-blocking)
+            UserState.setCart(cart);
+            
+            return false;
         }
         
         // Update quantity from input
@@ -5600,6 +5617,42 @@
         loadAddress();
         initializeLocationDropdowns();
         })();
+        
+        // Maintain cart item hover state when quantity buttons are clicked to allow continuous clicking
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use event delegation since cart items are dynamically rendered
+            document.addEventListener('mousedown', function(e) {
+                const quantityBtn = e.target.closest('.quantity-btn');
+                if (quantityBtn) {
+                    const cartItem = quantityBtn.closest('.cart-item');
+                    if (cartItem) {
+                        cartItem.classList.add('force-hover');
+                    }
+                }
+            });
+            
+            document.addEventListener('mouseup', function(e) {
+                const quantityBtn = e.target.closest('.quantity-btn');
+                if (quantityBtn) {
+                    const cartItem = quantityBtn.closest('.cart-item');
+                    if (cartItem) {
+                        // Don't remove force-hover immediately to allow rapid clicks
+                        setTimeout(() => {
+                            if (!cartItem.matches(':hover')) {
+                                cartItem.classList.remove('force-hover');
+                            }
+                        }, 100);
+                    }
+                }
+            });
+            
+            // Remove force-hover when mouse leaves cart item
+            document.addEventListener('mouseleave', function(e) {
+                if (e.target.classList.contains('cart-item')) {
+                    e.target.classList.remove('force-hover');
+                }
+            }, true);
+        });
         
         // Navbar scroll effect (only shadow, no size changes)
         window.addEventListener('scroll', function() {

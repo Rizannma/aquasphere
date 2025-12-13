@@ -103,6 +103,7 @@ if ($GLOBALS['use_postgres']) {
             o.delivery_time,
             o.delivery_address,
             o.delivery_fee,
+            o.delivery_date_range,
             o.total_amount,
             o.payment_method,
             o.status,

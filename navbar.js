@@ -458,6 +458,13 @@ function loadNotifications(force = false) {
 
     // FAST PATH: Try localStorage cache first (instant display) - only if not forcing refresh
     if (!force) {
+        // Only update badge if not yet initialized (prevent multiple updates)
+        if (badge && badge.dataset.initialized) {
+            // Badge already initialized, just fetch in background to sync
+            fetchNotificationsInBackground();
+            return;
+        }
+        
         try {
             const cachedCount = localStorage.getItem('notificationCount');
             const cacheTimestamp = localStorage.getItem('notificationCountTimestamp');
@@ -465,9 +472,10 @@ function loadNotifications(force = false) {
             // Use cache if it's less than 30 seconds old
             if (cachedCount !== null && cacheTimestamp && (now - parseInt(cacheTimestamp)) < 30000) {
                 const notifCount = parseInt(cachedCount, 10);
-                if (badge) {
+                if (badge && !badge.dataset.initialized) {
                     badge.textContent = notifCount;
                     badge.style.display = notifCount > 0 ? 'flex' : 'none';
+                    badge.dataset.initialized = 'true';
                 }
                 // Fetch in background to sync, but don't wait for it
                 fetchNotificationsInBackground();

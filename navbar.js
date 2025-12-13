@@ -241,9 +241,13 @@ function fetchOrdersInBackground() {
                 
                 const badgeEl = document.getElementById('ordersCount');
                 if (badgeEl) {
-                    badgeEl.textContent = orderCount;
-                    // Show badge when count > 0, hide when 0
-                    badgeEl.style.display = orderCount > 0 ? 'flex' : 'none';
+                    // Only update if not yet initialized (prevent multiple updates)
+                    if (!badgeEl.dataset.initialized) {
+                        badgeEl.textContent = orderCount;
+                        // Show badge when count > 0, hide when 0
+                        badgeEl.style.display = orderCount > 0 ? 'flex' : 'none';
+                        badgeEl.dataset.initialized = 'true';
+                    }
                 }
             } else {
                 // No orders or invalid response

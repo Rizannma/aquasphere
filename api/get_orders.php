@@ -52,11 +52,16 @@ if ($GLOBALS['use_postgres']) {
             o.delivery_time,
             o.delivery_address,
             o.delivery_fee,
+            o.delivery_date_range,
             o.total_amount,
             o.payment_method,
             o.status,
             o.created_at,
             o.updated_at,
+            (SELECT created_at 
+             FROM order_status_history 
+             WHERE order_id = o.id AND status = 'delivered' 
+             ORDER BY created_at DESC LIMIT 1) as delivered_at,
             COALESCE(
                 json_agg(
                     json_build_object(

@@ -1687,8 +1687,8 @@
             
             // Handle success case FIRST - before checking referrer
                 if (status === 'success') {
-                // Hide order summary and payment container immediately
-                hidePaymentContent();
+                // Clear order breakdown values immediately (keep container visible)
+                clearOrderBreakdown();
                 
                 // Clear PayMongo redirect flag
                 sessionStorage.removeItem('paymongo_redirect');
@@ -2135,6 +2135,30 @@
             }
         }
         
+        // Clear order breakdown values (keep container visible)
+        function clearOrderBreakdown() {
+            // Set all breakdown values to 0 or empty
+            const subtotalEl = document.getElementById('orderSubtotal');
+            const deliveryFeeEl = document.getElementById('orderDeliveryFee');
+            const totalEl = document.getElementById('orderTotal');
+            
+            if (subtotalEl) {
+                subtotalEl.textContent = '₱0.00';
+            }
+            if (deliveryFeeEl) {
+                deliveryFeeEl.textContent = '₱--';
+            }
+            if (totalEl) {
+                totalEl.textContent = '₱0.00';
+            }
+            
+            // Disable place order button
+            const placeOrderBtn = document.getElementById('placeOrderBtn');
+            if (placeOrderBtn) {
+                placeOrderBtn.disabled = true;
+            }
+        }
+        
         // Hide payment content (order summary, payment methods, etc.)
         function hidePaymentContent() {
             // Hide main content
@@ -2148,18 +2172,6 @@
             if (footer) {
                 footer.style.display = 'none';
             }
-            
-            // Hide payment container specifically
-            const paymentContainer = document.querySelector('.payment-container');
-            if (paymentContainer) {
-                paymentContainer.style.display = 'none';
-            }
-            
-            // Hide order summary specifically
-            const orderSummary = document.querySelector('.order-summary');
-            if (orderSummary) {
-                orderSummary.style.display = 'none';
-            }
         }
         
         // Show payment success modal
@@ -2167,7 +2179,7 @@
             // Lock body scroll
             lockBodyScroll();
             
-            // Hide payment content (in case it wasn't already hidden)
+            // Hide main content and footer (but keep payment container visible)
             hidePaymentContent();
             
             // Show success modal

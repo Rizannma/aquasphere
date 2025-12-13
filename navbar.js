@@ -413,6 +413,11 @@ function loadNotificationBadgeFast() {
         return;
     }
 
+    // Only update if not yet initialized (prevent multiple updates)
+    if (badge.dataset.initialized) {
+        return;
+    }
+
     // FAST PATH: Try localStorage cache first (instant display)
     try {
         const cachedCount = localStorage.getItem('notificationCount');
@@ -423,6 +428,7 @@ function loadNotificationBadgeFast() {
             const notifCount = parseInt(cachedCount, 10);
             badge.textContent = notifCount;
             badge.style.display = notifCount > 0 ? 'flex' : 'none';
+            badge.dataset.initialized = 'true';
             return; // Badge updated, full load will happen in background
         }
     } catch (e) {
@@ -582,14 +588,18 @@ function fetchNotificationsInBackground() {
                     // Ignore localStorage errors
                 }
                 
-                badgeEl.textContent = totalCount;
-                // Always set display explicitly - use 'flex' when count > 0, 'none' when 0
-                badgeEl.style.display = totalCount > 0 ? 'flex' : 'none';
-                
-                // Force visibility - ensure badge is shown
-                if (totalCount > 0) {
-                    badgeEl.style.visibility = 'visible';
-                    badgeEl.style.opacity = '1';
+                // Only update if not yet initialized (prevent multiple updates)
+                if (!badgeEl.dataset.initialized) {
+                    badgeEl.textContent = totalCount;
+                    // Always set display explicitly - use 'flex' when count > 0, 'none' when 0
+                    badgeEl.style.display = totalCount > 0 ? 'flex' : 'none';
+                    
+                    // Force visibility - ensure badge is shown
+                    if (totalCount > 0) {
+                        badgeEl.style.visibility = 'visible';
+                        badgeEl.style.opacity = '1';
+                    }
+                    badgeEl.dataset.initialized = 'true';
                 }
             }
         })

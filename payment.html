@@ -1426,26 +1426,41 @@
                 subtotal += item.price * item.quantity;
             });
             
+            // Check if we need to wait for prediction
+            const needsPrediction = subtotal > 0 && deliveryAddress && deliveryAddress.latitude && deliveryAddress.longitude;
+            const predictionReady = mlPrediction.shippingFee !== null;
+            
             // Use predicted shipping fee if available, otherwise show loading state
             let deliveryFee = 0;
             let deliveryFeeDisplay = '₱--';
+            let subtotalDisplay = `₱${subtotal.toFixed(2)}`;
+            let totalDisplay = '₱--';
             
             if (subtotal > 0) {
-                if (mlPrediction.shippingFee !== null) {
-                    // Prediction is ready
+                if (needsPrediction && !predictionReady) {
+                    // Prediction needed but not ready yet - show loading state for all values
+                    subtotalDisplay = '₱--';
+                    deliveryFeeDisplay = '₱--';
+                    totalDisplay = '₱--';
+                } else if (predictionReady) {
+                    // Prediction is ready - show all values
                     deliveryFee = mlPrediction.shippingFee;
                     deliveryFeeDisplay = `₱${deliveryFee.toFixed(2)}`;
+                    const total = subtotal + deliveryFee;
+                    totalDisplay = `₱${total.toFixed(2)}`;
                 } else {
-                    // Prediction not ready yet, show loading state
-                    deliveryFeeDisplay = '₱--';
+                    // No prediction needed (no address or no items) - show calculated values
+                    const total = subtotal + deliveryFee;
+                    totalDisplay = `₱${total.toFixed(2)}`;
                 }
+            } else {
+                // No items - show zeros
+                totalDisplay = '₱0.00';
             }
             
-            const total = subtotal + deliveryFee;
-            
-            document.getElementById('orderSubtotal').textContent = `₱${subtotal.toFixed(2)}`;
+            document.getElementById('orderSubtotal').textContent = subtotalDisplay;
             document.getElementById('orderDeliveryFee').textContent = deliveryFeeDisplay;
-            document.getElementById('orderTotal').textContent = `₱${total.toFixed(2)}`;
+            document.getElementById('orderTotal').textContent = totalDisplay;
         }
         
         // Select payment method

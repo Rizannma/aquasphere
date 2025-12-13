@@ -3047,17 +3047,22 @@
             updateSummary();
         }
         
-        // Initialize delivery fee display on page load
+        // Initialize summary display on page load
         function initializeDeliveryFeeDisplay() {
             const deliveryFeeEl = document.getElementById('deliveryFee');
+            const subtotalEl = document.getElementById('subtotal');
+            const totalEl = document.getElementById('total');
+            
             if (deliveryFeeEl) {
                 deliveryFeeEl.textContent = '₱--';
             }
+            // Don't reset subtotal and total here - let updateSummary handle it based on cart state
         }
         
         // Update summary (works across all pages)
         function updateSummary() {
             const cart = UserState.getCart();
+            const address = UserState.getDeliveryAddress();
             
             // Calculate subtotal from all selected items (not just visible ones)
             let subtotal = 0;
@@ -3068,32 +3073,48 @@
                 }
             });
             
+            // Check if we need to wait for prediction
+            // If we have selected items, address with coordinates, but prediction is not ready, show loading state
+            const needsPrediction = subtotal > 0 && address && address.latitude && address.longitude;
+            const predictionReady = mlPrediction.shippingFee !== null;
+            
             // Use predicted shipping fee if available, otherwise show loading state
             let deliveryFee = 0;
             let deliveryFeeDisplay = '₱--';
+            let subtotalDisplay = `₱${subtotal.toFixed(2)}`;
+            let totalDisplay = '₱--';
             
             if (subtotal > 0) {
-                if (mlPrediction.shippingFee !== null) {
-                    // Prediction is ready
+                if (needsPrediction && !predictionReady) {
+                    // Prediction needed but not ready yet - show loading state for all values
+                    subtotalDisplay = '₱--';
+                    deliveryFeeDisplay = '₱--';
+                    totalDisplay = '₱--';
+                } else if (predictionReady) {
+                    // Prediction is ready - show all values
                     deliveryFee = mlPrediction.shippingFee;
                     deliveryFeeDisplay = `₱${deliveryFee.toFixed(2)}`;
+                    const total = subtotal + deliveryFee;
+                    totalDisplay = `₱${total.toFixed(2)}`;
                 } else {
-                    // Prediction not ready yet, show loading state
-                    deliveryFeeDisplay = '₱--';
+                    // No prediction needed (no address or no items) - show calculated values
+                    const total = subtotal + deliveryFee;
+                    totalDisplay = `₱${total.toFixed(2)}`;
                 }
+            } else {
+                // No items selected - show zeros
+                totalDisplay = '₱0.00';
             }
             
-            const total = subtotal + deliveryFee;
-            
-            document.getElementById('subtotal').textContent = `₱${subtotal.toFixed(2)}`;
+            document.getElementById('subtotal').textContent = subtotalDisplay;
             document.getElementById('deliveryFee').textContent = deliveryFeeDisplay;
-            document.getElementById('total').textContent = `₱${total.toFixed(2)}`;
+            document.getElementById('total').textContent = totalDisplay;
             
             // Update delivery time display
             const deliveryTimeRow = document.getElementById('deliveryTimeRow');
             const deliveryTimeEl = document.getElementById('deliveryTime');
             
-            if (mlPrediction.deliveryTimeMinutes !== null && subtotal > 0) {
+            if (mlPrediction.deliveryTimeMinutes !== null && subtotal > 0 && predictionReady) {
                 // Format delivery time
                 const hours = Math.floor(mlPrediction.deliveryTimeMinutes / 60);
                 const minutes = Math.round(mlPrediction.deliveryTimeMinutes % 60);

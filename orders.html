@@ -1599,6 +1599,28 @@
     <script src="js/user_state.js"></script>
     
     <script>
+        // Preload cart count immediately to prevent showing "0" briefly
+        (async function() {
+            try {
+                await UserState.loadState();
+                const cart = UserState.getCart();
+                const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+                
+                // Update cart count badge in navbar immediately
+                const cartCountElement = document.getElementById('cartCount');
+                if (cartCountElement) {
+                    cartCountElement.textContent = cartCount;
+                    if (cartCount === 0) {
+                        cartCountElement.style.display = 'none';
+                    } else {
+                        cartCountElement.style.display = 'flex';
+                    }
+                }
+            } catch(e) {
+                console.error('Error preloading cart:', e);
+            }
+        })();
+        
         // Carousel variables (client-side)
         let allOrders = [];
         let currentIndex = 0;

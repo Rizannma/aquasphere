@@ -1444,6 +1444,14 @@
         
         // Load order summary from checkout items
         async function loadOrderSummary() {
+            // Don't load order summary if payment was successful
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+            if (status === 'success') {
+                // Keep values at 0/empty - don't load actual order data
+                return;
+            }
+            
             await UserState.loadState();
             const checkoutItems = UserState.getCheckoutItems();
             const deliveryAddress = UserState.getDeliveryAddress();

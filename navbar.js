@@ -17,10 +17,20 @@ async function loadNavbar() {
         const html = await resp.text();
         navbarContainer.innerHTML = html;
         
-            initializeNavbar();
-            window.dispatchEvent(new Event('navbarLoaded'));
-            setTimeout(updateOrderCount, 50);
-        setTimeout(loadNotifications, 120);
+        initializeNavbar();
+        window.dispatchEvent(new Event('navbarLoaded'));
+        
+        // Load all badges immediately (no delays) - similar to dashboard.html and cart.html
+        (async () => {
+            // Load cart count immediately
+            await updateCartCount();
+            
+            // Load order count immediately
+            updateOrderCount();
+            
+            // Load notifications immediately
+            loadNotifications();
+        })();
 
         // Refresh notifications when dropdown is opened
         document.addEventListener('shown.bs.dropdown', (event) => {
@@ -60,14 +70,7 @@ function initializeNavbar() {
     // Load user data
     loadUserData();
     
-    // Update cart count
-    updateCartCount();
-    
-    // Update order count (with delay to ensure navbar is fully rendered)
-    setTimeout(updateOrderCount, 100);
-
-    // Load notifications (after navbar render)
-    setTimeout(loadNotifications, 150);
+    // Badges are now loaded immediately in loadNavbar() - no delays needed here
 }
 
 // Load user data for navbar

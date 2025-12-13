@@ -28,7 +28,10 @@ async function loadNavbar() {
             // Load order count immediately
             updateOrderCount();
             
-            // Load notifications immediately
+            // Load notifications immediately (badge only, fast display)
+            loadNotificationBadgeFast();
+            
+            // Load full notifications in background (for dropdown)
             loadNotifications();
         })();
 
@@ -376,6 +379,41 @@ function getNotificationMessage(order) {
     return null;
 }
 
+// Fast badge-only loading (for instant display)
+function loadNotificationBadgeFast() {
+    const badge = document.getElementById('notificationCount');
+    if (!badge) {
+        // Retry immediately if element doesn't exist yet
+        requestAnimationFrame(() => {
+            if (document.getElementById('notificationCount')) {
+                loadNotificationBadgeFast();
+            } else {
+                setTimeout(loadNotificationBadgeFast, 50);
+            }
+        });
+        return;
+    }
+
+    // FAST PATH: Try localStorage cache first (instant display)
+    try {
+        const cachedCount = localStorage.getItem('notificationCount');
+        const cacheTimestamp = localStorage.getItem('notificationCountTimestamp');
+        const now = Date.now();
+        // Use cache if it's less than 30 seconds old
+        if (cachedCount !== null && cacheTimestamp && (now - parseInt(cacheTimestamp)) < 30000) {
+            const notifCount = parseInt(cachedCount, 10);
+            badge.textContent = notifCount;
+            badge.style.display = notifCount > 0 ? 'flex' : 'none';
+            return; // Badge updated, full load will happen in background
+        }
+    } catch (e) {
+        // Ignore localStorage errors
+    }
+    
+    // If no cache, badge will be updated when loadNotifications() completes
+    // For now, ensure badge is visible if it should be (will be updated by API call)
+}
+
 function loadNotifications(force = false) {
     const badge = document.getElementById('notificationCount');
     const list = document.getElementById('notificationList');
@@ -393,7 +431,7 @@ function loadNotifications(force = false) {
         return;
     }
 
-    // FAST PATH: Try localStorage cache first (instant display)
+    // FAST PATH: Try localStorage cache first (instant display) - only if not forcing refresh
     if (!force) {
         try {
             const cachedCount = localStorage.getItem('notificationCount');

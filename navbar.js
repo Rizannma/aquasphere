@@ -158,7 +158,7 @@ function updateOrderCount() {
         return;
     }
     
-    // Use cached orders when available (e.g., My Orders page just fetched)
+    // FAST PATH: Use cached orders when available (e.g., My Orders page just fetched)
     // The cache should already be filtered (no delivered/cancelled orders)
     if (Array.isArray(window.__ordersCache)) {
         // Filter out delivered and cancelled orders to match My Orders page behavior
@@ -169,11 +169,35 @@ function updateOrderCount() {
         const orderCount = filteredOrders.length;
         ordersCountEl.textContent = orderCount;
         ordersCountEl.style.display = orderCount > 0 ? 'flex' : 'none';
+        // Still fetch in background to sync, but don't wait for it
+        fetchOrdersInBackground();
         return;
     }
     
-    // Fetch orders from API (API uses session, so no need to check localStorage)
-    // Fetch enough orders to filter out delivered/cancelled ones
+    // FAST PATH: Try localStorage cache first (instant display)
+    try {
+        const cachedCount = localStorage.getItem('ordersCount');
+        const cacheTimestamp = localStorage.getItem('ordersCountTimestamp');
+        const now = Date.now();
+        // Use cache if it's less than 30 seconds old
+        if (cachedCount !== null && cacheTimestamp && (now - parseInt(cacheTimestamp)) < 30000) {
+            const orderCount = parseInt(cachedCount, 10);
+            ordersCountEl.textContent = orderCount;
+            ordersCountEl.style.display = orderCount > 0 ? 'flex' : 'none';
+            // Fetch in background to sync, but don't wait for it
+            fetchOrdersInBackground();
+            return;
+        }
+    } catch (e) {
+        // Ignore localStorage errors
+    }
+    
+    // SLOW PATH: Fetch orders from API (only if no cache available)
+    fetchOrdersInBackground();
+}
+
+// Fetch orders in background and update cache
+function fetchOrdersInBackground() {
     fetch('api/get_orders.php?limit=1000')
         .then(response => {
             if (!response.ok) {
@@ -197,6 +221,14 @@ function updateOrderCount() {
                 });
                 
                 const orderCount = filteredOrders.length;
+                
+                // Cache the count in localStorage for fast loading next time
+                try {
+                    localStorage.setItem('ordersCount', String(orderCount));
+                    localStorage.setItem('ordersCountTimestamp', String(Date.now()));
+                } catch (e) {
+                    // Ignore localStorage errors
+                }
                 
                 const badgeEl = document.getElementById('ordersCount');
                 if (badgeEl) {
@@ -361,6 +393,34 @@ function loadNotifications(force = false) {
         return;
     }
 
+    // FAST PATH: Try localStorage cache first (instant display)
+    if (!force) {
+        try {
+            const cachedCount = localStorage.getItem('notificationCount');
+            const cacheTimestamp = localStorage.getItem('notificationCountTimestamp');
+            const now = Date.now();
+            // Use cache if it's less than 30 seconds old
+            if (cachedCount !== null && cacheTimestamp && (now - parseInt(cacheTimestamp)) < 30000) {
+                const notifCount = parseInt(cachedCount, 10);
+                if (badge) {
+                    badge.textContent = notifCount;
+                    badge.style.display = notifCount > 0 ? 'flex' : 'none';
+                }
+                // Fetch in background to sync, but don't wait for it
+                fetchNotificationsInBackground();
+                return;
+            }
+        } catch (e) {
+            // Ignore localStorage errors
+        }
+    }
+
+    // SLOW PATH: Fetch notifications from API
+    fetchNotificationsInBackground();
+}
+
+// Fetch notifications in background and update cache
+function fetchNotificationsInBackground() {
     fetch('api/get_notifications.php?limit=200')
         .then(resp => {
             if (!resp.ok) {
@@ -381,6 +441,15 @@ function loadNotifications(force = false) {
                         <i class="fas fa-inbox"></i>
                         <p>No notifications yet.</p>
                     </div>`;
+                
+                // Cache the count in localStorage for fast loading next time
+                try {
+                    localStorage.setItem('notificationCount', '0');
+                    localStorage.setItem('notificationCountTimestamp', String(Date.now()));
+                } catch (e) {
+                    // Ignore localStorage errors
+                }
+                
                 if (badge) {
                     badge.style.display = 'none';
                     badge.textContent = '0';

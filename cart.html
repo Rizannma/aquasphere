@@ -3106,7 +3106,7 @@
         }
         
         // Toggle individual item selection
-        function toggleItemSelection(itemId, isChecked) {
+        async function toggleItemSelection(itemId, isChecked) {
             if (isChecked) {
                 selectedItems.add(itemId);
             } else {
@@ -3116,11 +3116,10 @@
             // Save to server
             UserState.setSelectedCartItems(selectedItems);
             
-            updateSummary();
             updateSelectAllState();
             
-            // Predict delivery time when selection changes
-            predictDeliveryTime();
+            // Predict delivery time when selection changes (this will call updateSummary after prediction)
+            await executePrediction();
         }
         
         // Update select all checkbox state
@@ -3177,8 +3176,10 @@
                 checkbox.checked = selectAll.checked;
             });
             
-            updateSummary();
             updateSelectAllState();
+            
+            // Predict delivery time when selection changes (this will call updateSummary after prediction)
+            executePrediction();
         }
         
         // Delete all selected items (works across all pages)

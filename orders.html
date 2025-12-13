@@ -1858,7 +1858,10 @@
                 const itemSubtotal = parseFloat(item?.subtotal || 0);
                 return sum + (isFinite(itemSubtotal) ? itemSubtotal : 0);
             }, 0);
-            const deliveryFee = Math.max(0, totalAmount - subtotal);
+            // Use saved delivery_fee from order, or calculate as fallback
+            const deliveryFee = order.delivery_fee !== null && order.delivery_fee !== undefined 
+                ? parseFloat(order.delivery_fee) 
+                : Math.max(0, totalAmount - subtotal);
             
             // Determine tracking steps
             const trackingSteps = getTrackingSteps(status);
@@ -2184,7 +2187,7 @@
                             if (currentIndex >= allOrders.length) {
                                 currentIndex = Math.max(0, allOrders.length - 1);
                             }
-                        }
+                    }
                         // Share updated list with navbar cache and update badge
                         window.__ordersCache = allOrders;
                         if (typeof window.updateOrderCount === 'function') {

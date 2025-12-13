@@ -51,7 +51,8 @@ foreach ($items as $item) {
     $subtotal += floatval($item['price']) * intval($item['quantity']);
 }
 
-$delivery_fee = 50;
+// Get delivery fee from request, or default to 50
+$delivery_fee = isset($input['delivery_fee']) ? floatval($input['delivery_fee']) : 50;
 $total_amount = $subtotal + $delivery_fee;
 
 // Initialize database
@@ -82,14 +83,39 @@ if (!$column_exists) {
     execute_sql($conn, $alter_query);
 }
 
+// Check if delivery_fee column exists, add if not
+$check_delivery_fee_query = $GLOBALS['use_postgres'] 
+    ? "SELECT column_name FROM information_schema.columns WHERE table_name='orders' AND column_name='delivery_fee'"
+    : "PRAGMA table_info(orders)";
+
+$delivery_fee_check = execute_sql($conn, $check_delivery_fee_query);
+$delivery_fee_exists = false;
+
+if ($GLOBALS['use_postgres']) {
+    $delivery_fee_exists = pg_fetch_assoc($delivery_fee_check) !== false;
+} else {
+    while ($row = $delivery_fee_check->fetchArray(SQLITE3_ASSOC)) {
+        if ($row['name'] === 'delivery_fee') {
+            $delivery_fee_exists = true;
+            break;
+        }
+    }
+}
+
+if (!$delivery_fee_exists) {
+    $alter_query = "ALTER TABLE orders ADD COLUMN delivery_fee DECIMAL(10,2) DEFAULT 50.00";
+    execute_sql($conn, $alter_query);
+}
+
 // Create order
-$query = "INSERT INTO orders (user_id, delivery_date, delivery_time, delivery_address, total_amount, payment_method, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+$query = "INSERT INTO orders (user_id, delivery_date, delivery_time, delivery_address, delivery_fee, total_amount, payment_method, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
 $result = execute_sql($conn, $query, [
     $user_id,
     $delivery_date,
     $delivery_time,
     json_encode($delivery_address), // Store address as JSON
+    $delivery_fee,
     $total_amount,
     $payment_method
 ]);

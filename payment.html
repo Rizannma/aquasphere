@@ -1244,7 +1244,7 @@
                             </div>
                             <div class="summary-row">
                                 <span class="summary-label">Delivery Fee</span>
-                                <span class="summary-value" id="orderDeliveryFee">₱50.00</span>
+                                <span class="summary-value" id="orderDeliveryFee">₱--</span>
                             </div>
                             <div class="summary-row total">
                                 <span class="summary-label">Total</span>
@@ -1426,14 +1426,25 @@
                 subtotal += item.price * item.quantity;
             });
             
-            // Use predicted shipping fee if available, otherwise default to 50
-            const deliveryFee = mlPrediction.shippingFee !== null && subtotal > 0 
-                ? mlPrediction.shippingFee 
-                : (subtotal > 0 ? 50 : 0);
+            // Use predicted shipping fee if available, otherwise show loading state
+            let deliveryFee = 0;
+            let deliveryFeeDisplay = '₱--';
+            
+            if (subtotal > 0) {
+                if (mlPrediction.shippingFee !== null) {
+                    // Prediction is ready
+                    deliveryFee = mlPrediction.shippingFee;
+                    deliveryFeeDisplay = `₱${deliveryFee.toFixed(2)}`;
+                } else {
+                    // Prediction not ready yet, show loading state
+                    deliveryFeeDisplay = '₱--';
+                }
+            }
+            
             const total = subtotal + deliveryFee;
             
             document.getElementById('orderSubtotal').textContent = `₱${subtotal.toFixed(2)}`;
-            document.getElementById('orderDeliveryFee').textContent = `₱${deliveryFee.toFixed(2)}`;
+            document.getElementById('orderDeliveryFee').textContent = deliveryFeeDisplay;
             document.getElementById('orderTotal').textContent = `₱${total.toFixed(2)}`;
         }
         

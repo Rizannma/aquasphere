@@ -2182,7 +2182,7 @@
                             
                             <div class="summary-row">
                                 <span class="summary-label">Delivery Fee</span>
-                                <span class="summary-value" id="deliveryFee">₱50.00</span>
+                                <span class="summary-value" id="deliveryFee">₱--</span>
                             </div>
                             
                             <div class="summary-row total">
@@ -3047,6 +3047,14 @@
             updateSummary();
         }
         
+        // Initialize delivery fee display on page load
+        function initializeDeliveryFeeDisplay() {
+            const deliveryFeeEl = document.getElementById('deliveryFee');
+            if (deliveryFeeEl) {
+                deliveryFeeEl.textContent = '₱--';
+            }
+        }
+        
         // Update summary (works across all pages)
         function updateSummary() {
             const cart = UserState.getCart();
@@ -3060,14 +3068,25 @@
                 }
             });
             
-            // Use predicted shipping fee if available, otherwise default to 50
-            const deliveryFee = mlPrediction.shippingFee !== null && subtotal > 0 
-                ? mlPrediction.shippingFee 
-                : (subtotal > 0 ? 50 : 0);
+            // Use predicted shipping fee if available, otherwise show loading state
+            let deliveryFee = 0;
+            let deliveryFeeDisplay = '₱--';
+            
+            if (subtotal > 0) {
+                if (mlPrediction.shippingFee !== null) {
+                    // Prediction is ready
+                    deliveryFee = mlPrediction.shippingFee;
+                    deliveryFeeDisplay = `₱${deliveryFee.toFixed(2)}`;
+                } else {
+                    // Prediction not ready yet, show loading state
+                    deliveryFeeDisplay = '₱--';
+                }
+            }
+            
             const total = subtotal + deliveryFee;
             
             document.getElementById('subtotal').textContent = `₱${subtotal.toFixed(2)}`;
-            document.getElementById('deliveryFee').textContent = `₱${deliveryFee.toFixed(2)}`;
+            document.getElementById('deliveryFee').textContent = deliveryFeeDisplay;
             document.getElementById('total').textContent = `₱${total.toFixed(2)}`;
             
             // Update delivery time display
@@ -5814,6 +5833,7 @@
         loadCart();
         loadAddress();
         initializeLocationDropdowns();
+        initializeDeliveryFeeDisplay();
         })();
         
         // Maintain cart item hover state when quantity buttons are clicked to allow continuous clicking

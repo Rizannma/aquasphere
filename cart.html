@@ -4807,6 +4807,18 @@
         function deleteAddress() {
             showDeleteConfirmModal(() => {
                 UserState.setDeliveryAddress(null);
+                
+                // Reset ML prediction values
+                mlPrediction = {
+                    deliveryTimeMinutes: null,
+                    shippingFee: null,
+                    deliveryTimeHours: null,
+                    deliveryDateRange: null
+                };
+                
+                // Reset order summary immediately
+                updateSummary();
+                
                 loadAddress();
                 updateCheckoutButton(); // Disable checkout when address is deleted
                 showNotification('Delivery address deleted successfully!', 'success');

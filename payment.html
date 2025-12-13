@@ -1687,6 +1687,9 @@
             
             // Handle success case FIRST - before checking referrer
                 if (status === 'success') {
+                // Hide order summary and payment container immediately
+                hidePaymentContent();
+                
                 // Clear PayMongo redirect flag
                 sessionStorage.removeItem('paymongo_redirect');
                 sessionStorage.removeItem('paymongo_redirect_time');
@@ -2132,11 +2135,8 @@
             }
         }
         
-        // Show payment success modal
-        function showPaymentSuccessModal() {
-            // Lock body scroll
-            lockBodyScroll();
-            
+        // Hide payment content (order summary, payment methods, etc.)
+        function hidePaymentContent() {
             // Hide main content
             const mainContent = document.querySelector('.main-content');
             if (mainContent) {
@@ -2148,6 +2148,27 @@
             if (footer) {
                 footer.style.display = 'none';
             }
+            
+            // Hide payment container specifically
+            const paymentContainer = document.querySelector('.payment-container');
+            if (paymentContainer) {
+                paymentContainer.style.display = 'none';
+            }
+            
+            // Hide order summary specifically
+            const orderSummary = document.querySelector('.order-summary');
+            if (orderSummary) {
+                orderSummary.style.display = 'none';
+            }
+        }
+        
+        // Show payment success modal
+        function showPaymentSuccessModal() {
+            // Lock body scroll
+            lockBodyScroll();
+            
+            // Hide payment content (in case it wasn't already hidden)
+            hidePaymentContent();
             
             // Show success modal
             const successModal = document.getElementById('paymentSuccessModal');

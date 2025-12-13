@@ -21,19 +21,23 @@ async function loadNavbar() {
         window.dispatchEvent(new Event('navbarLoaded'));
         
         // Load all badges immediately (no delays) - similar to dashboard.html and cart.html
-        (async () => {
-            // Load cart count immediately
-            await updateCartCount();
-            
-            // Load order count immediately
-            updateOrderCount();
-            
-            // Load notifications immediately (badge only, fast display)
-            loadNotificationBadgeFast();
-            
-            // Load full notifications in background (for dropdown)
-            loadNotifications();
-        })();
+        // Use a flag to ensure badges only load once
+        if (!window.__navbarBadgesLoaded) {
+            window.__navbarBadgesLoaded = true;
+            (async () => {
+                // Load cart count immediately
+                await updateCartCount();
+                
+                // Load order count immediately
+                updateOrderCount();
+                
+                // Load notifications immediately (badge only, fast display)
+                loadNotificationBadgeFast();
+                
+                // Load full notifications in background (for dropdown) - but don't update badge if already initialized
+                loadNotifications();
+            })();
+        }
 
         // Refresh notifications when dropdown is opened
         document.addEventListener('shown.bs.dropdown', (event) => {
@@ -155,13 +159,19 @@ function updateOrderCount() {
         // Retry immediately if element doesn't exist yet (navbar still loading)
         // Use requestAnimationFrame for smooth retry without blocking
         requestAnimationFrame(() => {
-            if (document.getElementById('ordersCount')) {
+            const el = document.getElementById('ordersCount');
+            if (el && !el.dataset.initialized) {
                 updateOrderCount();
-            } else {
+            } else if (!el) {
                 // Fallback: retry after a very short delay if still not found
                 setTimeout(updateOrderCount, 50);
             }
         });
+        return;
+    }
+    
+    // If already initialized, don't update again (prevent multiple refreshes)
+    if (ordersCountEl.dataset.initialized) {
         return;
     }
     
@@ -404,9 +414,10 @@ function loadNotificationBadgeFast() {
     if (!badge) {
         // Retry immediately if element doesn't exist yet
         requestAnimationFrame(() => {
-            if (document.getElementById('notificationCount')) {
+            const el = document.getElementById('notificationCount');
+            if (el && !el.dataset.initialized) {
                 loadNotificationBadgeFast();
-            } else {
+            } else if (!el) {
                 setTimeout(loadNotificationBadgeFast, 50);
             }
         });

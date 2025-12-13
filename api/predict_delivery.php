@@ -118,17 +118,32 @@ if ($return_var !== 0 || !$result || !isset($result['success'])) {
     $rate_per_minute = 0.5;
     $shipping_fee = $base_fee + ($delivery_time_minutes * $rate_per_minute);
     
-    // Calculate delivery date range for fallback
+    // Calculate delivery date range for fallback (supports same-day, next-day, multi-day)
     $order_datetime = new DateTime();
     $hours = $delivery_time_minutes / 60;
-    $min_days = 1;
-    $max_days = max($min_days, intval($hours / 8) + 1);
-    $processing_days = 1;
-    $delivery_window_days = 2;
+    $order_hour = intval($order_datetime->format('G'));
+    
+    // Determine delivery days based on predicted time and order time
+    if ($hours < 4 && $order_hour < 14) {
+        // Same-day delivery possible
+        $processing_days = 0;
+        $delivery_days = 0;
+        $delivery_window_days = 1;
+    } elseif ($hours < 8 || $order_hour >= 14) {
+        // Next-day delivery
+        $processing_days = ($order_hour < 14) ? 0 : 1;
+        $delivery_days = 1;
+        $delivery_window_days = 1;
+    } else {
+        // Multi-day delivery
+        $delivery_days = max(1, intval($hours / 8));
+        $processing_days = 1;
+        $delivery_window_days = 2;
+    }
     
     $start_date = clone $order_datetime;
     $start_date->modify("+{$processing_days} days");
-    $start_date->modify("+{$min_days} days");
+    $start_date->modify("+{$delivery_days} days");
     
     $end_date = clone $start_date;
     $end_date->modify("+{$delivery_window_days} days");

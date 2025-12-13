@@ -149,6 +149,7 @@ def calculate_shipping_fee(delivery_time_minutes):
 def calculate_delivery_date_range(delivery_time_minutes, order_datetime=None):
     """
     Calculate delivery date range from predicted delivery time in minutes
+    Supports same-day, next-day, and multi-day delivery based on predicted time
     
     Args:
         delivery_time_minutes: Predicted delivery time in minutes
@@ -160,20 +161,35 @@ def calculate_delivery_date_range(delivery_time_minutes, order_datetime=None):
     if order_datetime is None:
         order_datetime = datetime.now()
     
-    # Convert minutes to days (assuming business days and delivery hours)
-    # Add buffer for processing and delivery window
+    # Convert minutes to hours
     hours = delivery_time_minutes / 60
+    order_hour = order_datetime.hour
     
-    # Calculate minimum delivery days (at least 1 day, up to 2 days for processing)
-    min_days = 1
-    max_days = max(min_days, int(hours / 8) + 1)  # Assuming 8 hours of delivery work per day
+    # Determine delivery days based on predicted time and order time
+    # Same-day delivery: < 4 hours AND order placed before 2 PM (14:00)
+    # Next-day delivery: < 8 hours OR order placed after 2 PM
+    # Multi-day delivery: >= 8 hours
     
-    # Add buffer days for processing and delivery window (typically 1-3 days)
-    processing_days = 1
-    delivery_window_days = 2  # Range of 2 days (e.g., Dec 13 - Dec 15)
+    if hours < 4 and order_hour < 14:
+        # Same-day delivery possible (order early, short distance)
+        processing_days = 0
+        delivery_days = 0  # Same day
+        delivery_window_days = 1  # Range: today - tomorrow
+    elif hours < 8 or order_hour >= 14:
+        # Next-day delivery (short distance or late order)
+        processing_days = 0 if order_hour < 14 else 1  # If late order, need 1 day processing
+        delivery_days = 1  # Next day
+        delivery_window_days = 1  # Range: tomorrow - day after
+    else:
+        # Multi-day delivery (longer distance)
+        # Calculate days needed based on delivery hours
+        # Assuming 8 hours of delivery work per day
+        delivery_days = max(1, int(hours / 8))
+        processing_days = 1  # Always 1 day processing for longer deliveries
+        delivery_window_days = 2  # Range of 2 days for longer deliveries
     
-    # Calculate start date (order date + processing + minimum delivery)
-    start_date = order_datetime + timedelta(days=processing_days + min_days)
+    # Calculate start date
+    start_date = order_datetime + timedelta(days=processing_days + delivery_days)
     
     # Calculate end date (start date + delivery window)
     end_date = start_date + timedelta(days=delivery_window_days)

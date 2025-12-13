@@ -1332,6 +1332,40 @@
     <script src="js/user_state.js"></script>
     
     <script>
+        // Clear order summary immediately if payment was successful (runs before DOMContentLoaded)
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+            if (status === 'success') {
+                // Clear values immediately when DOM is ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const subtotalEl = document.getElementById('orderSubtotal');
+                        const deliveryFeeEl = document.getElementById('orderDeliveryFee');
+                        const totalEl = document.getElementById('orderTotal');
+                        const placeOrderBtn = document.getElementById('placeOrderBtn');
+                        
+                        if (subtotalEl) subtotalEl.textContent = '₱0.00';
+                        if (deliveryFeeEl) deliveryFeeEl.textContent = '₱--';
+                        if (totalEl) totalEl.textContent = '₱0.00';
+                        if (placeOrderBtn) placeOrderBtn.disabled = true;
+                    }, { once: true });
+                } else {
+                    // DOM already loaded, clear immediately
+                    const subtotalEl = document.getElementById('orderSubtotal');
+                    const deliveryFeeEl = document.getElementById('orderDeliveryFee');
+                    const totalEl = document.getElementById('orderTotal');
+                    const placeOrderBtn = document.getElementById('placeOrderBtn');
+                    
+                    if (subtotalEl) subtotalEl.textContent = '₱0.00';
+                    if (deliveryFeeEl) deliveryFeeEl.textContent = '₱--';
+                    if (totalEl) totalEl.textContent = '₱0.00';
+                    if (placeOrderBtn) placeOrderBtn.disabled = true;
+                }
+            }
+        })();
+    </script>
+    <script>
         let selectedPaymentMethod = 'gcash'; // Default to GCASH
         
         // Flag to prevent multiple modals from showing
@@ -2250,6 +2284,18 @@
                             document.addEventListener('DOMContentLoaded', function() {
             // Reset modal flag on fresh page load
             paymentErrorModalShown = false;
+            
+            // Check for success status immediately - clear order summary before it renders
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+            
+            if (status === 'success') {
+                // Clear order summary immediately before any loading happens
+                clearOrderBreakdown();
+                // Then handle the redirect (which will show success modal)
+                handlePaymentRedirect();
+                return; // Don't load order summary or predict delivery time
+            }
             
             predictDeliveryTime();
             

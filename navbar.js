@@ -122,7 +122,7 @@ function loadUserData() {
 }
 
 // Update cart count in navbar
-async function updateCartCount() {
+async function updateCartCount(force = false) {
     // Use UserState if available, otherwise fallback to localStorage
     let cart = [];
     if (typeof UserState !== 'undefined') {
@@ -134,9 +134,13 @@ async function updateCartCount() {
     const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
     const cartCountEl = document.getElementById('cartCount');
     if (cartCountEl) {
-        cartCountEl.textContent = totalItems;
-        // Hide badge when count is 0, only show when there are items
-        cartCountEl.style.display = totalItems > 0 ? 'flex' : 'none';
+        // Only update if forced (user action) or not yet initialized (prevent multiple updates)
+        if (force || !cartCountEl.dataset.initialized) {
+            cartCountEl.textContent = totalItems;
+            // Hide badge when count is 0, only show when there are items
+            cartCountEl.style.display = totalItems > 0 ? 'flex' : 'none';
+            cartCountEl.dataset.initialized = 'true';
+        }
     }
 }
 
@@ -163,7 +167,8 @@ function updateOrderCount() {
     
     // FAST PATH: Use cached orders when available (e.g., My Orders page just fetched)
     // The cache should already be filtered (no delivered/cancelled orders)
-    if (Array.isArray(window.__ordersCache)) {
+    // Only use cache if badge hasn't been set yet (to prevent multiple updates)
+    if (Array.isArray(window.__ordersCache) && !ordersCountEl.dataset.initialized) {
         // Filter out delivered and cancelled orders to match My Orders page behavior
         const filteredOrders = window.__ordersCache.filter(o => {
             const status = (o.status || '').toLowerCase();
@@ -172,6 +177,7 @@ function updateOrderCount() {
         const orderCount = filteredOrders.length;
         ordersCountEl.textContent = orderCount;
         ordersCountEl.style.display = orderCount > 0 ? 'flex' : 'none';
+        ordersCountEl.dataset.initialized = 'true';
         // Still fetch in background to sync, but don't wait for it
         fetchOrdersInBackground();
         return;

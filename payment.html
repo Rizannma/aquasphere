@@ -1338,28 +1338,6 @@
     <script src="js/user_state.js"></script>
     
     <script>
-        // Preload cart count immediately to prevent showing "0" briefly
-        (async function() {
-            try {
-                await UserState.loadState();
-                const cart = UserState.getCart();
-                const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-                
-                // Update cart count badge in navbar immediately
-                const cartCountElement = document.getElementById('cartCount');
-                if (cartCountElement) {
-                    cartCountElement.textContent = cartCount;
-                    if (cartCount === 0) {
-                        cartCountElement.style.display = 'none';
-                    } else {
-                        cartCountElement.style.display = 'flex';
-                    }
-                }
-            } catch(e) {
-                console.error('Error preloading cart:', e);
-            }
-        })();
-        
         // Clear order summary immediately if payment was successful (runs before DOMContentLoaded)
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -1745,7 +1723,12 @@
                     window.__ordersCache = null;
                     
                     // Update order count badge (with delay to ensure order is saved in database)
+                    // Force update by clearing initialization flag
                     if (typeof updateOrderCount === 'function') {
+                        const ordersCountEl = document.getElementById('ordersCount');
+                        if (ordersCountEl) {
+                            ordersCountEl.dataset.initialized = 'false';
+                        }
                         setTimeout(() => {
                             updateOrderCount();
                         }, 1000);
@@ -1853,7 +1836,12 @@
                 window.__ordersCache = null;
                 
                 // Update order count badge (with delay to ensure order is saved in database)
+                // Force update by clearing initialization flag
                 if (typeof updateOrderCount === 'function') {
+                    const ordersCountEl = document.getElementById('ordersCount');
+                    if (ordersCountEl) {
+                        ordersCountEl.dataset.initialized = 'false';
+                    }
                     setTimeout(() => {
                         updateOrderCount();
                     }, 1000);
@@ -2228,9 +2216,9 @@
                 // Update cart in server
                 UserState.setCart(updatedCart);
                 
-                // Update cart count in navbar if available
+                // Update cart count in navbar if available (force update after user action)
                 if (typeof updateCartCount === 'function') {
-                    updateCartCount();
+                    updateCartCount(true); // Force update after removing items
                 }
                 
                 console.log('Removed ordered items from cart');

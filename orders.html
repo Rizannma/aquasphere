@@ -1599,28 +1599,6 @@
     <script src="js/user_state.js"></script>
     
     <script>
-        // Preload cart count immediately to prevent showing "0" briefly
-        (async function() {
-            try {
-                await UserState.loadState();
-                const cart = UserState.getCart();
-                const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-                
-                // Update cart count badge in navbar immediately
-                const cartCountElement = document.getElementById('cartCount');
-                if (cartCountElement) {
-                    cartCountElement.textContent = cartCount;
-                    if (cartCount === 0) {
-                        cartCountElement.style.display = 'none';
-                    } else {
-                        cartCountElement.style.display = 'flex';
-                    }
-                }
-            } catch(e) {
-                console.error('Error preloading cart:', e);
-            }
-        })();
-        
         // Carousel variables (client-side)
         let allOrders = [];
         let currentIndex = 0;
@@ -1707,10 +1685,8 @@
                 // Share with navbar to avoid duplicate fetch for badge (already filtered - no delivered/cancelled)
                 window.__ordersCache = allOrders;
                 
-                // Update navbar badge count immediately
-                if (typeof window.updateOrderCount === 'function') {
-                    window.updateOrderCount();
-                }
+                // Don't update badge here - navbar.js handles initial badge loading
+                // Only update badge on user actions (cancel order, etc.)
                 
                 // Check if redirecting from payment - if so, show latest order
                 const urlParams = new URLSearchParams(window.location.search);
@@ -2213,7 +2189,12 @@
                     }
                         // Share updated list with navbar cache and update badge
                         window.__ordersCache = allOrders;
+                        // Force update by clearing initialization flag
                         if (typeof window.updateOrderCount === 'function') {
+                            const ordersCountEl = document.getElementById('ordersCount');
+                            if (ordersCountEl) {
+                                ordersCountEl.dataset.initialized = 'false';
+                            }
                             window.updateOrderCount();
                         }
                         // Show order cancelled success modal (will refresh page after 3 seconds)

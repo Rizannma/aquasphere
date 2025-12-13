@@ -21,25 +21,19 @@ async function loadNavbar() {
         window.dispatchEvent(new Event('navbarLoaded'));
         
         // Load all badges immediately (no delays) - similar to dashboard.html and cart.html
-        // Use a flag to ensure badges only load once per page
-        if (!window.__navbarBadgesLoaded) {
-            (async () => {
-                // Load cart count immediately
-                await updateCartCount();
-                
-                // Load order count immediately
-                updateOrderCount();
-                
-                // Load notifications immediately (badge only, fast display)
-                loadNotificationBadgeFast();
-                
-                // Load full notifications in background (for dropdown)
-                loadNotifications();
-                
-                // Set flag AFTER badges are loaded
-                window.__navbarBadgesLoaded = true;
-            })();
-        }
+        (async () => {
+            // Load cart count immediately
+            await updateCartCount();
+            
+            // Load order count immediately
+            updateOrderCount();
+            
+            // Load notifications immediately (badge only, fast display)
+            loadNotificationBadgeFast();
+            
+            // Load full notifications in background (for dropdown)
+            loadNotifications();
+        })();
 
         // Refresh notifications when dropdown is opened
         document.addEventListener('shown.bs.dropdown', (event) => {
@@ -128,7 +122,7 @@ function loadUserData() {
 }
 
 // Update cart count in navbar
-async function updateCartCount(force = false) {
+async function updateCartCount() {
     // Use UserState if available, otherwise fallback to localStorage
     let cart = [];
     if (typeof UserState !== 'undefined') {
@@ -164,11 +158,6 @@ function updateOrderCount() {
                 setTimeout(updateOrderCount, 50);
             }
         });
-        return;
-    }
-    
-    // If badges have already been loaded and this is not a forced update, don't update again
-    if (window.__navbarBadgesLoaded && !window.__forceUpdateOrders) {
         return;
     }
     
@@ -246,12 +235,9 @@ function fetchOrdersInBackground() {
                 
                 const badgeEl = document.getElementById('ordersCount');
                 if (badgeEl) {
-                    // Only update if badges haven't been loaded yet or force update is requested
-                    if (!window.__navbarBadgesLoaded || window.__forceUpdateOrders) {
-                        badgeEl.textContent = orderCount;
-                        // Show badge when count > 0, hide when 0
-                        badgeEl.style.display = orderCount > 0 ? 'flex' : 'none';
-                    }
+                    badgeEl.textContent = orderCount;
+                    // Show badge when count > 0, hide when 0
+                    badgeEl.style.display = orderCount > 0 ? 'flex' : 'none';
                 }
             } else {
                 // No orders or invalid response
@@ -416,11 +402,6 @@ function loadNotificationBadgeFast() {
         });
         return;
     }
-    
-    // If badges have already been loaded, don't update again
-    if (window.__navbarBadgesLoaded) {
-        return;
-    }
 
     // FAST PATH: Try localStorage cache first (instant display)
     try {
@@ -468,8 +449,7 @@ function loadNotifications(force = false) {
             // Use cache if it's less than 30 seconds old
             if (cachedCount !== null && cacheTimestamp && (now - parseInt(cacheTimestamp)) < 30000) {
                 const notifCount = parseInt(cachedCount, 10);
-                // Only update badge if it hasn't been loaded yet
-                if (badge && !window.__navbarBadgesLoaded) {
+                if (badge) {
                     badge.textContent = notifCount;
                     badge.style.display = notifCount > 0 ? 'flex' : 'none';
                 }
@@ -592,17 +572,14 @@ function fetchNotificationsInBackground() {
                     // Ignore localStorage errors
                 }
                 
-                // Only update if badges haven't been loaded yet
-                if (!window.__navbarBadgesLoaded) {
-                    badgeEl.textContent = totalCount;
-                    // Always set display explicitly - use 'flex' when count > 0, 'none' when 0
-                    badgeEl.style.display = totalCount > 0 ? 'flex' : 'none';
-                    
-                    // Force visibility - ensure badge is shown
-                    if (totalCount > 0) {
-                        badgeEl.style.visibility = 'visible';
-                        badgeEl.style.opacity = '1';
-                    }
+                badgeEl.textContent = totalCount;
+                // Always set display explicitly - use 'flex' when count > 0, 'none' when 0
+                badgeEl.style.display = totalCount > 0 ? 'flex' : 'none';
+                
+                // Force visibility - ensure badge is shown
+                if (totalCount > 0) {
+                    badgeEl.style.visibility = 'visible';
+                    badgeEl.style.opacity = '1';
                 }
             }
         })

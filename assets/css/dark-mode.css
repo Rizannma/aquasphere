@@ -889,7 +889,7 @@ body.dark .address-display .btn-outline-light,
 body.dark .address-display .btn-outline-secondary,
 body.dark .address-display .btn-outline-info,
 body.dark .address-display .btn-outline-warning {
-  background: var(--panel-bg-dark) !important;
+  background: var(--panel-bg-dark-alt) !important;
   color: var(--text-dark) !important;
   border: 1px solid var(--border-dark) !important;
 }
@@ -922,23 +922,6 @@ body.dark .address-display .tab-pane {
 
 body.dark .address-display .leaflet-container {
   background: var(--panel-bg-dark) !important;
-}
-
-body.dark .address-display .leaflet-popup-content,
-body.dark .address-display .leaflet-control-container,
-body.dark .address-display .leaflet-control {
-  background: var(--panel-bg-dark) !important;
-  color: var(--text-dark) !important;
-}
-
-body.dark .address-display .leaflet-bar a {
-  background: var(--panel-bg-dark) !important;
-  color: var(--text-dark) !important;
-  border-color: var(--border-dark) !important;
-}
-
-body.dark .address-display .leaflet-bar a:hover {
-  background: var(--panel-bg-dark-alt) !important;
 }
 
 /* Location coordinates block */

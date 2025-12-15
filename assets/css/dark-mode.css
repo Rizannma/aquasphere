@@ -837,6 +837,23 @@ body.dark .address-text {
   color: var(--text-dark) !important;
 }
 
+body.dark .address-coordinates,
+body.dark .coordinates-display,
+body.dark .coordinate-item {
+  background: var(--panel-bg-dark) !important;
+  border: 1px solid var(--border-dark) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .coordinate-label,
+body.dark .coordinates-label {
+  color: var(--text-dark) !important;
+}
+
+body.dark .coordinate-value {
+  color: var(--text-muted-dark) !important;
+}
+
 body.dark .address-display .form-control,
 body.dark .address-display .location-input,
 body.dark .address-display .location-coordinate {

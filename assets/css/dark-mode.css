@@ -709,8 +709,8 @@ body.dark .tracking-step .step-subtitle {
 
 body.dark .tracking-line,
 body.dark .tracking-step .step-circle {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: #94a3b8 !important;
+  background: var(--panel-bg-dark) !important;
+  border-color: #cbd5e1 !important; /* light slate */
 }
 
 body.dark .tracking-step.active .step-circle,
@@ -721,7 +721,7 @@ body.dark .tracking-step.completed .step-circle {
 
 body.dark .tracking-step .step-circle i,
 body.dark .tracking-step .step-icon {
-  color: #e2e8f0 !important;
+  color: #0f172a !important; /* dark icon on light circle */
 }
 
 body.dark .tracking-step.active .step-circle i,

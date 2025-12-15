@@ -707,6 +707,16 @@ body.dark .tracking-step .step-subtitle {
   color: var(--text-muted-dark) !important;
 }
 
+/* Highlight active/completed step text in white on blue */
+body.dark .tracking-step.active .step-title,
+body.dark .tracking-step.completed .step-title,
+body.dark .tracking-step.active .step-subtitle,
+body.dark .tracking-step.completed .step-subtitle,
+body.dark .tracking-step.active .step-label,
+body.dark .tracking-step.completed .step-label {
+  color: #ffffff !important;
+}
+
 body.dark .tracking-line,
 body.dark .tracking-step .step-circle {
   background: var(--panel-bg-dark) !important;
@@ -725,7 +735,11 @@ body.dark .tracking-step .step-icon {
 }
 
 body.dark .tracking-step.active .step-circle i,
-body.dark .tracking-step.completed .step-circle i {
+body.dark .tracking-step.completed .step-circle i,
+body.dark .tracking-step.active .step-icon,
+body.dark .tracking-step.active .step-icon i,
+body.dark .tracking-step.completed .step-icon,
+body.dark .tracking-step.completed .step-icon i {
   color: #ffffff !important;
 }
 

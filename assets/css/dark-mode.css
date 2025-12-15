@@ -520,6 +520,30 @@ body.dark .order-summary {
   border-color: var(--border-dark) !important;
 }
 
+/* Orders empty state container */
+body.dark .orders-empty,
+body.dark .orders-empty .empty-state-card,
+body.dark .orders-empty .empty-content,
+body.dark .orders-empty .empty-icon {
+  background: var(--panel-bg-dark) !important;
+  border: 1px solid var(--border-dark) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .orders-empty p,
+body.dark .orders-empty h3,
+body.dark .orders-empty h4,
+body.dark .orders-empty span {
+  color: var(--text-dark) !important;
+}
+
+body.dark .orders-empty .btn {
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%) !important;
+  border: 1px solid var(--accent-blue) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 18px rgba(14, 165, 233, 0.35) !important;
+}
+
 body.dark .order-item {
   background: var(--panel-bg-dark-alt) !important;
   border-color: var(--border-dark) !important;

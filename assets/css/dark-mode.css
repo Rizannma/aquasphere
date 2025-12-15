@@ -685,14 +685,24 @@ body.dark .tracking-step .step-subtitle {
 
 body.dark .tracking-line,
 body.dark .tracking-step .step-circle {
-  background: var(--border-dark) !important;
-  border-color: var(--border-dark) !important;
+  background: var(--panel-bg-dark) !important;
+  border-color: var(--text-dark) !important;
 }
 
 body.dark .tracking-step.active .step-circle,
 body.dark .tracking-step.completed .step-circle {
   background: var(--accent-blue) !important;
   border-color: var(--accent-blue) !important;
+}
+
+body.dark .tracking-step .step-circle i,
+body.dark .tracking-step .step-icon {
+  color: var(--text-dark) !important;
+}
+
+body.dark .tracking-step.active .step-circle i,
+body.dark .tracking-step.completed .step-circle i {
+  color: #ffffff !important;
 }
 
 body.dark .btn-outline-danger {

@@ -847,8 +847,8 @@ body.dark .label-btn {
 
 /* Keep work/default brand colors */
 body.dark .label-btn[data-label="work"] {
-  border-color: var(--accent-blue-light) !important;
-  color: var(--accent-blue-light) !important;
+  border-color: #ffffff !important;
+  color: #ffffff !important;
 }
 
 body.dark .label-btn[data-label="work"]:not(.active) {

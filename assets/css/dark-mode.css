@@ -847,6 +847,7 @@ body.dark .label-btn {
 
 /* Keep work pill with blue border even when inactive */
 body.dark .label-btn[data-label="work"] {
+  background: var(--panel-bg-dark) !important;
   border-color: var(--accent-blue) !important;
   color: var(--accent-blue-light) !important;
 }

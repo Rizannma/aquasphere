@@ -776,6 +776,14 @@ body.dark .select-all {
   border-radius: 12px !important;
 }
 
+body.dark .select-all label {
+  color: var(--text-dark) !important;
+}
+
+body.dark .select-all input[type="checkbox"] {
+  accent-color: var(--accent-blue) !important;
+}
+
 body.dark .btn-delete-all {
   background: rgba(239, 68, 68, 0.12) !important;
   border-color: rgba(239, 68, 68, 0.6) !important;
@@ -802,6 +810,18 @@ body.dark .address-info {
 body.dark .address-name-phone,
 body.dark .address-tag {
   color: var(--text-dark) !important;
+}
+
+body.dark .address-display input,
+body.dark .address-display textarea {
+  background: var(--panel-bg-dark) !important;
+  border: 1px solid var(--border-dark) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .address-display input::placeholder,
+body.dark .address-display textarea::placeholder {
+  color: var(--text-muted-dark) !important;
 }
 
 /* Dashboard search/filter wrapper */

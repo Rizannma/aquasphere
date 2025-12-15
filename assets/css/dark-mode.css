@@ -846,6 +846,18 @@ body.dark .profile-section p {
   color: var(--text-muted-dark) !important;
 }
 
+/* Profile footer (buttons area) */
+body.dark .profile-footer {
+  background: var(--panel-bg-dark) !important;
+  border-top: 1px solid var(--border-dark) !important;
+}
+
+body.dark .profile-footer .btn-cancel {
+  background: var(--panel-bg-dark-alt) !important;
+  border-color: var(--border-dark) !important;
+  color: var(--text-dark) !important;
+}
+
 /* Disabled / read-only profile fields should stay dark */
 body.dark .profile-section input[disabled],
 body.dark .profile-section select[disabled],

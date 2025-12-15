@@ -846,22 +846,13 @@ body.dark .label-btn {
 }
 
 /* Keep work/default brand colors */
-body.dark .label-btn[data-label="work"] {
+body.dark .address-display .label-btn[data-label="work"],
+body.dark .address-display .label-btn[data-label="work"].active {
   background: transparent !important;
   border: 2px solid #ffffff !important;
   color: #ffffff !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
-  outline: 1px solid rgba(255, 255, 255, 0.6) !important;
-  outline-offset: 0 !important;
-}
-
-body.dark .label-btn[data-label="work"].active {
-  background: transparent !important;
-  border: 2px solid #ffffff !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
-  outline: 1px solid rgba(255, 255, 255, 0.6) !important;
-  outline-offset: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 body.dark .label-btn[data-label="default"] {
@@ -924,6 +915,14 @@ body.dark .address-display .badge-default {
 body.dark .address-display .badge-default {
   border-color: #f97316 !important;
   color: #fdba74 !important;
+}
+
+/* Address label badge (Work) */
+body.dark .address-display .badge-label {
+  background: transparent !important;
+  border: 2px solid #ffffff !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35) !important;
 }
 
 body.dark .address-display .form-control,

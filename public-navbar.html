@@ -1,0 +1,99 @@
+<!-- Shared public navbar for index, login, and registration pages -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="index.html" style="display: flex; align-items: center;">
+            <img src="systemlogo.png" alt="AquaSphere Logo" style="height: 45px; margin-right: 10px;">
+            AquaSphere
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#how-it-works">How It Works</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto" id="authNav">
+                <!-- Navigation icons (shown when logged in) -->
+                <li class="nav-item" id="navHomeItem" style="display: none;">
+                    <a class="nav-link" href="dashboard.html" id="navHome" title="Home">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </li>
+                <li class="nav-item" id="navCartItem" style="display: none;">
+                    <a class="nav-link" href="cart.html" id="navCart" title="Shopping Cart" style="position: relative;">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" id="cartCount">0</span>
+                    </a>
+                </li>
+                <li class="nav-item" id="navOrdersItem" style="display: none;">
+                    <a class="nav-link" href="orders.html" id="navOrders" title="My Orders" style="position: relative;">
+                        <i class="fas fa-box"></i>
+                        <span class="orders-badge" id="ordersCount">0</span>
+                    </a>
+                </li>
+                <li class="nav-item dropdown" id="navNotificationsWrapper" style="display: none;">
+                    <a class="nav-link" href="#" id="navNotifications" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Notifications" style="position: relative;">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationCount">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="navNotifications">
+                        <li class="notification-header">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-bell"></i>
+                                <span>Notifications</span>
+                            </div>
+                            <button class="btn-clear" id="notifClearBtn" type="button" onclick="clearNotificationBadge()">Clear</button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li id="notificationList">
+                            <div class="notification-empty">
+                                <i class="fas fa-inbox"></i>
+                                <p>No notifications yet.</p>
+                            </div>
+                        </li>
+                        <li class="notification-pagination">
+                            <button type="button" id="notifPrevBtn" onclick="paginateNotifications(-1)">Prev</button>
+                            <span id="notifPageInfo">Page 1 of 1</span>
+                            <button type="button" id="notifNextBtn" onclick="paginateNotifications(1)">Next</button>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Login/Register buttons (shown when not logged in) -->
+                <li class="nav-item" id="loginNavItem">
+                    <a class="nav-link" href="login.html">Login</a>
+                </li>
+                <li class="nav-item" id="registerNavItem">
+                    <a class="nav-link" href="registration.html">Register</a>
+                </li>
+                <!-- User dropdown (shown when logged in) -->
+                <li class="nav-item dropdown user-dropdown" id="userDropdownNavItem" style="display: none;">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="usernameDisplay">User</span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="recent_orders.html"><i class="fas fa-receipt me-2"></i>Recent Orders</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openSettingsModal(); return false;"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+

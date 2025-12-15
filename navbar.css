@@ -404,4 +404,46 @@ body {
     font-size: 0.9rem;
 }
 
+/* Dark mode styles for navbar elements */
+body.dark .notification-header {
+    color: #f1f5f9 !important;
+}
+
+body.dark .notification-title {
+    color: #f1f5f9 !important;
+}
+
+body.dark .notification-desc {
+    color: #94a3b8 !important;
+}
+
+body.dark .notification-meta {
+    color: #64748b !important;
+}
+
+body.dark .notification-empty {
+    color: #94a3b8 !important;
+}
+
+body.dark .notification-empty i {
+    color: #64748b !important;
+}
+
+body.dark .notification-pagination {
+    background: #1e293b !important;
+    border-top-color: #334155 !important;
+}
+
+body.dark .notification-pagination span {
+    color: #f1f5f9 !important;
+}
+
+body.dark .nav-item.dropdown .nav-link #usernameDisplay {
+    color: #f1f5f9 !important;
+}
+
+body.dark .nav-item.dropdown .nav-link:hover #usernameDisplay {
+    color: #38bdf8 !important;
+}
+
 

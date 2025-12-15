@@ -847,8 +847,10 @@ body.dark .label-btn {
 
 /* Keep work/default brand colors */
 body.dark .label-btn[data-label="work"] {
-  border-color: #ffffff !important;
+  background: transparent !important;
+  border: 1.5px solid #ffffff !important;
   color: #ffffff !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
 }
 
 body.dark .label-btn[data-label="work"]:not(.active) {

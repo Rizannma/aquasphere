@@ -850,11 +850,18 @@ body.dark .label-btn[data-label="work"] {
   background: transparent !important;
   border: 1.5px solid #ffffff !important;
   color: #ffffff !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) !important;
 }
 
 body.dark .label-btn[data-label="work"]:not(.active) {
   background: transparent !important;
+}
+
+body.dark .label-btn[data-label="work"].active {
+  background: transparent !important;
+  border: 1.5px solid #ffffff !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) !important;
 }
 
 body.dark .label-btn[data-label="default"] {

@@ -839,20 +839,20 @@ body.dark .address-text {
 
 /* Address label pills (Work / Default) */
 body.dark .label-btn {
-  background: var(--panel-bg-dark) !important;
+  background: var(--panel-bg-dark-alt) !important;
   border: 1px solid var(--border-dark) !important;
   color: var(--text-dark) !important;
   box-shadow: none !important;
 }
 
 body.dark .label-btn:hover {
-  background: var(--panel-bg-dark-alt) !important;
+  background: var(--panel-bg-dark) !important;
   border-color: var(--accent-blue) !important;
   color: var(--accent-blue-light) !important;
 }
 
 body.dark .label-btn.active {
-  background: var(--panel-bg-dark-alt) !important;
+  background: var(--panel-bg-dark) !important;
   border-color: var(--accent-blue) !important;
   color: var(--accent-blue-light) !important;
   box-shadow: 0 6px 18px rgba(14, 165, 233, 0.35) !important;
@@ -875,6 +875,18 @@ body.dark .coordinate-value {
   color: var(--text-dark) !important;
   background: var(--panel-bg-dark-alt) !important;
   border: 1px solid var(--border-dark) !important;
+}
+
+/* Map zoom controls */
+body.dark .address-display .leaflet-bar a {
+  background: var(--panel-bg-dark) !important;
+  color: var(--text-dark) !important;
+  border-color: var(--border-dark) !important;
+}
+
+body.dark .address-display .leaflet-bar a:hover {
+  background: var(--panel-bg-dark-alt) !important;
+  color: var(--text-dark) !important;
 }
 
 body.dark .address-display .form-control,

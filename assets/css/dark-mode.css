@@ -1329,4 +1329,66 @@ body.dark .modal-footer .btn-cancel {
   color: var(--text-dark) !important;
 }
 
+/* Cart delete confirmation modal */
+body.dark .delete-confirm-content {
+  background: var(--panel-bg-dark) !important;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.85) !important;
+}
+
+body.dark .delete-confirm-icon {
+  background: radial-gradient(circle at 40% 40%, rgba(248, 113, 113, 0.4), transparent 60%),
+              linear-gradient(135deg, var(--panel-bg-dark-alt), var(--panel-bg-dark)) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65) !important;
+}
+
+body.dark .delete-confirm-icon::before {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  opacity: 0.5 !important;
+}
+
+body.dark .delete-confirm-icon i {
+  color: #fca5a5 !important;
+}
+
+body.dark .delete-confirm-body h3 {
+  color: var(--text-dark) !important;
+}
+
+body.dark .delete-confirm-body p {
+  color: var(--text-muted-dark) !important;
+}
+
+body.dark .btn-confirm-cancel {
+  background: var(--panel-bg-dark-alt) !important;
+  border: 2px solid var(--border-dark) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .btn-confirm-cancel:hover {
+  background: var(--panel-bg-dark) !important;
+  color: var(--accent-blue-light) !important;
+  border-color: var(--accent-blue) !important;
+}
+
+body.dark .btn-confirm-delete {
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35) !important;
+}
+
+/* Cart address modal fields */
+body.dark .address-modal label {
+  color: #f1f5f9 !important;
+}
+
+body.dark .address-modal input,
+body.dark .address-modal select {
+  background: var(--panel-bg-dark-alt) !important;
+  border: 1px solid var(--border-dark) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .address-modal input::placeholder,
+body.dark .address-modal select::placeholder {
+  color: var(--text-muted-dark) !important;
+}
+
 

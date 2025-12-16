@@ -1391,4 +1391,19 @@ body.dark .address-modal select::placeholder {
   color: var(--text-muted-dark) !important;
 }
 
+/* Cart checkout loading modal */
+body.dark .checkout-loading-content {
+  background: var(--panel-bg-dark) !important;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.85) !important;
+}
+
+body.dark .checkout-loading-text {
+  color: var(--text-muted-dark) !important;
+}
+
+/* Cart map popup text (Your location) */
+body.dark .address-modal .leaflet-popup-content {
+  color: #0f172a !important;
+}
+
 

@@ -846,6 +846,11 @@ body.dark .profile-section p {
   color: var(--text-muted-dark) !important;
 }
 
+/* Profile form labels */
+body.dark .profile-section .form-group label {
+  color: #f1f5f9 !important;
+}
+
 /* Profile footer (buttons area) */
 body.dark .profile-footer {
   background: var(--panel-bg-dark) !important;

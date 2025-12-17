@@ -461,9 +461,10 @@
                         style.textContent = `
                             body.dark #birthday::-webkit-calendar-picker-indicator,
                             body.dark .register-card input[type="date"]::-webkit-calendar-picker-indicator {
-                                filter: invert(1) brightness(10) contrast(2) saturate(0) !important;
+                                filter: invert(1) brightness(2) !important;
                                 opacity: 1 !important;
-                                background: transparent !important;
+                                width: 20px !important;
+                                height: 20px !important;
                             }
                         `;
                         // Remove existing style if any

@@ -1831,17 +1831,16 @@ body.dark .register-card .btn-outline-secondary:hover i {
   color: var(--accent-blue-light) !important;
 }
 
-/* Date Input Calendar Icon Dark Mode - Make it white with maximum filter strength */
+/* Date Input Calendar Icon Dark Mode - Make it white and visible */
 body.dark input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1) brightness(10) contrast(2) saturate(0) !important;
+  filter: invert(1) brightness(2) !important;
   cursor: pointer;
   opacity: 1 !important;
-  background: transparent !important;
 }
 
 body.dark input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1 !important;
-  filter: invert(1) brightness(10) contrast(2.5) saturate(0) !important;
+  filter: invert(1) brightness(2.5) !important;
 }
 
 /* For Firefox and other browsers */
@@ -1850,22 +1849,23 @@ body.dark input[type="date"] {
 }
 
 body.dark input[type="date"]::-moz-calendar-picker-indicator {
-  filter: invert(1) brightness(10) contrast(2) saturate(0) !important;
+  filter: invert(1) brightness(2) !important;
   cursor: pointer;
   opacity: 1 !important;
 }
 
-/* Registration form date input calendar icon - Maximum specificity and filter strength */
+/* Registration form date input calendar icon - Ensure visibility */
 body.dark .register-card input[type="date"]::-webkit-calendar-picker-indicator,
 body.dark .register-card .form-control[type="date"]::-webkit-calendar-picker-indicator,
 body.dark .form-control[type="date"]::-webkit-calendar-picker-indicator,
 body.dark #birthday::-webkit-calendar-picker-indicator,
 body.dark input#birthday::-webkit-calendar-picker-indicator,
 body.dark .register-card input#birthday::-webkit-calendar-picker-indicator {
-  filter: invert(1) brightness(10) contrast(2) saturate(0) !important;
+  filter: invert(1) brightness(2) !important;
   cursor: pointer;
   opacity: 1 !important;
-  background: transparent !important;
+  width: 20px !important;
+  height: 20px !important;
 }
 
 body.dark .register-card input[type="date"]::-webkit-calendar-picker-indicator:hover,
@@ -1874,7 +1874,7 @@ body.dark .form-control[type="date"]::-webkit-calendar-picker-indicator:hover,
 body.dark #birthday::-webkit-calendar-picker-indicator:hover,
 body.dark input#birthday::-webkit-calendar-picker-indicator:hover,
 body.dark .register-card input#birthday::-webkit-calendar-picker-indicator:hover {
-  filter: invert(1) brightness(10) contrast(2.5) saturate(0) !important;
+  filter: invert(1) brightness(2.5) !important;
   opacity: 1 !important;
 }
 

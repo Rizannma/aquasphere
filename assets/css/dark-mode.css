@@ -1178,7 +1178,7 @@ body.dark .site-footer a {
 
 /* Landing / Home page (index.html) - Hero section exempt from dark mode */
 body.dark .hero-section {
-  background-image: url('./home_image.png') !important;
+  background-image: url('../home_image.png') !important;
   background-position: center center !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;

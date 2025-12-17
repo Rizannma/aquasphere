@@ -1694,4 +1694,25 @@ body.dark .register-link a:hover {
   color: var(--accent-blue) !important;
 }
 
+/* Password Toggle Button Dark Mode */
+body.dark .btn-password-toggle {
+  background: var(--panel-bg-dark-alt) !important;
+  border-color: var(--border-dark) !important;
+  color: var(--text-muted-dark) !important;
+}
+
+body.dark .btn-password-toggle:hover {
+  background: var(--panel-bg-dark) !important;
+  border-color: var(--accent-blue) !important;
+  color: var(--accent-blue-light) !important;
+}
+
+body.dark .btn-password-toggle i {
+  color: var(--text-muted-dark) !important;
+}
+
+body.dark .btn-password-toggle:hover i {
+  color: var(--accent-blue-light) !important;
+}
+
 

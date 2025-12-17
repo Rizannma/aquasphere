@@ -1715,4 +1715,28 @@ body.dark .btn-password-toggle:hover i {
   color: var(--accent-blue-light) !important;
 }
 
+/* Toast Notification Dark Mode */
+body.dark .toast-notification {
+  background: var(--panel-bg-dark) !important;
+  border-color: var(--border-dark) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark .toast-title {
+  color: var(--text-dark) !important;
+}
+
+body.dark .toast-text {
+  color: var(--text-muted-dark) !important;
+}
+
+body.dark .toast-close {
+  color: var(--text-muted-dark) !important;
+}
+
+body.dark .toast-close:hover {
+  background: var(--panel-bg-dark-alt) !important;
+  color: var(--text-dark) !important;
+}
+
 

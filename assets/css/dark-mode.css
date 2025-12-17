@@ -1606,4 +1606,92 @@ body.dark .cancel-approved-close:hover {
   color: var(--text-dark) !important;
 }
 
+/* Login Page Dark Mode */
+body.dark .login-card {
+  background: var(--panel-bg-dark) !important;
+  border: 1px solid var(--border-dark) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dark .login-title {
+  color: var(--text-dark) !important;
+}
+
+body.dark .login-subtitle {
+  color: var(--text-muted-dark) !important;
+}
+
+body.dark .form-label {
+  color: var(--text-dark) !important;
+}
+
+body.dark .form-control {
+  background: var(--panel-bg-dark-alt) !important;
+  border-color: var(--border-dark) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .form-control::placeholder {
+  color: var(--text-muted-dark) !important;
+}
+
+body.dark .form-control:focus {
+  background: var(--panel-bg-dark-alt) !important;
+  border-color: var(--accent-blue) !important;
+  color: var(--text-dark) !important;
+  box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.25) !important;
+}
+
+body.dark .form-control.success {
+  background: rgba(14, 165, 233, 0.1) !important;
+  border-color: var(--accent-blue) !important;
+}
+
+body.dark .form-control.error {
+  border-color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+body.dark .custom-error {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+  color: #fca5a5 !important;
+  border-left-color: #ef4444 !important;
+}
+
+body.dark .input-group .btn-outline-secondary {
+  background: var(--panel-bg-dark-alt) !important;
+  border-color: var(--border-dark) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .input-group .btn-outline-secondary:hover {
+  background: var(--panel-bg-dark) !important;
+  border-color: var(--accent-blue) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .form-check-label {
+  color: var(--text-muted-dark) !important;
+}
+
+body.dark .forgot-password-link {
+  color: var(--accent-blue-light) !important;
+}
+
+body.dark .forgot-password-link:hover {
+  color: var(--accent-blue) !important;
+}
+
+body.dark .register-link {
+  color: var(--text-muted-dark) !important;
+}
+
+body.dark .register-link a {
+  color: var(--accent-blue-light) !important;
+}
+
+body.dark .register-link a:hover {
+  color: var(--accent-blue) !important;
+}
+
 

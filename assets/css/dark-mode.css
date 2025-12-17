@@ -1176,16 +1176,23 @@ body.dark .site-footer a {
   color: var(--accent-blue-light) !important;
 }
 
-/* Landing / Home page (index.html) */
+/* Landing / Home page (index.html) - Hero section exempt from dark mode */
 body.dark .hero-section {
   background-image: url('./home_image.png') !important;
   background-position: center center !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
+  /* Ensure no dark mode background colors override the image */
+  background-color: transparent !important;
 }
 
 body.dark .hero-section::before {
   display: none !important;
+}
+
+/* Ensure hero section content remains visible in dark mode */
+body.dark .hero-content {
+  color: white !important;
 }
 
 body.dark .btn-hero:hover,

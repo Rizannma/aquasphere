@@ -1176,16 +1176,20 @@ body.dark .site-footer a {
   color: var(--accent-blue-light) !important;
 }
 
-/* Landing / Home page (index.html) - Hero section exempt from dark mode overlay */
+/* Landing / Home page (index.html) - Hero section exempt from dark mode */
+/* Keep hero section in light mode even when body has dark class */
 body.dark .hero-section {
   background-image: url('./home_image.png') !important;
   background-position: center center !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
+  /* Override any dark mode background colors */
+  background-color: transparent !important;
 }
 
 body.dark .hero-section::before {
-  display: none !important;
+  background: rgba(14, 165, 233, 0.3) !important;
+  /* Keep the blue overlay, not black */
 }
 
 body.dark .hero-content {
@@ -1193,9 +1197,9 @@ body.dark .hero-content {
 }
 
 body.dark .btn-hero {
-  background: var(--panel-bg-dark-alt) !important;
-  color: var(--text-dark) !important;
-  border: 1px solid var(--border-dark) !important;
+  background: white !important;
+  color: #0ea5e9 !important;
+  border: none !important;
 }
 
 body.dark .btn-hero:hover,

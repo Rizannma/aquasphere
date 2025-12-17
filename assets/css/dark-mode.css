@@ -1209,8 +1209,9 @@ body.dark .btn-hero-outline {
 }
 
 body.dark .btn-hero-outline:hover {
-  background: var(--accent-blue) !important;
-  color: #0f172a !important;
+  background: white !important;
+  color: #0ea5e9 !important;
+  border-color: white !important;
 }
 
 body.dark .features-section {

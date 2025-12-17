@@ -1178,11 +1178,10 @@ body.dark .site-footer a {
 
 /* Landing / Home page (index.html) */
 body.dark .hero-section {
-  background-image: url('home_image.png') !important;
+  background-image: url('./home_image.png') !important;
   background-position: center center !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
-  background-attachment: fixed !important;
 }
 
 body.dark .hero-section::before {

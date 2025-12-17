@@ -1203,8 +1203,9 @@ body.dark .cta-section .btn-hero:hover {
 }
 
 body.dark .btn-hero-outline {
-  border-color: var(--accent-blue-light) !important;
-  color: var(--accent-blue-light) !important;
+  border-color: white !important;
+  color: white !important;
+  background: transparent !important;
 }
 
 body.dark .btn-hero-outline:hover {

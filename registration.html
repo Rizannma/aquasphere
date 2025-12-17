@@ -199,35 +199,40 @@
             border-color: #ced4da;
         }
         
-        /* Date Input Wrapper with Custom Calendar Icon */
-        .date-input-wrapper {
-            position: relative;
+        /* Date Input Wrapper with Custom Calendar Icon - Using input-group */
+        .date-input-wrapper input[type="date"] {
+            padding-right: 0;
         }
         
-        .date-input-wrapper input[type="date"] {
-            padding-right: 40px;
+        .date-icon-btn {
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
         .date-icon-overlay {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
             color: #4a5568;
             font-size: 1rem;
-            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        /* Floating hover effect for calendar icon - will be animated via CSS */
+        .date-icon-btn:hover .date-icon-overlay {
+            color: #0369a1;
+        }
+        
+        body.dark .date-icon-btn:hover .date-icon-overlay {
+            color: var(--accent-blue-light);
         }
         
         body.dark .date-icon-overlay {
-            color: #f1f5f9 !important;
+            color: var(--text-dark) !important;
         }
         
         /* Completely hide native calendar icon but keep it clickable */
         .date-input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
             position: absolute;
             right: 0;
-            width: 40px;
+            width: 100%;
             height: 100%;
             opacity: 0 !important;
             cursor: pointer;
@@ -252,6 +257,15 @@
         .date-input-wrapper input[type="date"]::-ms-clear,
         .date-input-wrapper input[type="date"]::-ms-reveal {
             display: none;
+        }
+        
+        /* Make button trigger date picker */
+        .date-icon-btn {
+            pointer-events: auto;
+        }
+        
+        .date-input-wrapper input[type="date"] {
+            position: relative;
         }
         
         .login-link {
@@ -409,9 +423,11 @@
                                 
                                 <div class="col-md-6 mb-2">
                                     <label for="birthday" class="form-label">Birthday</label>
-                                    <div class="date-input-wrapper" style="position: relative;">
+                                    <div class="input-group date-input-wrapper">
                                         <input type="date" class="form-control" id="birthday" name="birthday" required>
-                                        <i class="fas fa-calendar-alt date-icon-overlay"></i>
+                                        <button class="btn btn-outline-secondary date-icon-btn" type="button" id="datePickerBtn">
+                                            <i class="fas fa-calendar-alt date-icon-overlay"></i>
+                                        </button>
                                     </div>
                                     <div class="custom-error" id="birthday-error">Birthday is required.</div>
                                 </div>
@@ -847,6 +863,14 @@
             
             togglePasswordVisibility('password', 'togglePassword', 'passwordIcon');
             togglePasswordVisibility('confirm_password', 'toggleConfirmPassword', 'confirmPasswordIcon');
+            
+            // Date picker button trigger
+            const datePickerBtn = document.getElementById('datePickerBtn');
+            if (datePickerBtn && birthdayInput) {
+                datePickerBtn.addEventListener('click', function() {
+                    birthdayInput.showPicker ? birthdayInput.showPicker() : birthdayInput.focus();
+                });
+            }
             
             // Form submission handler
             form.addEventListener('submit', function(e) {

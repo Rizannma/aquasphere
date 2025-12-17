@@ -1874,6 +1874,46 @@ body.dark .date-input-wrapper input[type="date"]::-moz-calendar-picker-indicator
   opacity: 0 !important;
 }
 
+/* Date Picker Popup Dark Mode */
+body.dark input[type="date"] {
+  color-scheme: dark;
+}
+
+/* Floating animation for calendar icon on hover */
+@keyframes calendarFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.date-icon-btn:hover .date-icon-overlay {
+  animation: calendarFloat 1.5s ease-in-out infinite;
+}
+
+/* Calendar icon button styling to match password toggle */
+body.dark .date-icon-btn {
+  background: var(--panel-bg-dark-alt) !important;
+  border-color: var(--border-dark) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .date-icon-btn:hover {
+  background: var(--panel-bg-dark) !important;
+  border-color: var(--accent-blue) !important;
+  color: var(--text-dark) !important;
+}
+
+body.dark .date-icon-btn i {
+  color: var(--text-dark) !important;
+}
+
+body.dark .date-icon-btn:hover i {
+  color: var(--accent-blue-light) !important;
+}
+
 /* Verify Email Page Dark Mode */
 body.dark .verification-card {
   background: var(--panel-bg-dark) !important;

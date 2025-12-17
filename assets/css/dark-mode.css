@@ -1184,10 +1184,6 @@ body.dark .hero-section {
   background-repeat: no-repeat !important;
 }
 
-body.dark .hero-section::before {
-  background: rgba(0, 0, 0, 0.5) !important;
-}
-
 body.dark .hero-content {
   color: #e5f0ff !important;
 }

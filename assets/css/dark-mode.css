@@ -1188,8 +1188,8 @@ body.dark .hero-section {
 }
 
 body.dark .hero-section::before {
-  background: rgba(14, 165, 233, 0.3) !important;
-  /* Keep the blue overlay, not black */
+  background: rgba(14, 165, 233, 0.15) !important;
+  /* Lighter blue overlay so image is clearly visible */
 }
 
 body.dark .hero-content {

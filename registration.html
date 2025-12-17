@@ -223,15 +223,35 @@
             color: #f1f5f9 !important;
         }
         
-        /* Hide native calendar icon but keep it clickable */
+        /* Completely hide native calendar icon but keep it clickable */
         .date-input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
             position: absolute;
             right: 0;
             width: 40px;
             height: 100%;
-            opacity: 0;
+            opacity: 0 !important;
             cursor: pointer;
             z-index: 2;
+            background: transparent !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        /* Hide native calendar icon for all browsers */
+        .date-input-wrapper input[type="date"]::-moz-calendar-picker-indicator {
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            position: absolute;
+            right: 0;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        /* Additional hiding for Edge/IE */
+        .date-input-wrapper input[type="date"]::-ms-clear,
+        .date-input-wrapper input[type="date"]::-ms-reveal {
+            display: none;
         }
         
         .login-link {

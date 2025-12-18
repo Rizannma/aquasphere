@@ -34,7 +34,7 @@
             left: 0;
             height: 100vh;
             width: 250px;
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            background: linear-gradient(135deg, #256892 0%, #1e4f73 100%);
             color: white;
             padding-top: 20px;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
@@ -104,7 +104,7 @@
         .page-header h1 {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #0369a1;
+            color: #1a4a6b;
             margin: 0;
         }
         
@@ -124,7 +124,7 @@
         }
         
         .stats-card.primary {
-            border-left-color: #0ea5e9;
+            border-left-color: #256892;
         }
         
         .stats-card.success {
@@ -143,7 +143,7 @@
             font-size: 2.5rem;
             font-weight: 700;
             margin: 0;
-            color: #0369a1;
+            color: #1a4a6b;
         }
         
         .stats-card p {
@@ -171,7 +171,7 @@
         
         .content-card h5 {
             font-weight: 600;
-            color: #0369a1;
+            color: #1a4a6b;
             margin-bottom: 20px;
         }
         
@@ -186,7 +186,7 @@
         .table thead th {
             background-color: #f8f9fa;
             font-weight: 600;
-            color: #0369a1;
+            color: #1a4a6b;
             border-bottom: 2px solid #dee2e6;
         }
         
@@ -208,12 +208,12 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            background: linear-gradient(135deg, #256892, #1e4f73);
             border: none;
         }
         
         .btn-primary:hover {
-            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            background: linear-gradient(135deg, #1e4f73, #256892);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
         }
@@ -232,7 +232,7 @@
         }
         
         .system-status-item:hover i {
-            color: #0ea5e9;
+            color: #256892;
             transform: scale(1.1);
         }
         
@@ -500,7 +500,7 @@
             const statusColors = {
                 'pending': '#fbbf24',
                 'preparing': '#3b82f6',
-                'shipped': '#0ea5e9',
+                'shipped': '#256892',
                 'out_for_delivery': '#8b5cf6',
                 'delivered': '#22c55e',
                 'cancelled': '#ef4444',
@@ -573,7 +573,7 @@
                 
                 return `
                     <tr>
-                        <td><a href="orders.html" style="color: #0ea5e9; text-decoration: none;"><strong>#${order.id}</strong></a></td>
+                        <td><a href="orders.html" style="color: #256892; text-decoration: none;"><strong>#${order.id}</strong></a></td>
                         <td>${escapeHtml(order.username || 'N/A')}</td>
                         <td><strong>₱${parseFloat(order.total_amount).toFixed(2)}</strong></td>
                         <td><span class="badge bg-${getStatusColor(status)}">${statusLabel}</span></td>

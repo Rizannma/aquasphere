@@ -433,7 +433,7 @@
         .product-image {
             width: 40%;
             min-width: 280px;
-            height: 280px;
+            height: 320px;
             background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
             display: flex;
             align-items: center;
@@ -490,7 +490,7 @@
             display: flex;
             flex-direction: column;
             background: white;
-            min-height: 280px;
+            min-height: 320px;
         }
         
         .product-title {
@@ -525,21 +525,20 @@
             display: flex;
             align-items: center;
             gap: 1.5rem;
-            margin-left: auto;
         }
         
         .product-price {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: #0ea5e9;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
             letter-spacing: -0.5px;
         }
         
         .product-price span {
             font-size: 1rem;
-            color: #94a3b8;
+            color: #64748b;
             font-weight: 500;
-            margin-left: 4px;
+            margin-left: 2px;
         }
         
         .btn-add-cart {
@@ -1154,6 +1153,10 @@
                         <h3 class="product-title">5-Gallon Refill</h3>
                         <p class="product-description">Refill your existing container with fresh, clean water</p>
                         <div class="product-footer">
+                            <button type="button" class="btn-add-cart" onclick="return addToCart(1, '5-Gallon Refill', 25, event)">
+                                <i class="fas fa-cart-plus"></i>
+                                <span>Add to Cart</span>
+                            </button>
                             <div class="product-price-row">
                                 <div class="product-price">
                                     ₱25<span>/refill</span>
@@ -1164,10 +1167,6 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(1)">+</button>
                                 </div>
                             </div>
-                            <button type="button" class="btn-add-cart" onclick="return addToCart(1, '5-Gallon Refill', 25, event)">
-                                <i class="fas fa-cart-plus"></i>
-                                <span>Add to Cart</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1181,6 +1180,10 @@
                         <h3 class="product-title">New 5-Gallon + Container</h3>
                         <p class="product-description">Includes new gallon container with fresh water</p>
                         <div class="product-footer">
+                            <button type="button" class="btn-add-cart" onclick="return addToCart(2, 'New 5-Gallon + Container', 150, event)">
+                                <i class="fas fa-cart-plus"></i>
+                                <span>Add to Cart</span>
+                            </button>
                             <div class="product-price-row">
                                 <div class="product-price">
                                     ₱150<span>/unit</span>
@@ -1191,10 +1194,6 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(2)">+</button>
                                 </div>
                             </div>
-                            <button type="button" class="btn-add-cart" onclick="return addToCart(2, 'New 5-Gallon + Container', 150, event)">
-                                <i class="fas fa-cart-plus"></i>
-                                <span>Add to Cart</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1208,6 +1207,10 @@
                         <h3 class="product-title">1-Liter Bottle (12-pack)</h3>
                         <p class="product-description">Convenient bottles perfect for home and office</p>
                         <div class="product-footer">
+                            <button type="button" class="btn-add-cart" onclick="return addToCart(3, '1-Liter Bottle (12-pack)', 120, event)">
+                                <i class="fas fa-cart-plus"></i>
+                                <span>Add to Cart</span>
+                            </button>
                             <div class="product-price-row">
                                 <div class="product-price">
                                     ₱120<span>/pack</span>
@@ -1218,10 +1221,6 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(3)">+</button>
                                 </div>
                             </div>
-                            <button type="button" class="btn-add-cart" onclick="return addToCart(3, '1-Liter Bottle (12-pack)', 120, event)">
-                                <i class="fas fa-cart-plus"></i>
-                                <span>Add to Cart</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1235,6 +1234,10 @@
                         <h3 class="product-title">500ml Bottle (24-pack)</h3>
                         <p class="product-description">Perfect for on-the-go hydration</p>
                         <div class="product-footer">
+                            <button type="button" class="btn-add-cart" onclick="return addToCart(4, '500ml Bottle (24-pack)', 100, event)">
+                                <i class="fas fa-cart-plus"></i>
+                                <span>Add to Cart</span>
+                            </button>
                             <div class="product-price-row">
                                 <div class="product-price">
                                     ₱100<span>/pack</span>
@@ -1245,10 +1248,6 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(4)">+</button>
                                 </div>
                             </div>
-                            <button type="button" class="btn-add-cart" onclick="return addToCart(4, '500ml Bottle (24-pack)', 100, event)">
-                                <i class="fas fa-cart-plus"></i>
-                                <span>Add to Cart</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1262,6 +1261,10 @@
                         <h3 class="product-title">Bring Your Jug (Refill)</h3>
                         <p class="product-description">Use your own container for eco-friendly refills</p>
                         <div class="product-footer">
+                            <button type="button" class="btn-add-cart" onclick="return addToCart(5, 'Bring Your Jug (Refill)', 20, event)">
+                                <i class="fas fa-cart-plus"></i>
+                                <span>Add to Cart</span>
+                            </button>
                             <div class="product-price-row">
                                 <div class="product-price">
                                     ₱20<span>/refill</span>
@@ -1272,10 +1275,6 @@
                                     <button type="button" class="quantity-btn increase" onclick="increaseQuantity(5)">+</button>
                                 </div>
                             </div>
-                            <button type="button" class="btn-add-cart" onclick="return addToCart(5, 'Bring Your Jug (Refill)', 20, event)">
-                                <i class="fas fa-cart-plus"></i>
-                                <span>Add to Cart</span>
-                            </button>
                         </div>
                     </div>
                 </div>

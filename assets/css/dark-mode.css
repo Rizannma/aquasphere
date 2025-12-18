@@ -1203,7 +1203,7 @@ body.dark .hero-section {
 }
 
 body.dark .hero-section::before {
-  background: rgba(37, 104, 146, 0.5) !important;
+  background: rgba(37, 104, 146, 0.6) !important;
   /* Darker blue overlay for better text visibility */
 }
 

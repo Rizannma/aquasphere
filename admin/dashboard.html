@@ -364,8 +364,8 @@
             <div class="col-lg-6">
                 <div class="content-card">
                     <h5><i class="fas fa-clock me-2"></i>Recent Orders</h5>
-                    <div id="recentOrdersContainer" style="min-height: 300px;">
-                        <div class="table-responsive">
+                    <div id="recentOrdersContainer" style="min-height: 300px; display: flex; flex-direction: column;">
+                        <div class="table-responsive" style="flex: 1;">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
@@ -383,7 +383,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <nav aria-label="Recent orders pagination" class="mt-1 mb-0" id="recent-orders-pagination" style="display: none;">
+                        <nav aria-label="Recent orders pagination" class="mt-1 mb-0" id="recent-orders-pagination" style="display: none; flex-shrink: 0;">
                             <ul class="pagination pagination-sm justify-content-end mb-0">
                                 <li class="page-item">
                                     <button class="page-link" id="recent-prev" type="button">Prev</button>
@@ -396,9 +396,9 @@
                                 </li>
                             </ul>
                         </nav>
+                    </div>
                 </div>
             </div>
-        </div>
         
         <!-- System Status -->
         <div class="row mt-4">

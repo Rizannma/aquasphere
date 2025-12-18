@@ -758,9 +758,6 @@
             tbody.innerHTML = users.map(user => {
                 const isExactMatch = searchTerm && (user.username || '').toLowerCase() === searchTerm;
                 const highlightClass = isExactMatch ? 'exact-match-row' : '';
-                
-                return `
-                <tr class="${highlightClass}">
                 const isSuspended = parseInt(user.suspended || 0) === 1;
                 const statusBadge = isSuspended
                     ? `<span class="badge bg-danger">Suspended</span>

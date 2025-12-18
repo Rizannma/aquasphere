@@ -349,7 +349,7 @@
             <div class="col-lg-6">
                 <div class="content-card">
                     <h5><i class="fas fa-chart-pie me-2"></i>Orders by Status</h5>
-                    <div id="statusChart" style="height: 300px;">
+                    <div id="statusChart" style="min-height: 300px;">
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <tbody id="statusTableBody">
@@ -364,39 +364,37 @@
             <div class="col-lg-6">
                 <div class="content-card">
                     <h5><i class="fas fa-clock me-2"></i>Recent Orders</h5>
-                    <div id="recentOrdersContainer" style="height: 300px; display: flex; flex-direction: column;">
-                        <div class="table-responsive" style="flex: 1;">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Customer</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recent-orders">
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted" style="padding: 40px 20px;">Loading...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <nav aria-label="Recent orders pagination" class="mt-1 mb-0" id="recent-orders-pagination" style="display: none; flex-shrink: 0;">
-                            <ul class="pagination pagination-sm justify-content-end mb-0">
-                                <li class="page-item">
-                                    <button class="page-link" id="recent-prev" type="button">Prev</button>
-                                </li>
-                                <li class="page-item">
-                                    <span class="page-link bg-light border-0 text-muted" id="recent-page-indicator">1</span>
-                                </li>
-                                <li class="page-item">
-                                    <button class="page-link" id="recent-next" type="button">Next</button>
-                                </li>
-                            </ul>
-                        </nav>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-orders">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted" style="padding: 40px 20px;">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+                    <nav aria-label="Recent orders pagination" class="mt-3" id="recent-orders-pagination" style="display: none;">
+                        <ul class="pagination pagination-sm justify-content-end mb-0">
+                            <li class="page-item">
+                                <button class="page-link" id="recent-prev" type="button">Prev</button>
+                            </li>
+                            <li class="page-item">
+                                <span class="page-link bg-light border-0 text-muted" id="recent-page-indicator">1</span>
+                            </li>
+                            <li class="page-item">
+                                <button class="page-link" id="recent-next" type="button">Next</button>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         
@@ -443,7 +441,7 @@
         // Recent orders pagination state
         let recentOrdersData = [];
         let recentCurrentPage = 1;
-        const recentPerPage = 7;
+        const recentPerPage = 5;
         
         // Load dashboard statistics
         fetch('../api/admin/stats.php')
@@ -536,7 +534,7 @@
             }).join('');
         }
         
-        // Display recent orders with pagination (7 per page)
+        // Display recent orders with pagination (5 per page)
         function displayRecentOrders(orders) {
             recentOrdersData = orders || [];
             recentCurrentPage = 1;

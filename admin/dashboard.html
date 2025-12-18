@@ -441,7 +441,7 @@
         // Recent orders pagination state
         let recentOrdersData = [];
         let recentCurrentPage = 1;
-        const recentPerPage = 5;
+        const recentPerPage = 6;
         
         // Load dashboard statistics
         fetch('../api/admin/stats.php')
@@ -534,7 +534,7 @@
             }).join('');
         }
         
-        // Display recent orders with pagination (5 per page)
+        // Display recent orders with pagination (6 per page)
         function displayRecentOrders(orders) {
             recentOrdersData = orders || [];
             recentCurrentPage = 1;

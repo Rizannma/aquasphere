@@ -411,7 +411,7 @@ function getNotificationMessage(order) {
         return {
             title: 'Order Placed',
             desc: 'Your order has been placed! Kindly wait for admin approval.',
-            color: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+            color: 'linear-gradient(135deg, #256892, #1a4a6b)',
             icon: 'fas fa-check-circle'
         };
     }
@@ -427,7 +427,7 @@ function getNotificationMessage(order) {
         return {
             title: 'Shipped',
             desc: 'Your order has been shipped and is now in transit. Please await our next update regarding delivery.',
-            color: 'linear-gradient(135deg, #06b6d4, #0ea5e9)',
+            color: 'linear-gradient(135deg, #06b6d4, #256892)',
             icon: 'fas fa-shipping-fast'
         };
     }

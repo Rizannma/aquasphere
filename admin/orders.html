@@ -501,6 +501,21 @@
         .update-actions {
             border-top: 1px solid #e2e8f0;
         }
+        
+        .exact-match-row {
+            background-color: #fef3c7 !important;
+            border-left: 4px solid #f59e0b;
+            animation: highlightPulse 2s ease-in-out;
+        }
+        
+        @keyframes highlightPulse {
+            0%, 100% {
+                background-color: #fef3c7;
+            }
+            50% {
+                background-color: #fde68a;
+            }
+        }
     </style>
 </head>
 <body>
@@ -701,7 +716,36 @@
                 return;
             }
             
+            // Sort orders: exact matches first
+            const searchTerm = currentSearch.toLowerCase().trim();
+            if (searchTerm) {
+                orders.sort((a, b) => {
+                    const aOrderId = String(a.id || '').toLowerCase();
+                    const aUsername = (a.username || '').toLowerCase();
+                    const aEmail = (a.email || '').toLowerCase();
+                    const bOrderId = String(b.id || '').toLowerCase();
+                    const bUsername = (b.username || '').toLowerCase();
+                    const bEmail = (b.email || '').toLowerCase();
+                    
+                    const aExactMatch = aOrderId === searchTerm || aUsername === searchTerm || aEmail === searchTerm;
+                    const bExactMatch = bOrderId === searchTerm || bUsername === searchTerm || bEmail === searchTerm;
+                    
+                    if (aExactMatch && !bExactMatch) return -1;
+                    if (!aExactMatch && bExactMatch) return 1;
+                    return 0;
+                });
+            }
+            
             tbody.innerHTML = orders.map(order => {
+                const orderId = String(order.id || '').toLowerCase();
+                const username = (order.username || '').toLowerCase();
+                const email = (order.email || '').toLowerCase();
+                const isExactMatch = searchTerm && (
+                    orderId === searchTerm || 
+                    username === searchTerm || 
+                    email === searchTerm
+                );
+                const highlightClass = isExactMatch ? 'exact-match-row' : '';
                 const status = order.status.toLowerCase();
                 const statusLabel = status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
                 const itemsCount = order.items ? order.items.length : 0;
@@ -709,7 +753,7 @@
                 const addressText = address ? (typeof address === 'string' ? address : (address.address || address.street || 'N/A')) : 'N/A';
                 
                 return `
-                    <tr>
+                    <tr class="${highlightClass}">
                         <td><strong>#${order.id}</strong></td>
                         <td>
                             <div><strong>${escapeHtml(order.username || 'N/A')}</strong></div>

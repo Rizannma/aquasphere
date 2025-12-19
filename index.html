@@ -35,7 +35,7 @@
         
         /* Navbar Styles */
         .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background:rgba(240, 248, 255, 0.8) !important;
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
@@ -47,20 +47,21 @@
         }
         
         .navbar-brand {
-            font-weight: 700;
+            font-weight: 400;
             font-size: 1.5rem;
-            color: #256892 !important;
+            color: #1a4a6b !important;
             transition: all 0.3s ease;
         }
         
         .navbar-brand:hover {
-            color: #1a4a6b !important;
+            color: #256892 !important;
             transform: scale(1.05);
         }
         
         .nav-link {
             font-weight: 500;
-            color: #4a5568 !important;
+            font-size: 1 rem;
+            color: #1a4a6b !important;
             padding: 0 16px !important;
             margin: 0 !important;
             height: 70px !important;
@@ -93,6 +94,7 @@
         .nav-link:hover,
         .nav-link.active {
             color: #1a4a6b !important;
+            font-weight: 900;
         }
         
         /* Dark Mode Toggle Button in Navbar */
@@ -386,10 +388,11 @@
             display: flex;
             align-items: center;
             position: relative;
+            padding: 120px 0 100px;
             overflow: hidden;
-            padding: 100px 0 80px;
         }
-        
+
+        /* Sophisticated Gradient Overlay: Clearer on the right, dark enough on the left */
         .hero-section::before {
             content: '';
             position: absolute;
@@ -397,104 +400,117 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(37, 104, 146, 0.6);
+            background: linear-gradient(
+                90deg, 
+                rgba(37, 104, 146, 0.95) 0%, 
+                rgba(37, 104, 146, 0.7) 40%, 
+                rgba(37, 104, 146, 0.2) 100%
+            );
             z-index: 1;
         }
-        
+
         .hero-content {
             position: relative;
             z-index: 2;
             color: white;
             text-align: left;
         }
-        
+
+        /* --- Typography --- */
         .hero-title {
-            font-size: 4rem;
+            font-size: clamp(2.5rem, 5vw, 4rem); 
             font-weight: 800;
+            margin-top: 1.5rem;
             margin-bottom: 1.5rem;
-            line-height: 1.2;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-            color: white;
+            line-height: 1.1;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        
-        .hero-title br {
-            display: block;
-        }
-        
-        /* Keep "Delivered to Your Door" together on one line */
+
         .hero-title-line2 {
-            white-space: nowrap;
-            display: inline-block;
+            display: block;
+            color: #e0f2ff; 
         }
-        
+
         .hero-subtitle {
-            font-size: 1.75rem;
+            font-size: clamp(1.1rem, 2vw, 1.25rem); /* Improved readability size */
             font-weight: 400;
-            margin-bottom: 2rem;
-            opacity: 1;
-            line-height: 1.5;
-            color: white;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 580px; /* Golden-ratio line length for eye comfort */
         }
-        
-        .hero-subtitle-line {
-            white-space: nowrap;
-            display: inline-block;
-        }
-        
+
+        /* --- Buttons --- */
         .btn-hero {
-            padding: 15px 40px;
+            padding: 16px 36px;
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
             border-radius: 50px;
             border: none;
-            background: white;
+            background: #ffffff;
             color: #256892;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
-        
+
         .btn-hero:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
             background: #212936;
             color: #4299E1 !important;
-            font-weight: 700;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
-        
-        /* CTA Button Hover */
-        .cta-section .btn-hero:hover {
-            background: #212936 !important;
-            color: #4299E1 !important;
-        }
-        
+
         .btn-hero-outline {
-            padding: 15px 40px;
+            padding: 16px 36px;
             font-size: 1.1rem;
             font-weight: 600;
             border-radius: 50px;
-            border: 2px solid white;
-            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px); /* Modern "Glass" effect */
             color: white;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
         }
-        
+
         .btn-hero-outline:hover {
             background: white;
-            color: #1a4a6b;
+            color: #256892;
             transform: translateY(-5px);
-            font-weight: 700;
+            border-color: white;
         }
-        
-        /* Floating Animation */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        
+
+        /* --- Animations & Visuals --- */
         .hero-image {
             animation: float 6s ease-in-out infinite;
             position: relative;
             z-index: 2;
+            filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-25px); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 991px) {
+            .hero-section {
+                text-align: center;
+                padding-top: 150px;
+            }
+            .hero-content {
+                text-align: center;
+            }
+            .hero-subtitle {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .d-flex {
+                justify-content: center;
+            }
+            .hero-section::before {
+                background: rgba(37, 104, 146, 0.8); /* Stronger overlay on mobile */
+            }
         }
         
         /* Features Section */
@@ -586,194 +602,250 @@
         
         /* Stats Section */
         .stats-section {
-            padding: 80px 0;
-            background: linear-gradient(135deg, #256892 0%, #1e4f73 100%);
-            color: white;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 2rem;
-        }
-        
-        .stat-number {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-label {
-            font-size: 1.2rem;
-            font-weight: 500;
-            opacity: 0.9;
-        }
-        
-        /* How It Works Section */
-        .how-it-works-section {
             padding: 100px 0;
-            background: white;
-        }
-        
-        .step-card {
-            text-align: center;
-            padding: 2.4rem 2rem 2.1rem;
+            background: linear-gradient(135deg, #1e4f73 0%, #256892 100%);
             position: relative;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.1) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 22px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
             overflow: hidden;
-            isolation: isolate;
-            min-height: 420px;
+        }
+
+        .section-heading {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtext {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Step Card - Balanced Glassmorphism */
+        .step-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            text-align: center;
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
             align-items: center;
-            gap: 1.1rem;
-            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
-        
+
         .step-card:hover {
-            transform: translateY(-6px) scale(1.01);
-            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
-            border-color: rgba(255, 255, 255, 0.35);
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
         }
-        
-        /* Water wave accents */
-        .step-card::before,
-        .step-card::after {
+
+        /* Circular Number Step */
+        .step-number {
+            width: 70px;
+            height: 70px;
+            background: white;
+            color: #256892;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .step-title {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .step-description {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* Subtle Animated Wave Background Decor */
+        .stats-section::before {
             content: '';
             position: absolute;
-            left: -40%;
-            width: 180%;
-            height: 55%;
-            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, rgba(37, 104, 146, 0.25) 40%, rgba(37, 104, 146, 0.12) 70%, rgba(255, 255, 255, 0) 100%);
-            opacity: 0.35;
-            animation: waveMove 8s linear infinite;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.05;
             pointer-events: none;
-            bottom: -18%;
-            z-index: 0;
         }
-        
-        .step-card::after {
-            opacity: 0.25;
-            animation-duration: 10s;
-            animation-direction: reverse;
-            bottom: -10%;
-        }
-        
-        @keyframes waveMove {
-            from { transform: translateX(0) translateY(0); }
-            to { transform: translateX(35%) translateY(0); }
-        }
-        
-        .step-number {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #256892, #1e4f73);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 auto 1.5rem;
-            box-shadow: 0 10px 30px rgba(37, 104, 146, 0.3);
-        }
-        
-        .step-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #1a4a6b;
-            margin-bottom: 0.6rem;
-            min-height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .step-description {
-            color: #4a5568;
-            line-height: 1.7;
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        
+
         /* CTA Section */
-        .cta-section {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #3b7fb8 0%, #256892 100%);
-            color: white;
-            text-align: center;
-        }
         
+           .cta-section {
+        padding: 120px 0;
+        background: linear-gradient(
+            rgba(22, 64, 92, 0.85), 
+            rgba(30, 79, 115, 0.85)
+        ), 
+        url('https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&q=80&w=2000');
+        
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        text-align: center;
+        position: relative;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         .cta-title {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); 
             margin-bottom: 1.5rem;
         }
-        
+
         .cta-subtitle {
             font-size: 1.3rem;
-            margin-bottom: 2.5rem;
-            opacity: 0.95;
+            color: rgba(255, 255, 255, 0.95);
+            max-width: 750px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+        }
+
+        /* The "Get Started" Button */
+        .btn-cta-glass {
+            background: white;
+            color: #256892 !important;
+            font-weight: 700;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 2px solid white;
+        }
+
+        .btn-cta-glass:hover {
+            background: #256892;
+            color: white !important;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
         
         /* Footer */
         .footer {
-            background: #1a4a6b;
+            background: #0f2a3d; /* Deeper, more modern navy */
             color: white;
-            padding: 20px 0 15px;
+            padding: 80px 0 40px;
+            font-family: 'Inter', sans-serif;
         }
-        
+
+        .footer-logo {
+            height: 40px;
+            margin-right: 12px;
+        }
+
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .footer-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            max-width: 320px;
+        }
+
         .footer-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            margin-bottom: 0.7rem;
-        }
-        
-        .footer-link {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: block;
-            margin-bottom: 0.3rem;
-            font-size: 0.85rem;
-        }
-        
-        .footer-link:hover {
+            margin-bottom: 1.5rem;
             color: white;
-            transform: translateX(5px);
         }
-        
+
+        .footer-links-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #3b7fb8;
+            transform: translateX(8px);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .footer-icon {
+            width: 20px;
+            color: #3b7fb8;
+            margin-right: 12px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 12px;
+        }
+
         .social-icons a {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            display: inline-flex;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 50%;
             color: white;
-            margin-right: 8px;
+            text-decoration: none;
             transition: all 0.3s ease;
-            font-size: 0.85rem;
         }
-        
+
         .social-icons a:hover {
-            background: white;
-            color: #256892;
+            background: #3b7fb8;
             transform: translateY(-5px);
         }
-        
-        .footer p {
+
+        .footer-bottom {
+            margin-top: 60px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .copyright {
+            color: rgba(255, 255, 255, 0.5);
             font-size: 0.85rem;
-            line-height: 1.5;
+        }
+
+        .footer-legal a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .footer-legal a:hover {
+            color: white;
         }
         
         /* Smooth Scroll */
@@ -1447,243 +1519,271 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="hero-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 hero-content" data-aos="fade-right" data-aos-duration="1000">
-                    <h1 class="hero-title">Clean Water<br><span class="hero-title-line2">Delivered to Your Door</span></h1>
-                    <p class="hero-subtitle">
-                        <span class="hero-subtitle-line">Order fresh, quality water with ease. Track your delivery in real-time</span><br>
-                        <span class="hero-subtitle-line">and enjoy convenient payment options. Your hydration solution is</span><br>
-                        <span class="hero-subtitle-line">just a click away! Experience fast delivery, clean water,</span><br>
-                        <span class="hero-subtitle-line">and reliable service.</span>
-                    </p>
-                    <div class="d-flex gap-3 flex-wrap">
-                        <a href="registration.html" class="btn btn-hero">
-                            <i class="fas fa-rocket me-2"></i>Get Started Free
-                        </a>
-                        <a href="#features" class="btn btn-hero-outline">
-                            <i class="fas fa-play-circle me-2"></i>Learn More
-                        </a>
-                    </div>
+  <section id="home" class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content" data-aos="fade-right" data-aos-duration="1000">
+               <h1 class="hero-title">
+                    Stay Hydrated<br>
+                    <span class="hero-title-line2">Order Delivered</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Order fresh, high-quality water with real-time tracking and easy payments. 
+                    Fast, reliable service is just a click away—stay hydrated with ease.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="registration.html" class="btn btn-hero">
+                        <i class="fas fa-shopping-cart me-2"></i>Order Now
+                    </a>
+                    <a href="#features" class="btn btn-hero-outline">
+                        <i class="fas fa-arrow-down me-2"></i>Explore Features
+                    </a>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Features Section -->
-    <section id="features" class="features-section">
-        <div class="container">
+  <section id="features" class="features-section">
+    <div class="container">
+        <div class="text-center mb-5">
             <h2 class="section-title" data-aos="fade-up">What You Can Do Today</h2>
-            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
-                Current, working features in the app right now
+            <p class="section-subtitle mx-auto" data-aos="fade-up" data-aos-delay="100" style="max-width: 600px;">
+                Explore the current features of the AquaSphere ecosystem right now.
             </p>
-            
-            <div class="row g-4">
-                <!-- Easy Ordering -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        <h3 class="feature-title">Easy Ordering</h3>
-                        <p class="feature-description">
-                            Quick product browsing (gallons, bottles, refills), simple order placement, 
-                            and easy quantity and container selection. Find what you need in seconds.
-                        </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-faucet-drip"></i>
                     </div>
-                </div>
-                
-                <!-- Saved Address & Quick Checkout -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <h3 class="feature-title">Saved Address & Quick Checkout</h3>
-                        <p class="feature-description">
-                            Save your delivery address once and reuse it for faster checkout.
-                        </p>
-                    </div>
-                </div>
-                
-                <!-- Order Status Updates -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <h3 class="feature-title">Order Status Updates</h3>
-                        <p class="feature-description">
-                            See your order progress as it moves from Pending to Delivered. Status updates are reflected in the app.
-                        </p>
-                    </div>
-                </div>
-                
-                <!-- Payment Options -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <h3 class="feature-title">Secure Payment Options</h3>
-                        <p class="feature-description">
-                            Pay via Cash on Delivery or GCash (PayMongo checkout). Pick what works best for you at checkout.
-                        </p>
-                    </div>
-                </div>
-                
-                <!-- Product Details -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-info-circle"></i>
-                        </div>
-                        <h3 class="feature-title">Product Details at a Glance</h3>
-                        <p class="feature-description">
-                            Prices, container types, descriptions. Search and 
-                            filter to easily find what you need quickly.
-                        </p>
-                    </div>
-                </div>
-                
-                <!-- Order History -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-receipt"></i>
-                        </div>
-                        <h3 class="feature-title">Order History</h3>
-                        <p class="feature-description">
-                            Review all your previous orders and their statuses in one place.
-                        </p>
-                    </div>
+                    <h3 class="feature-title">Streamlined Ordering</h3>
+                    <p class="feature-description">
+                        Browse our full catalog of gallons and refills. Select quantities and container types in just a few simple taps.
+                    </p>
                 </div>
             </div>
             
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h3 class="feature-title">Quick Checkout</h3>
+                    <p class="feature-description">
+                        Securely save your delivery addresses for a faster experience. No need to re-type details for every new order.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3 class="feature-title">Live Status Updates</h3>
+                    <p class="feature-description">
+                        Track your water delivery progress in real-time. Receive instant app updates from pending to successfully delivered.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h3 class="feature-title">Flexible Payments</h3>
+                    <p class="feature-description">
+                        Choose between convenient Cash on Delivery or secure digital payments via GCash powered by our PayMongo integration.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="feature-title">Smart Product Search</h3>
+                    <p class="feature-description">
+                        Access clear pricing and detailed container descriptions. Use smart filters to find the right water size for your home.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3 class="feature-title">Order History</h3>
+                    <p class="feature-description">
+                        Review all your past transactions and receipts in one place. Easily re-order your favorites with total transparency.
+                    </p>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- How It Works Section -->
     <section id="how-it-works" class="stats-section">
-        <div class="container">
-            <h2 class="mb-4 text-center" style="font-size: 2.5rem; font-weight: 700; color: white;" data-aos="fade-up">How It Works</h2>
-            <p class="text-center mb-5" style="font-size: 1.2rem; color: white; opacity: 0.95;" data-aos="fade-up" data-aos-delay="100">
-                Get your water delivered in four simple steps
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-heading" data-aos="fade-up">How It Works</h2>
+            <p class="section-subtext" data-aos="fade-up" data-aos-delay="100">
+                Pure water. Fast delivery. Four simple steps.
             </p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="0">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Select Products</h3>
+                    <p class="step-description">
+                        Browse our premium selection of gallons and refills. Pick the items that best fit your household needs.
+                    </p>
+                </div>
+            </div>
             
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="0">
-                    <div class="step-card">
-                        <div class="step-number" style="width: 80px; height: 80px; border-radius: 50%; background: white; color: #256892; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; margin: 0 auto 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);">1</div>
-                        <h3 class="step-title" style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1rem;">Choose Water Product</h3>
-                        <p class="step-description" style="color: white; opacity: 0.9; line-height: 1.7;">
-                            Browse through our selection of gallons, bottles, and refills. View prices, descriptions, and images.
-                        </p>
-                    </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="150">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Quick Checkout</h3>
+                    <p class="step-description">
+                        Set your delivery address and choose your payment method. Our streamlined process takes less than a minute.
+                    </p>
                 </div>
-                
-                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="150">
-                    <div class="step-card">
-                        <div class="step-number" style="width: 80px; height: 80px; border-radius: 50%; background: white; color: #256892; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; margin: 0 auto 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);">2</div>
-                        <h3 class="step-title" style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1rem;">Add Address & Checkout</h3>
-                        <p class="step-description" style="color: white; opacity: 0.9; line-height: 1.7;">
-                            Add or select your saved delivery address, review your cart, and place your order.
-                        </p>
-                    </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Track Progress</h3>
+                    <p class="step-description">
+                        Stay informed with real-time status updates. Follow your order from preparation to out-for-delivery.
+                    </p>
                 </div>
-                
-                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="step-card">
-                        <div class="step-number" style="width: 80px; height: 80px; border-radius: 50%; background: white; color: #256892; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; margin: 0 auto 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);">3</div>
-                        <h3 class="step-title" style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1rem;">View Order Status</h3>
-                        <p class="step-description" style="color: white; opacity: 0.9; line-height: 1.7;">
-                            Follow your order as it moves through statuses (Pending, Preparing, Out for Delivery, Delivered) in the app.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="450">
-                    <div class="step-card">
-                        <div class="step-number" style="width: 80px; height: 80px; border-radius: 50%; background: white; color: #256892; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; margin: 0 auto 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);">4</div>
-                        <h3 class="step-title" style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1rem;">Receive Your Order</h3>
-                        <p class="step-description" style="color: white; opacity: 0.9; line-height: 1.7;">
-                            Get your water delivered and pay via your preferred method.
-                        </p>
-                    </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="450">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Enjoy Delivery</h3>
+                    <p class="step-description">
+                        Receive your purified water right at your door. Pay conveniently and enjoy the refreshingly clean taste.
+                    </p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- CTA Section -->
-    <section id="cta" class="cta-section">
-        <div class="container">
-            <h2 class="cta-title" data-aos="fade-up">Ready to Get Started?</h2>
-            <p class="cta-subtitle" data-aos="fade-up" data-aos-delay="100">
-                Experience fast delivery, clean quality water, and trusted reliable service. 
-                Join thousands of satisfied customers who trust us for their hydration needs!
-            </p>
-            <div data-aos="fade-up" data-aos-delay="200">
-                <a href="registration.html" class="btn btn-hero" style="background: white; color: #256892; font-size: 1.2rem; padding: 18px 50px;">
-                    <i class="fas fa-user-plus me-2"></i>Get Started Free
-                </a>
+<section id="cta" class="cta-section">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-10">
+                <h2 class="cta-title" data-aos="fade-up">Pure Hydration, Delivered Fresh</h2>
+                
+                <p class="cta-subtitle" data-aos="fade-up" data-aos-delay="100">
+                    Smarter ordering. Faster delivery. Better water. <br>
+                    Experience a seamless way to keep your home or office perfectly hydrated.
+                </p>
+
+                <div data-aos="fade-up" data-aos-delay="200">
+                    <a href="registration.html" class="btn btn-cta-glass btn-lg px-5 py-3 mb-4">
+                        <i class="fas fa-droplet me-2"></i>Dive Into AquaSphere
+                    </a>
+                    
+                    <p class="text-light opacity-75 small mt-2">
+                        <i class="fas fa-certificate me-1"></i> 
+                        <strong>Premium quality minerals at prices that fit your budget.</strong>
+                    </p>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Footer -->
-    <footer id="contact" class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h4 class="footer-title" style="display: flex; align-items: center;">
-                        <img src="systemlogo.png" alt="AquaSphere Logo" style="height: 40px; margin-right: 10px;">
-                        AquaSphere
-                    </h4>
-                    <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.7;">
-                        Your trusted water delivery service. Fast delivery, clean quality water, and reliable service. 
-                        Everything you need for your hydration needs, all in one platform.
-                    </p>
+<footer id="contact" class="footer">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-4 col-md-12 mb-2">
+                <div class="footer-brand mb-3">
+                    <img src="systemlogo.png" alt="AquaSphere Logo" class="footer-logo">
+                    <span class="footer-logo-text">AquaSphere</span>
                 </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="footer-title">Quick Links</h5>
-                    <a href="#home" class="footer-link">Home</a>
-                    <a href="#features" class="footer-link">Features</a>
-                    <a href="#how-it-works" class="footer-link">How It Works</a>
-                    <a href="#contact" class="footer-link">Contact</a>
-                </div>
-                
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h5 class="footer-title">Features</h5>
-                    <a href="#" class="footer-link">Easy Ordering</a>
-                    <a href="#" class="footer-link">Delivery Tracking</a>
-                    <a href="#" class="footer-link">Payment Options</a>
-                    <a href="#" class="footer-link">Customer Support</a>
-                </div>
-                
-                <div class="col-lg-3 mb-4">
-                    <h5 class="footer-title">Connect With Us</h5>
-                    <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                    <p class="mt-1" style="color: rgba(255, 255, 255, 0.8);">
-                        <i class="fas fa-envelope me-2"></i>support@aquasphere.com
-                    </p>
+                <p class="footer-desc">
+                    Bringing nature's purest hydration to your doorstep. We combine smart ordering technology with reliable, eco-friendly delivery to keep your life flowing.
+                </p>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                 </div>
             </div>
-            
-            <hr style="border-color: rgba(255, 255, 255, 0.2); margin: 1rem 0 0.8rem;">
-            
-            <div class="text-center" style="color: rgba(255, 255, 255, 0.8); font-size: 0.8rem;">
-                <p>&copy; 2024 AquaSphere. Made with ❤️ for clean water delivery. All rights reserved.</p>
+
+            <div class="col-lg-2 col-md-4 col-6">
+                <h5 class="footer-title">Explore</h5>
+                <ul class="footer-links-list">
+                    <li><a href="#home" class="footer-link">Home</a></li>
+                    <li><a href="#features" class="footer-link">Features</a></li>
+                    <li><a href="#how-it-works" class="footer-link">How It Works</a></li>
+                    <li><a href="#pricing" class="footer-link">Pricing</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6">
+                <h5 class="footer-title">Our Services</h5>
+                <ul class="footer-links-list">
+                    <li><a href="#" class="footer-link">Mineral Refills</a></li>
+                    <li><a href="#" class="footer-link">Alkaline Water</a></li>
+                    <li><a href="#" class="footer-link">Bulk Delivery</a></li>
+                    <li><a href="#" class="footer-link">Express Support</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <h5 class="footer-title">Contact Us</h5>
+                <div class="contact-item mb-2">
+                    <i class="fas fa-envelope footer-icon"></i>
+                    <span>support@aquasphere.com</span>
+                </div>
+                <div class="contact-item mb-2">
+                    <i class="fas fa-phone-alt footer-icon"></i>
+                    <span>+63 (2) 123-4567</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-location-dot footer-icon"></i>
+                    <span>123 Water St, Metro Manila</span>
+                </div>
             </div>
         </div>
-    </footer>
+
+        <div class="footer-bottom">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="copyright mb-0">&copy; 2024 <strong>AquaSphere</strong>. Pure health in every drop.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="footer-legal">
+                        <a href="#">Privacy Policy</a>
+                        <span class="mx-2">|</span>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
